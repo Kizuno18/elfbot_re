@@ -41,9 +41,9 @@ void sub_1002e344(void)
 }
 ```
 
-## `sub_1002e353` `0x1002e353`
+## cmd_coretarget `0x1002e353`
 
-_8 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _8 bytes. (leaf/helper — see body)_
 
 ```c
 int sub_1002e353(void)
@@ -83,9 +83,9 @@ int sub_1002e36a(void)
 }
 ```
 
-## `sub_1002e460` `0x1002e460`
+## cmd_name `0x1002e460`
 
-_19 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _19 bytes. (leaf/helper — see body)_
 
 ```c
 int sub_1002e460(void)
@@ -97,9 +97,9 @@ int sub_1002e460(void)
 }
 ```
 
-## `sub_1002e473` `0x1002e473`
+## cmd_id `0x1002e473`
 
-_25 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _25 bytes. (leaf/helper — see body)_
 
 ```c
 int sub_1002e473(void)
@@ -113,9 +113,9 @@ int sub_1002e473(void)
 }
 ```
 
-## `sub_1002e48c` `0x1002e48c`
+## cmd_posx `0x1002e48c`
 
-_26 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _26 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -134,9 +134,9 @@ int sub_1002e48c(void)
 }
 ```
 
-## `sub_1002e4a6` `0x1002e4a6`
+## cmd_distance `0x1002e4a6`
 
-_57 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _57 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned int g_1005f854;
@@ -163,9 +163,9 @@ int sub_1002e4a6(void)
 }
 ```
 
-## `sub_1002e4df` `0x1002e4df`
+## cmd_distx `0x1002e4df`
 
-_37 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _37 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -188,9 +188,9 @@ int sub_1002e4df(void)
 }
 ```
 
-## `sub_1002e504` `0x1002e504`
+## cmd_disty `0x1002e504`
 
-_37 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _37 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -213,9 +213,9 @@ int sub_1002e504(void)
 }
 ```
 
-## `sub_1002e529` `0x1002e529`
+## cmd_posy `0x1002e529`
 
-_26 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _26 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -234,9 +234,9 @@ int sub_1002e529(void)
 }
 ```
 
-## `sub_1002e543` `0x1002e543`
+## cmd_posz `0x1002e543`
 
-_26 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _26 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -255,9 +255,9 @@ int sub_1002e543(void)
 }
 ```
 
-## `sub_1002e55d` `0x1002e55d`
+## cmd_dir `0x1002e55d`
 
-_26 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _26 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -276,9 +276,9 @@ int sub_1002e55d(void)
 }
 ```
 
-## `sub_1002e577` `0x1002e577`
+## cmd_outfit `0x1002e577`
 
-_26 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _26 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -297,9 +297,9 @@ int sub_1002e577(void)
 }
 ```
 
-## `sub_1002e591` `0x1002e591`
+## cmd_hppc `0x1002e591`
 
-_29 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _29 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -318,9 +318,9 @@ int sub_1002e591(void)
 }
 ```
 
-## `sub_1002e5ae` `0x1002e5ae`
+## cmd_speed `0x1002e5ae`
 
-_29 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _29 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -339,9 +339,9 @@ int sub_1002e5ae(void)
 }
 ```
 
-## `sub_1002e5cb` `0x1002e5cb`
+## cmd_isparalyzed `0x1002e5cb`
 
-_32 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _32 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -362,9 +362,9 @@ void sub_1002e5cb(void)
 }
 ```
 
-## `sub_1002e5eb` `0x1002e5eb`
+## cmd_color1 `0x1002e5eb`
 
-_26 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _26 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -383,9 +383,9 @@ int sub_1002e5eb(void)
 }
 ```
 
-## `sub_1002e605` `0x1002e605`
+## cmd_color2 `0x1002e605`
 
-_26 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _26 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -404,9 +404,9 @@ int sub_1002e605(void)
 }
 ```
 
-## `sub_1002e61f` `0x1002e61f`
+## cmd_color3 `0x1002e61f`
 
-_26 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _26 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -425,9 +425,9 @@ int sub_1002e61f(void)
 }
 ```
 
-## `sub_1002e639` `0x1002e639`
+## cmd_color4 `0x1002e639`
 
-_26 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _26 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -446,9 +446,9 @@ int sub_1002e639(void)
 }
 ```
 
-## `sub_1002e653` `0x1002e653`
+## cmd_skull `0x1002e653`
 
-_29 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _29 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -467,9 +467,9 @@ int sub_1002e653(void)
 }
 ```
 
-## `sub_1002e670` `0x1002e670`
+## cmd_party `0x1002e670`
 
-_29 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _29 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -488,9 +488,9 @@ int sub_1002e670(void)
 }
 ```
 
-## `sub_1002e68d` `0x1002e68d`
+## cmd_warbanner `0x1002e68d`
 
-_29 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _29 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -509,9 +509,9 @@ int sub_1002e68d(void)
 }
 ```
 
-## `sub_1002e6aa` `0x1002e6aa`
+## cmd_ismonster `0x1002e6aa`
 
-_26 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _26 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -532,9 +532,9 @@ void sub_1002e6aa(void)
 }
 ```
 
-## `sub_1002e6c4` `0x1002e6c4`
+## cmd_isnpc `0x1002e6c4`
 
-_41 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _41 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -559,9 +559,9 @@ int sub_1002e6c4(void)
 }
 ```
 
-## `sub_1002e6ed` `0x1002e6ed`
+## cmd_isplayer `0x1002e6ed`
 
-_26 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _26 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -582,9 +582,9 @@ void sub_1002e6ed(void)
 }
 ```
 
-## `sub_1002e707` `0x1002e707`
+## cmd_isonscreen `0x1002e707`
 
-_30 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _30 bytes. (leaf/helper — see body)_
 
 ```c
 int sub_1002e707(void)
@@ -602,9 +602,9 @@ int sub_1002e707(void)
 }
 ```
 
-## `sub_1002e725` `0x1002e725`
+## cmd_isshootable `0x1002e725`
 
-_50 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _50 bytes. (leaf/helper — see body)_
 
 ```c
 int sub_1002e725(void)
@@ -618,9 +618,9 @@ int sub_1002e725(void)
 }
 ```
 
-## `sub_1002e757` `0x1002e757`
+## cmd_canshoot `0x1002e757`
 
-_93 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _93 bytes. (leaf/helper — see body)_
 
 ```c
 int sub_1002e757(void)
@@ -642,9 +642,9 @@ int sub_1002e757(void)
 }
 ```
 
-## `sub_1002e7b4` `0x1002e7b4`
+## cmd_isenemy `0x1002e7b4`
 
-_33 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _33 bytes. (leaf/helper — see body)_
 
 ```c
 int sub_1002e7b4(void)
@@ -662,9 +662,9 @@ int sub_1002e7b4(void)
 }
 ```
 
-## `sub_1002e7d5` `0x1002e7d5`
+## cmd_isonnavi `0x1002e7d5`
 
-_31 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _31 bytes. (leaf/helper — see body)_
 
 ```c
 int sub_1002e7d5(void)
@@ -682,9 +682,9 @@ int sub_1002e7d5(void)
 }
 ```
 
-## `sub_1002e7f4` `0x1002e7f4`
+## cmd_isleader `0x1002e7f4`
 
-_33 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _33 bytes. (leaf/helper — see body)_
 
 ```c
 int sub_1002e7f4(void)
@@ -702,9 +702,9 @@ int sub_1002e7f4(void)
 }
 ```
 
-## `sub_1002e815` `0x1002e815`
+## cmd_isfriend `0x1002e815`
 
-_33 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _33 bytes. (leaf/helper — see body)_
 
 ```c
 int sub_1002e815(void)
@@ -722,9 +722,9 @@ int sub_1002e815(void)
 }
 ```
 
-## `sub_1002e836` `0x1002e836`
+## cmd_issubenemy `0x1002e836`
 
-_33 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _33 bytes. (leaf/helper — see body)_
 
 ```c
 int sub_1002e836(void)
@@ -742,9 +742,9 @@ int sub_1002e836(void)
 }
 ```
 
-## `sub_1002e857` `0x1002e857`
+## cmd_issubfriend `0x1002e857`
 
-_33 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _33 bytes. (leaf/helper — see body)_
 
 ```c
 int sub_1002e857(void)
@@ -762,9 +762,9 @@ int sub_1002e857(void)
 }
 ```
 
-## `sub_1002e878` `0x1002e878`
+## cmd_haslookinfo `0x1002e878`
 
-_39 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _39 bytes. (leaf/helper — see body)_
 
 ```c
 int sub_1002e878(void)
@@ -781,9 +781,9 @@ int sub_1002e878(void)
 }
 ```
 
-## `sub_1002e89f` `0x1002e89f`
+## cmd_guild `0x1002e89f`
 
-_26 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _26 bytes. (leaf/helper — see body)_
 
 ```c
 int sub_1002e89f(void)
@@ -796,9 +796,9 @@ int sub_1002e89f(void)
 }
 ```
 
-## `sub_1002e8b9` `0x1002e8b9`
+## cmd_voc `0x1002e8b9`
 
-_30 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _30 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -824,9 +824,9 @@ int sub_1002e8b9(void)
 }
 ```
 
-## `sub_1002e8d7` `0x1002e8d7`
+## cmd_vocation `0x1002e8d7`
 
-_33 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _33 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -846,9 +846,9 @@ int sub_1002e8d7(void)
 }
 ```
 
-## `sub_1002e8f8` `0x1002e8f8`
+## cmd_level `0x1002e8f8`
 
-_25 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _25 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -866,9 +866,9 @@ int sub_1002e8f8(void)
 }
 ```
 
-## `sub_1002e911` `0x1002e911`
+## cmd_isknight `0x1002e911`
 
-_39 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _39 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -890,9 +890,9 @@ int sub_1002e911(void)
 }
 ```
 
-## `sub_1002e938` `0x1002e938`
+## cmd_ispaladin `0x1002e938`
 
-_39 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _39 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -914,9 +914,9 @@ int sub_1002e938(void)
 }
 ```
 
-## `sub_1002e95f` `0x1002e95f`
+## cmd_issorcerer `0x1002e95f`
 
-_39 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _39 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -938,9 +938,9 @@ int sub_1002e95f(void)
 }
 ```
 
-## `sub_1002e986` `0x1002e986`
+## cmd_isdruid `0x1002e986`
 
-_39 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _39 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -962,9 +962,9 @@ int sub_1002e986(void)
 }
 ```
 
-## `sub_1002e9ad` `0x1002e9ad`
+## cmd_ismage `0x1002e9ad`
 
-_50 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _50 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -988,9 +988,9 @@ int sub_1002e9ad(void)
 }
 ```
 
-## `sub_1002e9df` `0x1002e9df`
+## cmd_maxhp `0x1002e9df`
 
-_27 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _27 bytes. (leaf/helper — see body)_
 
 ```c
 int sub_1002e9df(void)
@@ -1003,9 +1003,9 @@ int sub_1002e9df(void)
 }
 ```
 
-## `sub_1002e9fa` `0x1002e9fa`
+## cmd_hp `0x1002e9fa`
 
-_27 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _27 bytes. (leaf/helper — see body)_
 
 ```c
 int sub_1002e9fa(void)
@@ -1018,9 +1018,9 @@ int sub_1002e9fa(void)
 }
 ```
 
-## `sub_1002ea15` `0x1002ea15`
+## cmd_maxmp `0x1002ea15`
 
-_53 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _53 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -1045,9 +1045,9 @@ int sub_1002ea15(void)
 }
 ```
 
-## `sub_1002ea4a` `0x1002ea4a`
+## cmd_mp `0x1002ea4a`
 
-_59 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _59 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -1078,9 +1078,9 @@ int sub_1002ea4a(void)
 }
 ```
 
-## `sub_1002ea85` `0x1002ea85`
+## cmd_attackedme `0x1002ea85`
 
-_36 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _36 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -1102,9 +1102,9 @@ int sub_1002ea85(void)
 }
 ```
 
-## `sub_1002eaa9` `0x1002eaa9`
+## cmd_exposedcount `0x1002eaa9`
 
-_33 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _33 bytes. (leaf/helper — see body)_
 
 ```c
 int sub_1002eaa9(void)
@@ -1119,9 +1119,9 @@ int sub_1002eaa9(void)
 }
 ```
 
-## `sub_1002eaca` `0x1002eaca`
+## cmd_shotcount `0x1002eaca`
 
-_33 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _33 bytes. (leaf/helper — see body)_
 
 ```c
 int sub_1002eaca(void)

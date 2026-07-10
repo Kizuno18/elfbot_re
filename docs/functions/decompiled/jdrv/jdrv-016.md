@@ -2,9 +2,9 @@
 
 angr pseudo-C for each function in this address range. Named functions link to their subsystem doc. Auto-summary lists the APIs/strings each touches.
 
-## `sub_10035685` `0x10035685`
+## cmd_turnn `0x10035685`
 
-_6 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _6 bytes. (leaf/helper — see body)_
 
 ```c
 void sub_10035685(void)
@@ -15,9 +15,9 @@ void sub_10035685(void)
 }
 ```
 
-## `sub_1003568b` `0x1003568b`
+## cmd_turne `0x1003568b`
 
-_6 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _6 bytes. (leaf/helper — see body)_
 
 ```c
 void sub_1003568b(void)
@@ -28,9 +28,9 @@ void sub_1003568b(void)
 }
 ```
 
-## `sub_10035691` `0x10035691`
+## cmd_turns `0x10035691`
 
-_6 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _6 bytes. (leaf/helper — see body)_
 
 ```c
 void sub_10035691(void)
@@ -41,9 +41,9 @@ void sub_10035691(void)
 }
 ```
 
-## `sub_10035697` `0x10035697`
+## cmd_turnw `0x10035697`
 
-_6 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _6 bytes. (leaf/helper — see body)_
 
 ```c
 void sub_10035697(void)
@@ -54,9 +54,9 @@ void sub_10035697(void)
 }
 ```
 
-## `sub_100356b2` `0x100356b2`
+## cmd_scrollview `0x100356b2`
 
-_212 bytes. calls WriteProcessMemory_
+Named — see [doc 11](../../11-*.md). _212 bytes. calls WriteProcessMemory_
 
 ```c
 typedef struct struct_0 {
@@ -114,9 +114,9 @@ struct_0 * sub_100356b2(void)
 }
 ```
 
-## `sub_10035786` `0x10035786`
+## cmd_settargeting `0x10035786`
 
-_129 bytes. calls SendDlgItemMessageA; refs "off", "toggle"_
+Named — see [doc 11](../../11-*.md). _129 bytes. calls SendDlgItemMessageA; refs "off", "toggle"_
 
 ```c
 extern HWND g_10072f8c;
@@ -144,9 +144,9 @@ LRESULT sub_10035786(void)
 }
 ```
 
-## `sub_10035807` `0x10035807`
+## cmd_runtargeting `0x10035807`
 
-_11 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _11 bytes. (leaf/helper — see body)_
 
 ```c
 extern char g_100f0d3c;
@@ -158,9 +158,9 @@ void sub_10035807(void)
 }
 ```
 
-## `sub_10035812` `0x10035812`
+## cmd_setcavebot `0x10035812`
 
-_108 bytes. calls SendDlgItemMessageA; refs "off", "toggle"_
+Named — see [doc 11](../../11-*.md). _108 bytes. calls SendDlgItemMessageA; refs "off", "toggle"_
 
 ```c
 extern HWND g_10072f94;
@@ -184,9 +184,9 @@ int sub_10035812(void)
 }
 ```
 
-## `sub_1003587e` `0x1003587e`
+## cmd_setopennextbp `0x1003587e`
 
-_107 bytes. calls SendDlgItemMessageA; refs "off", "toggle"_
+Named — see [doc 11](../../11-*.md). _107 bytes. calls SendDlgItemMessageA; refs "off", "toggle"_
 
 ```c
 extern HWND g_10072f94;
@@ -208,9 +208,9 @@ LRESULT sub_1003587e(void)
 }
 ```
 
-## `sub_100358e9` `0x100358e9`
+## cmd_set `0x100358e9`
 
-_233 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _233 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -309,9 +309,9 @@ void sub_100359a0(void)
 }
 ```
 
-## `sub_100359d8` `0x100359d8`
+## cmd_clear `0x100359d8`
 
-_106 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _106 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -367,9 +367,9 @@ void sub_10035a1f(void)
 }
 ```
 
-## `sub_10035a44` `0x10035a44`
+## cmd_inc `0x10035a44`
 
-_132 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _132 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -426,9 +426,9 @@ void sub_10035aa3(void)
 }
 ```
 
-## `sub_10035aca` `0x10035aca`
+## cmd_dec `0x10035aca`
 
-_111 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _111 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -476,9 +476,9 @@ void sub_10035b29(void)
 }
 ```
 
-## `sub_10035b3b` `0x10035b3b`
+## cmd_swapequip `0x10035b3b`
 
-_58 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _58 bytes. (leaf/helper — see body)_
 
 ```c
 void sub_10035b3b(void)
@@ -491,9 +491,9 @@ void sub_10035b3b(void)
 }
 ```
 
-## `sub_10035b75` `0x10035b75`
+## cmd_unequip `0x10035b75`
 
-_160 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _160 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned short g_10043377;
@@ -542,9 +542,9 @@ int sub_10035b75(void)
 }
 ```
 
-## `sub_10035c15` `0x10035c15`
+## cmd_setcaption `0x10035c15`
 
-_18 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _18 bytes. (leaf/helper — see body)_
 
 ```c
 void sub_10035c15(void)
@@ -554,9 +554,9 @@ void sub_10035c15(void)
 }
 ```
 
-## `sub_10035c27` `0x10035c27`
+## cmd_makerune `0x10035c27`
 
-_39 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _39 bytes. (leaf/helper — see body)_
 
 ```c
 int sub_10035c27(void)

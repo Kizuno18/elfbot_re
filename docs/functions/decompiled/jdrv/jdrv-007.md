@@ -3312,9 +3312,9 @@ void sub_1002cbb6(void)
 }
 ```
 
-## `sub_1002cbca` `0x1002cbca`
+## cmd_mppc `0x1002cbca`
 
-_45 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _45 bytes. (leaf/helper — see body)_
 
 ```c
 int sub_1002cbca(void)
@@ -3351,9 +3351,9 @@ void sub_1002cc24(void)
 }
 ```
 
-## `sub_1002cc38` `0x1002cc38`
+## cmd_cap `0x1002cc38`
 
-_30 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _30 bytes. (leaf/helper — see body)_
 
 ```c
 int sub_1002cc38(void)
@@ -3364,9 +3364,9 @@ int sub_1002cc38(void)
 }
 ```
 
-## `sub_1002cc56` `0x1002cc56`
+## cmd_exp `0x1002cc56`
 
-_20 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _20 bytes. (leaf/helper — see body)_
 
 ```c
 void sub_1002cc56(void)
@@ -3390,9 +3390,9 @@ void sub_1002cc6a(void)
 }
 ```
 
-## `sub_1002cc7e` `0x1002cc7e`
+## cmd_mlevel `0x1002cc7e`
 
-_20 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _20 bytes. (leaf/helper — see body)_
 
 ```c
 void sub_1002cc7e(void)
@@ -3442,9 +3442,9 @@ void sub_1002ccba(void)
 }
 ```
 
-## `sub_1002ccce` `0x1002ccce`
+## cmd_soul `0x1002ccce`
 
-_20 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _20 bytes. (leaf/helper — see body)_
 
 ```c
 void sub_1002ccce(void)
@@ -3455,9 +3455,9 @@ void sub_1002ccce(void)
 }
 ```
 
-## `sub_1002cce2` `0x1002cce2`
+## cmd_stamina `0x1002cce2`
 
-_20 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _20 bytes. (leaf/helper — see body)_
 
 ```c
 void sub_1002cce2(void)
@@ -3468,9 +3468,9 @@ void sub_1002cce2(void)
 }
 ```
 
-## `sub_1002ccf6` `0x1002ccf6`
+## cmd_count `0x1002ccf6`
 
-_19 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _19 bytes. (leaf/helper — see body)_
 
 ```c
 extern int g_100f0e7c;

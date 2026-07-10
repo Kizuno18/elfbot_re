@@ -35,6 +35,14 @@ NAMED = {
  "0x1001b8be": ("dlgProc_SkinEditor", "10"),
 }
 
+# merge CiroScript command handlers (cmd_<name>) from the extracted table
+_csv = os.path.join(DEC, "../ciroscript-commands.csv")
+if os.path.exists(_csv):
+    for ln in open(_csv).read().splitlines()[1:]:
+        if "," in ln:
+            cmd, handler = ln.split(",", 1)
+            NAMED.setdefault(handler.strip().lower(), (f"cmd_{cmd.strip()}", "11"))
+
 def summarize(c, apis, strs):
     apis = apis or []
     hot = [a for a in apis if a in (

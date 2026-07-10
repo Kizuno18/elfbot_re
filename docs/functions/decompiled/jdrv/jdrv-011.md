@@ -1312,9 +1312,9 @@ void sub_100305e2(void)
 }
 ```
 
-## `sub_1003068a` `0x1003068a`
+## cmd_gotolabel `0x1003068a`
 
-_132 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _132 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned int g_100f0df8;
@@ -1359,9 +1359,9 @@ int sub_1003068a(void)
 }
 ```
 
-## `sub_1003070e` `0x1003070e`
+## cmd_islocation `0x1003070e`
 
-_70 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _70 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned int g_1005f854;
@@ -1389,9 +1389,9 @@ unsigned int sub_1003070e(void)
 }
 ```
 
-## `sub_10030754` `0x10030754`
+## cmd_isdistance `0x10030754`
 
-_101 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _101 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned int g_1005f854;
@@ -1440,9 +1440,9 @@ void* sub_10030754(void)
 }
 ```
 
-## `sub_100307b9` `0x100307b9`
+## cmd_isnotdistance `0x100307b9`
 
-_101 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _101 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned int g_1005f854;
@@ -1479,9 +1479,9 @@ void* sub_100307b9(void)
 }
 ```
 
-## `sub_1003081e` `0x1003081e`
+## cmd_isnotlocation `0x1003081e`
 
-_70 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _70 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned int g_1005f854;
@@ -1508,9 +1508,9 @@ void* sub_1003081e(void)
 }
 ```
 
-## `sub_10030864` `0x10030864`
+## cmd_skip `0x10030864`
 
-_20 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _20 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned int g_100f0e30;
@@ -1525,9 +1525,9 @@ void sub_10030864(void)
 }
 ```
 
-## `sub_10030878` `0x10030878`
+## cmd_wait `0x10030878`
 
-_71 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _71 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned int g_10087a0b;
@@ -1557,9 +1557,9 @@ unsigned int sub_10030878(void)
 }
 ```
 
-## `sub_100308bf` `0x100308bf`
+## cmd_refillammo `0x100308bf`
 
-_249 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _249 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned short g_100433bd;
@@ -1619,9 +1619,9 @@ int sub_100308bf(void)
 }
 ```
 
-## `sub_100309b8` `0x100309b8`
+## cmd_countolditems `0x100309b8`
 
-_373 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _373 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -1753,9 +1753,9 @@ int sub_100309b8(void)
 }
 ```
 
-## `sub_10030a3e` `0x10030a3e`
+## cmd_sspecial `0x10030a3e`
 
-_29 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _29 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned int g_10042294;
@@ -1771,9 +1771,9 @@ unsigned int sub_10030a3e(void)
 }
 ```
 
-## `sub_10030a5b` `0x10030a5b`
+## cmd_countitems `0x10030a5b`
 
-_18 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _18 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned int g_100f0e7c;
@@ -1785,9 +1785,9 @@ int sub_10030a5b(void)
 }
 ```
 
-## `sub_10030b5c` `0x10030b5c`
+## cmd_getcount `0x10030b5c`
 
-_34 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _34 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned int g_100f0e7c;
@@ -1800,9 +1800,9 @@ int sub_10030b5c(void)
 }
 ```
 
-## `sub_10030b7e` `0x10030b7e`
+## cmd_countitemsvisible `0x10030b7e`
 
-_25 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _25 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned int g_100f0e7c;
@@ -1819,9 +1819,9 @@ int sub_10030b7e(void)
 }
 ```
 
-## `sub_10030b97` `0x10030b97`
+## cmd_uh `0x10030b97`
 
-_181 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _181 bytes. (leaf/helper — see body)_
 
 ```c
 extern void g_100432e5;
@@ -1877,9 +1877,9 @@ unsigned int [35] sub_10030b97(void)
 }
 ```
 
-## `sub_10030c4c` `0x10030c4c`
+## cmd_ihpc `0x10030c4c`
 
-_194 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _194 bytes. (leaf/helper — see body)_
 
 ```c
 extern void g_100432e5;

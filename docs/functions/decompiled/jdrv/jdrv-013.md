@@ -2,9 +2,9 @@
 
 angr pseudo-C for each function in this address range. Named functions link to their subsystem doc. Auto-summary lists the APIs/strings each touches.
 
-## `sub_100322dc` `0x100322dc`
+## cmd_uhealth `0x100322dc`
 
-_11 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _11 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned short g_100433a3;
@@ -15,9 +15,9 @@ void sub_100322dc(void)
 }
 ```
 
-## `sub_100322e7` `0x100322e7`
+## cmd_gshealth `0x100322e7`
 
-_11 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _11 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned short g_100433a3;
@@ -28,9 +28,9 @@ void sub_100322e7(void)
 }
 ```
 
-## `sub_10032372` `0x10032372`
+## cmd_retarget `0x10032372`
 
-_145 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _145 bytes. (leaf/helper — see body)_
 
 ```c
 extern int g_10084bf7;
@@ -81,9 +81,9 @@ int sub_10032372(void)
 }
 ```
 
-## `sub_10032403` `0x10032403`
+## cmd_pm `0x10032403`
 
-_48 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _48 bytes. (leaf/helper — see body)_
 
 ```c
 int sub_10032403(void)
@@ -94,9 +94,9 @@ int sub_10032403(void)
 }
 ```
 
-## `sub_10032433` `0x10032433`
+## cmd_auto `0x10032433`
 
-_246 bytes. refs "Auto Off: ", "Auto On: "_
+Named — see [doc 11](../../11-*.md). _246 bytes. refs "Auto Off: ", "Auto On: "_
 
 ```c
 extern unsigned int g_10084c0b[4];
@@ -158,9 +158,9 @@ int sub_10032433(void)
 }
 ```
 
-## `sub_10032529` `0x10032529`
+## cmd_end `0x10032529`
 
-_48 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _48 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned int g_10087a0b;
@@ -184,9 +184,9 @@ void sub_10032529(void)
 }
 ```
 
-## `sub_10032559` `0x10032559`
+## cmd_break `0x10032559`
 
-_32 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _32 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned int g_1008ab93;
@@ -206,9 +206,9 @@ void sub_10032559(void)
 }
 ```
 
-## `sub_10032579` `0x10032579`
+## cmd_turnoff `0x10032579`
 
-_28 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _28 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned int g_10084c0b;
@@ -223,9 +223,9 @@ void sub_10032579(void)
 }
 ```
 
-## `sub_10032595` `0x10032595`
+## cmd_reconnect `0x10032595`
 
-_9 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _9 bytes. (leaf/helper — see body)_
 
 ```c
 void sub_10032595(void)
@@ -235,9 +235,9 @@ void sub_10032595(void)
 }
 ```
 
-## `sub_1003259e` `0x1003259e`
+## cmd_connect `0x1003259e`
 
-_255 bytes. calls GetPrivateProfileStringA; refs "serverlist.txt", "Servers"_
+Named — see [doc 11](../../11-*.md). _255 bytes. calls GetPrivateProfileStringA; refs "serverlist.txt", "Servers"_
 
 ```c
 typedef struct struct_0 {
@@ -294,9 +294,9 @@ int sub_1003259e(void)
 }
 ```
 
-## `sub_1003269d` `0x1003269d`
+## cmd_setpos `0x1003269d`
 
-_56 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _56 bytes. (leaf/helper — see body)_
 
 ```c
 extern char g_100ba736;
@@ -324,9 +324,9 @@ unsigned int sub_1003269d(void)
 }
 ```
 
-## `sub_100326d5` `0x100326d5`
+## cmd_listboxsetup `0x100326d5`
 
-_145 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _145 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -376,9 +376,9 @@ unsigned int sub_100326d5(void)
 }
 ```
 
-## `sub_10032766` `0x10032766`
+## cmd_listboxaddline `0x10032766`
 
-_157 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _157 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned int g_100f49f1;
@@ -430,9 +430,9 @@ unsigned int sub_10032766(void)
 }
 ```
 
-## `sub_10032803` `0x10032803`
+## cmd_setcolor `0x10032803`
 
-_74 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _74 bytes. (leaf/helper — see body)_
 
 ```c
 extern char g_100ba736;
@@ -463,9 +463,9 @@ unsigned int sub_10032803(void)
 }
 ```
 
-## `sub_1003284d` `0x1003284d`
+## cmd_displaytext `0x1003284d`
 
-_47 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _47 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned int g_100ee8b6;
@@ -483,9 +483,9 @@ void sub_1003284d(void)
 }
 ```
 
-## `sub_1003287c` `0x1003287c`
+## cmd_listas `0x1003287c`
 
-_51 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _51 bytes. (leaf/helper — see body)_
 
 ```c
 extern char g_100ba736;
@@ -505,9 +505,9 @@ void sub_1003287c(void)
 }
 ```
 
-## `sub_100328af` `0x100328af`
+## cmd_dontlist `0x100328af`
 
-_24 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _24 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned int g_100ee8b6;
@@ -522,9 +522,9 @@ void sub_100328af(void)
 }
 ```
 
-## `sub_100328c7` `0x100328c7`
+## cmd_sio `0x100328c7`
 
-_147 bytes. refs "exura sio \"_
+Named — see [doc 11](../../11-*.md). _147 bytes. refs "exura sio \"_
 
 ```c
 typedef struct struct_0 {
@@ -573,9 +573,9 @@ struct_0 * sub_100328c7(void)
 }
 ```
 
-## `sub_1003295a` `0x1003295a`
+## cmd_usegrounditem `0x1003295a`
 
-_77 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _77 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned short g_100433ff;
@@ -610,9 +610,9 @@ int sub_1003295a(void)
 }
 ```
 
-## `sub_100329a7` `0x100329a7`
+## cmd_opengrounditem `0x100329a7`
 
-_97 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _97 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned short g_100433ff;
@@ -645,9 +645,9 @@ int sub_100329a7(void)
 }
 ```
 
-## `sub_10032a08` `0x10032a08`
+## cmd_playsound `0x10032a08`
 
-_30 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _30 bytes. (leaf/helper — see body)_
 
 ```c
 int sub_10032a08(void)
@@ -657,9 +657,9 @@ int sub_10032a08(void)
 }
 ```
 
-## `sub_10032a26` `0x10032a26`
+## cmd_useitem `0x10032a26`
 
-_69 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _69 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned short g_1004340b;
@@ -686,9 +686,9 @@ int sub_10032a26(void)
 }
 ```
 
-## `sub_10032a6b` `0x10032a6b`
+## cmd_usegroundxyz `0x10032a6b`
 
-_96 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _96 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned short g_100433ff;
@@ -720,9 +720,9 @@ int sub_10032a6b(void)
 }
 ```
 
-## `sub_10032acb` `0x10032acb`
+## cmd_opengroundxyz `0x10032acb`
 
-_99 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _99 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned short g_100433ff;
@@ -754,9 +754,9 @@ int sub_10032acb(void)
 }
 ```
 
-## `sub_10032b2e` `0x10032b2e`
+## cmd_reachgrounditem `0x10032b2e`
 
-_82 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _82 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned int g_100f0e18;
@@ -794,9 +794,9 @@ unsigned int sub_10032b2e(void)
 }
 ```
 
-## `sub_10032b80` `0x10032b80`
+## cmd_skin `0x10032b80`
 
-_118 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _118 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned short g_10043414;
@@ -840,9 +840,9 @@ int sub_10032b80(void)
 }
 ```
 
-## `sub_10032bf6` `0x10032bf6`
+## cmd_stake `0x10032bf6`
 
-_118 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _118 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned short g_10043414;
@@ -886,9 +886,9 @@ int sub_10032bf6(void)
 }
 ```
 
-## `sub_10032c6c` `0x10032c6c`
+## cmd_moveto `0x10032c6c`
 
-_50 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _50 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned int g_1028987c;
@@ -907,9 +907,9 @@ unsigned int sub_10032c6c(void)
 }
 ```
 
-## `sub_10032c9e` `0x10032c9e`
+## cmd_addloot `0x10032c9e`
 
-_27 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _27 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned int g_1005f854;
@@ -922,9 +922,9 @@ unsigned int sub_10032c9e(void)
 }
 ```
 
-## `sub_10032cb9` `0x10032cb9`
+## cmd_setammy `0x10032cb9`
 
-_19 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _19 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned int g_64cca4;
@@ -936,9 +936,9 @@ int sub_10032cb9(void)
 }
 ```
 
-## `sub_10032ccc` `0x10032ccc`
+## cmd_seticontext `0x10032ccc`
 
-_101 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _101 bytes. (leaf/helper — see body)_
 
 ```c
 extern char g_1014f420;
@@ -967,9 +967,9 @@ int sub_10032ccc(void)
 }
 ```
 
-## `sub_10032d31` `0x10032d31`
+## cmd_seticonactive `0x10032d31`
 
-_124 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _124 bytes. (leaf/helper — see body)_
 
 ```c
 extern char g_1008a90b;
@@ -1011,9 +1011,9 @@ int sub_10032d31(void)
 }
 ```
 
-## `sub_10032dad` `0x10032dad`
+## cmd_setoutfitcolor `0x10032dad`
 
-_211 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _211 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -1111,9 +1111,9 @@ int sub_10032e52(void)
 }
 ```
 
-## `sub_10032e85` `0x10032e85`
+## cmd_setoutfit `0x10032e85`
 
-_188 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _188 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -1209,9 +1209,9 @@ void sub_10032ebc(void)
 }
 ```
 
-## `sub_10032f46` `0x10032f46`
+## cmd_setitemoutfit `0x10032f46`
 
-_105 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _105 bytes. (leaf/helper — see body)_
 
 ```c
 typedef struct struct_0 {
@@ -1266,9 +1266,9 @@ void sub_10032f75(void)
 }
 ```
 
-## `sub_10032fb1` `0x10032fb1`
+## cmd_setrelation `0x10032fb1`
 
-_220 bytes. refs "enemy", "subenemy", "friend"_
+Named — see [doc 11](../../11-*.md). _220 bytes. refs "enemy", "subenemy", "friend"_
 
 ```c
 int sub_10032fb1(void)
@@ -1322,9 +1322,9 @@ int sub_10032fb1(void)
 }
 ```
 
-## `sub_1003308d` `0x1003308d`
+## cmd_setdebug `0x1003308d`
 
-_17 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _17 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned int g_100f931c;
@@ -1336,9 +1336,9 @@ int sub_1003308d(void)
 }
 ```
 
-## `sub_1003309e` `0x1003309e`
+## cmd_getproperties `0x1003309e`
 
-_52 bytes. refs "%lX %lX"_
+Named — see [doc 11](../../11-*.md). _52 bytes. refs "%lX %lX"_
 
 ```c
 int sub_1003309e(void)
@@ -1354,9 +1354,9 @@ int sub_1003309e(void)
 }
 ```
 
-## `sub_100330d2` `0x100330d2`
+## cmd_gettile `0x100330d2`
 
-_73 bytes. refs "%lX"_
+Named — see [doc 11](../../11-*.md). _73 bytes. refs "%lX"_
 
 ```c
 int sub_100330d2(void)
@@ -1375,9 +1375,9 @@ int sub_100330d2(void)
 }
 ```
 
-## `sub_1003311b` `0x1003311b`
+## cmd_goinvisible `0x1003311b`
 
-_30 bytes. refs "utana vid"_
+Named — see [doc 11](../../11-*.md). _30 bytes. refs "utana vid"_
 
 ```c
 typedef struct struct_0 {
@@ -1395,9 +1395,9 @@ void sub_1003311b(void)
 }
 ```
 
-## `sub_10033139` `0x10033139`
+## cmd_moveitems `0x10033139`
 
-_123 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _123 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned int g_100f0e18;
@@ -1449,9 +1449,9 @@ int sub_10033139(void)
 }
 ```
 
-## `sub_100331b4` `0x100331b4`
+## cmd_movenitems `0x100331b4`
 
-_57 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _57 bytes. (leaf/helper — see body)_
 
 ```c
 void sub_100331b4(void)
@@ -1468,9 +1468,9 @@ void sub_100331b4(void)
 }
 ```
 
-## `sub_100331ed` `0x100331ed`
+## cmd_moveitemsonto `0x100331ed`
 
-_200 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _200 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned int g_100f0e18;
@@ -1553,9 +1553,9 @@ void sub_100332af(void)
 }
 ```
 
-## `sub_100332b7` `0x100332b7`
+## cmd_openitem `0x100332b7`
 
-_50 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _50 bytes. (leaf/helper — see body)_
 
 ```c
 void sub_100332b7(void)
@@ -1572,9 +1572,9 @@ void sub_100332b7(void)
 }
 ```
 
-## `sub_100332e9` `0x100332e9`
+## cmd_openbpitem `0x100332e9`
 
-_60 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _60 bytes. (leaf/helper — see body)_
 
 ```c
 extern char g_100434d7;
@@ -1597,9 +1597,9 @@ int sub_100332e9(void)
 }
 ```
 
-## `sub_10033325` `0x10033325`
+## cmd_openbeltitem `0x10033325`
 
-_60 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _60 bytes. (leaf/helper — see body)_
 
 ```c
 extern char g_100434d7;
@@ -1622,9 +1622,9 @@ int sub_10033325(void)
 }
 ```
 
-## `sub_10033361` `0x10033361`
+## cmd_closeallwindows `0x10033361`
 
-_90 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _90 bytes. (leaf/helper — see body)_
 
 ```c
 int sub_10033361(void)
@@ -1655,9 +1655,9 @@ int sub_10033361(void)
 }
 ```
 
-## `sub_100333bb` `0x100333bb`
+## cmd_reopenwindows `0x100333bb`
 
-_114 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _114 bytes. (leaf/helper — see body)_
 
 ```c
 extern char g_100f45bc;
@@ -1695,9 +1695,9 @@ int sub_100333bb(void)
 }
 ```
 
-## `sub_1003342d` `0x1003342d`
+## cmd_loadcavebot `0x1003342d`
 
-_17 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _17 bytes. (leaf/helper — see body)_
 
 ```c
 void sub_1003342d(void)
@@ -1707,9 +1707,9 @@ void sub_1003342d(void)
 }
 ```
 
-## `sub_1003343e` `0x1003343e`
+## cmd_loadtargeting `0x1003343e`
 
-_17 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _17 bytes. (leaf/helper — see body)_
 
 ```c
 void sub_1003343e(void)
@@ -1719,9 +1719,9 @@ void sub_1003343e(void)
 }
 ```
 
-## `sub_1003344f` `0x1003344f`
+## cmd_loadsetting `0x1003344f`
 
-_17 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _17 bytes. (leaf/helper — see body)_
 
 ```c
 void sub_1003344f(void)
@@ -1731,9 +1731,9 @@ void sub_1003344f(void)
 }
 ```
 
-## `sub_10033460` `0x10033460`
+## cmd_loadscript `0x10033460`
 
-_17 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _17 bytes. (leaf/helper — see body)_
 
 ```c
 void sub_10033460(void)
@@ -1743,9 +1743,9 @@ void sub_10033460(void)
 }
 ```
 
-## `sub_10033471` `0x10033471`
+## cmd_openitemnew `0x10033471`
 
-_53 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _53 bytes. (leaf/helper — see body)_
 
 ```c
 void sub_10033471(void)
@@ -1762,9 +1762,9 @@ void sub_10033471(void)
 }
 ```
 
-## `sub_100334a6` `0x100334a6`
+## cmd_useitemsonground `0x100334a6`
 
-_193 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _193 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned short g_10043427;
@@ -1814,9 +1814,9 @@ int sub_100334a6(void)
 }
 ```
 
-## `sub_10033567` `0x10033567`
+## cmd_useongroundxyz `0x10033567`
 
-_178 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _178 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned short g_10043414;
@@ -1868,9 +1868,9 @@ int sub_10033567(void)
 }
 ```
 
-## `sub_10033619` `0x10033619`
+## cmd_repeatuseongroundxyz `0x10033619`
 
-_192 bytes. (leaf/helper — see body)_
+Named — see [doc 11](../../11-*.md). _192 bytes. (leaf/helper — see body)_
 
 ```c
 extern unsigned short g_10043414;
