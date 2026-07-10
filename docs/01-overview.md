@@ -40,19 +40,23 @@ Confirmed entry points in `elfbot.dll`:
 Derived from imports, strings and the entry call graph; refined as functions are
 documented in later docs.
 
-| Subsystem | Evidence | Status |
-|---|---|---|
-| **Client memory engine** | `ReadProcessMemory`/`WriteProcessMemory`, `VirtualProtect`, thread context APIs; `TibiaClient`, `INITIALIZEDLLADDR` | WIP |
-| **Config / settings** | `GetPrivateProfileStringA`, `elfbot.ini`, `GlobalSettings`, `hotkeys.ini`, `serverlist.txt` | WIP |
-| **CiroScript engine** | `scripts\*.elfc`/`*.elft`, `CiroScript.com`, compiled script blobs | WIP |
-| **Cavebot / walker** | navigation, waypoint execution | WIP |
-| **NavNet client** | `WSOCK32` connect/send/recv, `gethostbyname`; mirror of `navserv.exe` | WIP |
-| **Hotkeys / input** | `RegisterHotKey`, `GetAsyncKeyState`, `SendMessageA` | WIP |
-| **HUD / overlay** | `GDI32` BitBlt/DC/font, `GetDIBits`; minimaps | WIP |
-| **Sound / alarms** | `winmm` mmio + `DSOUND`; `*.wav` assets | WIP |
-| **Looting** | `lootitems.txt`, `loot.wav` | WIP |
-| **GUI (bot windows)** | `CreateWindowExA`, `SendDlgItemMessageA`, `USkin.dll` theming | WIP |
-| **GM / anti-detection** | `gmdetected.wav`, flash/alert | WIP |
+| Subsystem | Deep-dive doc |
+|---|---|
+| **Client hooks / memory engine** | [08](08-client-hooks-engine.md), [20](20-client-hooks-deep.md) |
+| **Master tick loop** | [13](13-engine-tick-loop.md) |
+| **CiroScript language + VM** | [07](07-ciroscript-language.md), [11](11-ciroscript-engine.md), runtime [14](14-ciroscript-runtime.md) |
+| **Cavebot walker / waypoints** | walker [17](17-cavebot-walker.md), waypoints [19](19-cavebot-waypoints.md) |
+| **Targeting** | [16](16-targeting-engine.md) |
+| **Healer** | [15](15-healer-engine.md) |
+| **Looting** | [23](23-looting-engine.md) |
+| **Hotkeys / alarms / sound** | [24](24-hotkeys-alarms.md) |
+| **NavNet client + packet proxy** | proxy [09](09-packet-proxy.md), codec [18](18-navnet-codec.md), server [04](04-navnet-server.md) |
+| **Player-state readout / HUD** | [21](21-player-state.md), dialogs [10](10-feature-subsystems.md) |
+| **Compiled scripts `.elfc`/`.elft`** | format [22](22-elfc-file-format.md); crypto lib [12](12-script-crypto-compression.md) |
+| **Feature dialogs (23 windows)** | [10](10-feature-subsystems.md) |
+
+All subsystems above are documented function-by-function; every function is in
+the [master catalog](functions/index.md).
 
 ## Companion binaries
 
