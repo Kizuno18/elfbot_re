@@ -59,6 +59,7 @@ scripts), `elfsettings/`, `lootitems.txt`, `outfits.txt`, `hotkeys.ini`,
 | [`docs/27-subsystem-relations.md`](docs/27-subsystem-relations.md) | **All 23 tabs + every inter-tab relation** (the graph) |
 | [`docs/28-runtime-validation.md`](docs/28-runtime-validation.md) | **Live injection into genuine Tibia 8.6** — unpack, DllMain, hooks confirmed |
 | [`docs/29-ui-layout-geometry.md`](docs/29-ui-layout-geometry.md) | **Exact pixel geometry of every panel/control** (live capture) + [`ui/*.json`](ui/elfbot-ui-geometry.json) |
+| [`docs/30-runtime-session-log.md`](docs/30-runtime-session-log.md) | Live driving of the OTServ-patched client: login path proven to server auth, crash-fix, pending items |
 | [`docs/functions/index.md`](docs/functions/index.md) | Master index — every function (7125) decompiled + purpose |
 
 ## Method
