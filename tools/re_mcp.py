@@ -13,8 +13,8 @@ Usage:
 
 Examples:
   re_mcp.py ida list
-  re_mcp.py upload fetch_url '{"url":"https://.../XenoSuite.exe"}'
-  re_mcp.py ida idb_open '{"input_path":"C:\\\\Tools\\\\mcp-uploads\\\\XenoSuite.exe"}'
+  re_mcp.py upload fetch_url '{"url":"https://.../elfbot.dll"}'
+  re_mcp.py ida idb_open '{"input_path":"C:\\\\Tools\\\\mcp-uploads\\\\elfbot.dll"}'
 """
 import json, sys, os, re, urllib.request, urllib.error
 
