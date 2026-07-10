@@ -40,6 +40,18 @@ scripts), `elfsettings/`, `lootitems.txt`, `outfits.txt`, `hotkeys.ini`,
 | [`docs/10-feature-subsystems.md`](docs/10-feature-subsystems.md) | All 23 feature dialogs mapped + named |
 | [`docs/11-ciroscript-engine.md`](docs/11-ciroscript-engine.md) | CiroScript VM: 422 commands → handlers, hash dispatch |
 | [`docs/12-script-crypto-compression.md`](docs/12-script-crypto-compression.md) | `.elfc`/`.elft` protection: Blowfish, BWT, LZW, block ciphers |
+| [`docs/13-engine-tick-loop.md`](docs/13-engine-tick-loop.md) | **Master control flow** — `botMainTickLoop`, the timed subsystem dispatch |
+| [`docs/14-ciroscript-runtime.md`](docs/14-ciroscript-runtime.md) | CiroScript interpreter runtime (script execution each tick) |
+| [`docs/15-healer-engine.md`](docs/15-healer-engine.md) | Healer: heal-spell/potion ladder + offensive casting |
+| [`docs/16-targeting-engine.md`](docs/16-targeting-engine.md) | Targeting: creature scoring, battle-list, attack |
+| [`docs/17-cavebot-walker.md`](docs/17-cavebot-walker.md) | Walker/pathfinder: 18×14 cost grid, BFS, flee/retreat |
+| [`docs/18-navnet-codec.md`](docs/18-navnet-codec.md) | NavNet position-sharing + synthetic-packet builders |
+| [`docs/19-cavebot-waypoints.md`](docs/19-cavebot-waypoints.md) | Cavebot waypoint loading, record types, in-memory table |
+| [`docs/20-client-hooks-deep.md`](docs/20-client-hooks-deep.md) | Client hook engine (deep): parser hook, shadow tables, full-light |
+| [`docs/21-player-state.md`](docs/21-player-state.md) | Player-state snapshot + exp meter (client offsets read) |
+| [`docs/22-elfc-file-format.md`](docs/22-elfc-file-format.md) | `.elfc`/`.elft` format cracked (sparse-opcode) + `decode_elfc.py` |
+| [`docs/23-looting-engine.md`](docs/23-looting-engine.md) | Looter: corpse scan, container table, depot state machine |
+| [`docs/24-hotkeys-alarms.md`](docs/24-hotkeys-alarms.md) | Hotkey/label engine, alarms, DirectSound |
 | [`docs/functions/index.md`](docs/functions/index.md) | Master index — every function (7125) decompiled + purpose |
 
 ## Method

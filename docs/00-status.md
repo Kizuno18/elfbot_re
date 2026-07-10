@@ -41,6 +41,25 @@ Resume point for the ElfBot NG 8.60 RE. What is done, what is in progress.
 - **Script crypto/compression** — the `.elfc`/`.elft` protection stack
   (Blowfish, BWT, LZW, custom block ciphers) mapped ([12](12-script-crypto-compression.md)).
 
+- **Names applied to the IDB** — the full `.jdrv` catalog is now written into
+  `elfbot.dll.i64` on the VM: **893 functions named + 1188 purpose comments**
+  (was 454 offline), plus 51 from the engine deep-dives. Saved; Hex-Rays reads
+  with real names throughout.
+- **Engine deep-dives (all runtime flows traced)** — from the named Hex-Rays:
+  master tick loop ([13](13-engine-tick-loop.md)), CiroScript runtime
+  ([14](14-ciroscript-runtime.md)), healer ([15](15-healer-engine.md)), targeting
+  ([16](16-targeting-engine.md)), cavebot walker/pathfinder
+  ([17](17-cavebot-walker.md)) + waypoint format ([19](19-cavebot-waypoints.md)),
+  NavNet codec ([18](18-navnet-codec.md)), client hooks deep
+  ([20](20-client-hooks-deep.md)), player-state/exp ([21](21-player-state.md)),
+  looting ([23](23-looting-engine.md)), hotkeys/alarms/sound
+  ([24](24-hotkeys-alarms.md)).
+- **`.elfc`/`.elft` byte format cracked** — the compiled files are **not
+  encrypted**: a sparse-opcode table encoding (magic `0xFFFFFEA0`). Decoder
+  `tools/decode_elfc.py` recovers the 283 KB waypoint + 41 KB targeting tables
+  from real samples ([22](22-elfc-file-format.md)). Refines [12](12-script-crypto-compression.md)
+  (that crypto cluster is a separate, unused-for-these-files path).
+
 - **loader.exe** — all 1780 functions decompiled + purpose; the madCodeHook
   injection internals (trampoline, remote-thread, shared-mem IPC) reversed
   ([06](06-injection-chain.md), [functions/loader-catalog.md](functions/loader-catalog.md)).
@@ -59,11 +78,11 @@ Every function in every binary is decompiled to pseudo-C **and** has a purpose:
 
 ## Optional follow-ups
 
-- Bulk-import the full 1158-name map (`ciroscript-commands.csv` + catalogs) into
-  the IDA db via a script (the 37 core names are already applied + saved).
-- `.elfc`/`.elft` exact byte layout: run a sample through the mapped
-  decrypt/decompress functions ([12](12-script-crypto-compression.md)).
+- HUD renderer deep pass (the on-screen draw callbacks; partially covered in
+  [20](20-client-hooks-deep.md) / [21](21-player-state.md)).
 - Reconcile the `SetFunctionAddresses` offset table with the hardcoded hooks.
+- The `.jiru`/`.cdtemn` support section stays catalogued (5935 funcs) but is not
+  individually deep-documented — MSVC STL/Boost/CRT glue, outside bot-logic scope.
 
 ## Conventions
 
