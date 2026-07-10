@@ -40,6 +40,7 @@ scripts), `elfsettings/`, `lootitems.txt`, `outfits.txt`, `hotkeys.ini`,
 | [`docs/10-feature-subsystems.md`](docs/10-feature-subsystems.md) | All 23 feature dialogs mapped + named |
 | [`docs/11-ciroscript-engine.md`](docs/11-ciroscript-engine.md) | CiroScript VM: 422 commands → handlers, hash dispatch |
 | [`docs/12-script-crypto-compression.md`](docs/12-script-crypto-compression.md) | `.elfc`/`.elft` protection: Blowfish, BWT, LZW, block ciphers |
+| [`docs/13-cavebot-targeting-engine.md`](docs/13-cavebot-targeting-engine.md) | Cavebot pathfinder + threat map, targeting evaluator |
 | [`docs/13-engine-tick-loop.md`](docs/13-engine-tick-loop.md) | **Master control flow** — `botMainTickLoop`, the timed subsystem dispatch |
 | [`docs/14-ciroscript-runtime.md`](docs/14-ciroscript-runtime.md) | CiroScript interpreter runtime (script execution each tick) |
 | [`docs/15-healer-engine.md`](docs/15-healer-engine.md) | Healer: heal-spell/potion ladder + offensive casting |
