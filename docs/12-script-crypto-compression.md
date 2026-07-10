@@ -1,14 +1,25 @@
 # elfbot.dll — crypto & compression subsystem
 
-> **Correction:** the `.elfc`/`.elft` files are **not** run through this stack.
-> They are a sparse-write opcode stream, not ciphertext — see the cracked format
-> in [`22-elfc-file-format.md`](22-elfc-file-format.md), which supersedes the
-> "protection pipeline for compiled scripts" framing below. This cluster is a
-> self-contained crypto/compression library in `.jiru`; its live use is most
-> likely the network/proxy stream cipher (`encryptPacketBlocks` /
-> `decryptPacketBlocks`, [09](09-packet-proxy.md)) and/or the online script-store
-> DRM (`ciroscript.com`), **not** the on-disk `.elfc` load path. The function
-> inventory below stands; only the "what it protects" claim is corrected.
+> **Resolved — this cluster is unused, statically-linked library code.** A full
+> reverse call-graph walk (12 levels up from every crypto/compression entry) hits
+> **33 functions and never reaches ElfBot's own bot logic** (`.jdrv`,
+> `< 0x1002C000`); the only string anywhere in that tree is **`"1.2.3"` — the
+> zlib version**. So the whole Blowfish + BWT + LZW + RLE/zlib + white-box-cipher
+> stack is a third-party archive/compression library the toolchain linked in
+> (zlib 1.2.3, pulled via a Boost / compression dependency) that the bot **never
+> calls**. It has no live target:
+>
+> - **Not the `.elfc`/`.elft`** — those are a sparse-write opcode stream, not
+>   ciphertext ([`22-elfc-file-format.md`](22-elfc-file-format.md)).
+> - **Not the network stream** — the proxy cipher (`decryptPacketBlocks` /
+>   `encryptPacketBlocks` `0x100212A3/0x100212D7`, [09](09-packet-proxy.md))
+>   processes 8-byte blocks by calling the **Tibia client's own XTEA routine at
+>   `0x549F60`**, not this cluster.
+> - **Not online DRM** — elfbot.dll imports no HTTP/WinINet; there is no reachable
+>   caller from bot code.
+>
+> The function inventory below is still a correct RE of the library; it simply is
+> not part of ElfBot's runtime behaviour.
 
 A cluster of ~59 functions in `.jiru` implements a full compress-then-encrypt
 stack: BWT + LZW + RLE/zlib compression and a Blowfish + custom/white-box
