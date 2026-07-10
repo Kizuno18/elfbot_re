@@ -33,14 +33,21 @@ Resume point for the ElfBot NG 8.60 RE. What is done, what is in progress.
   (`docs/functions/named-index.md`).
 - **elfload.dll** — all 6 real functions decompiled ([06](06-injection-chain.md)).
 
-## In progress / remaining
+- **Every function documented** — `.jdrv` 1190 funcs name+purpose
+  ([functions/jdrv-catalog.md](functions/jdrv-catalog.md)); `.jiru`/`.cdtemn`
+  5935 funcs (299 dispatchers described + rest labelled,
+  [functions/jiru-catalog.md](functions/jiru-catalog.md)). Master index:
+  [functions/index.md](functions/index.md).
+- **Script crypto/compression** — the `.elfc`/`.elft` protection stack
+  (Blowfish, BWT, LZW, custom block ciphers) mapped ([12](12-script-crypto-compression.md)).
 
-- Apply the 454 + 422 names into the IDA db when `re-ida` is reconnected
-  (session restart); the decompiled C already carries the semantics.
-- Prose deep-dives per CiroScript command handler group (cavebot walker,
-  targeting evaluator, healer) — the pseudo-C is on disk, narrative pending.
-- `loader.exe` (Delphi) per-function; `.elfc`/`.elft` byte layout from the
-  loaders.
+## Remaining
+
+- Apply the 454 semantic names into the IDA db when `re-ida` reconnects
+  (session restart) — the decompiled C + catalogs already carry the semantics.
+- `loader.exe` (Delphi) per-function (decompiling).
+- `.elfc`/`.elft` byte layout: run a sample through the mapped decrypt/decompress
+  functions ([12](12-script-crypto-compression.md)).
 
 ## TODO (deep passes)
 

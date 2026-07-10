@@ -38,7 +38,9 @@ scripts), `elfsettings/`, `lootitems.txt`, `outfits.txt`, `hotkeys.ini`,
 | [`docs/08-client-hooks-engine.md`](docs/08-client-hooks-engine.md) | Inline hooks, packet-parser hook, full-light, shadow tables |
 | [`docs/09-packet-proxy.md`](docs/09-packet-proxy.md) | Embedded proxy server, protocol, packet injection |
 | [`docs/10-feature-subsystems.md`](docs/10-feature-subsystems.md) | All 23 feature dialogs mapped + named |
-| `docs/functions/` | Full per-function catalog (in progress) |
+| [`docs/11-ciroscript-engine.md`](docs/11-ciroscript-engine.md) | CiroScript VM: 422 commands → handlers, hash dispatch |
+| [`docs/12-script-crypto-compression.md`](docs/12-script-crypto-compression.md) | `.elfc`/`.elft` protection: Blowfish, BWT, LZW, block ciphers |
+| [`docs/functions/index.md`](docs/functions/index.md) | Master index — every function (7125) decompiled + purpose |
 
 ## Method
 
