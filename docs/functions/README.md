@@ -1,50 +1,45 @@
 # elfbot.dll — full function catalog
 
-Per-function inventory of all recovered `elfbot.dll` functions. Two tiers:
+**Every function in `elfbot.dll` is decompiled to pseudo-C** (angr, offline).
+7125 functions across the code sections, 0 decompile failures.
 
-- **[catalog-core.md](catalog-core.md)** — the `.jdrv` section (498 functions,
-  362 non-thunk): **ElfBot's own logic**. Each row lists the function address,
-  size, the Win32 APIs it calls (resolved through the IAT), and notable string
-  literals it references.
-- **[catalog-support.md](catalog-support.md)** — the `.jiru`/`.cdtemn` sections
-  (2488 functions): overwhelmingly **MSVC STL + Boost template instantiations and
-  the C runtime**, plus a few feature dispatchers. Bulk-classified; the
-  bot-relevant dispatchers are surfaced separately.
-- `inventory.json` — machine-readable dump of every function (address, size,
-  section, category, APIs, strings, callee count).
+## Decompiled C (the deep layer)
+
+- **[decompiled/jdrv-index.md](decompiled/jdrv-index.md)** — 1190 functions of
+  the `.jdrv` section: **ElfBot's own logic**. 20 files, each function with its
+  full pseudo-C + an auto-summary of the APIs/strings it touches. **454 are
+  named by semantics** (see [named-index.md](named-index.md)) — the 422
+  CiroScript command handlers (`cmd_*`), the 23 feature dialog procs
+  (`dlgProc_*`), the hook/proxy engine, and the init core.
+- **[decompiled/jiru-index.md](decompiled/jiru-index.md)** — 5935 functions of
+  `.jiru`/`.cdtemn`: the MSVC STL + Boost template instantiations, the C runtime,
+  and feature dispatchers. 99 files of pseudo-C. Mostly library support; the
+  bot-relevant dispatchers are the larger ones with WinAPI/socket calls.
+- `jdrv.jsonl` / `jiru.jsonl` — machine-readable: one function per line with its
+  pseudo-C, resolved API calls, and string refs.
+
+## Named index & command map
+
+- **[named-index.md](named-index.md)** — the 454 semantically-named `.jdrv`
+  functions, grouped (core / hooks-proxy / dialogs / CiroScript commands).
+- **ciroscript-commands.csv** — canonical `command → handler-address` map for all
+  422 CiroScript commands (see [../11-ciroscript-engine.md](../11-ciroscript-engine.md)).
+
+## Structural inventory (cross-check)
+
+- **[catalog-core.md](catalog-core.md)** / **[catalog-support.md](catalog-support.md)**
+  / `inventory.json` — a second, independent recovery (capstone byte-scan) giving
+  per-function section, size, API calls and category. Used to verify coverage and
+  classify library vs bot code.
 
 ## How it was produced
 
-`tools/fn_inventory.py` (capstone + pefile, fully offline). It byte-scans the
-code sections for `E8` call targets and `FF25` import thunks to recover function
-starts, walks each function's extent, and resolves API calls and string
-references. Recovered **2987 / 3471** functions (~86%); the remainder are
-functions only reached via jump tables / vtables that a linear+call-target
-sweep misses.
+- `tools/angr_decompile.py` — angr `CFGFast` per code region + Hex-Rays-style
+  decompiler, one pseudo-C blob per function, written to JSONL.
+- `tools/render_decompiled.py` — JSONL → grouped markdown, merging the named set
+  and the CiroScript command handlers.
+- `tools/fn_inventory.py` — the independent capstone structural inventory.
 
-## Fidelity caveat
-
-This offline catalog is a **structural** inventory — it tells you *what each
-function touches* (which APIs, which strings), not a decompiled semantic
-description. The high-fidelity, purpose-level documentation comes from the IDA
-Hex-Rays pass (docs 04–10 already cover navserv 100%, the hook engine, the
-packet proxy, and all 23 feature dialogs by name). The remaining `.jdrv`
-functions get named + described in the IDA catalog pass; this file is the
-worklist and the coverage guarantee that no function is unaccounted for.
-
-## Category counts
-
-| Category | Count | Meaning |
-|---|---|---|
-| bot (`.jdrv`) | ~362 | ElfBot logic — deep-doc target |
-| support (`.jiru`) | ~2476 | STL / Boost / CRT templates |
-| thunk | 136 | single-jump import wrappers |
-| library | 11 | STL/Boost identified by RTTI strings |
-
-## Cross-reference
-
-Functions already named + deeply documented (see docs 05–10) also appear here by
-address. The named set so far: `EcInit`, `DllEntryPoint`, `registerDialogs`,
-`postBotMessage`, the 23 `dlgProc_*`, `installClientHooks_proxyServer`,
-`hook_incomingPacketParser`, `hook_captureRenderCtx`, `hook_fullLightDetour`,
-`installLightHook`, `proxyClientThread`, plus the full navserv set.
+Fully offline (no IDA/Ghidra service required). The prose subsystem docs
+(04–11) give the architecture and the meaning; this directory is the exhaustive
+per-function evidence — every function, dismantled.

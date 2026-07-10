@@ -24,12 +24,23 @@ Resume point for the ElfBot NG 8.60 RE. What is done, what is in progress.
 - **Feature subsystems** — all 23 `TBOTDLG*` procs mapped + named
   ([10](10-feature-subsystems.md)).
 
-## In progress
+- **Full decompilation** — **every** `elfbot.dll` function decompiled to pseudo-C
+  (angr, offline): 1190 `.jdrv` (bot code) + 5935 `.jiru`/`.cdtemn` (STL/Boost/
+  support) = **7125 functions, 0 failures**. In `docs/functions/decompiled/`.
+- **CiroScript engine** — 422 commands mapped to their handler functions +
+  3-table perfect-hash dispatch mechanism ([11](11-ciroscript-engine.md)).
+- **Named set** — 454 `.jdrv` functions named by semantics
+  (`docs/functions/named-index.md`).
+- **elfload.dll** — all 6 real functions decompiled ([06](06-injection-chain.md)).
 
-- **Full function catalog** — classify + name + one-line every one of the 3471
-  `elfbot.dll` functions, IDA-driven, in throttled workflow chunks; output to
-  `docs/functions/` and names persisted into the IDA db. ~half are Boost/MSVC
-  STL/CRT library templates (labelled in bulk), ~half are bot logic (described).
+## In progress / remaining
+
+- Apply the 454 + 422 names into the IDA db when `re-ida` is reconnected
+  (session restart); the decompiled C already carries the semantics.
+- Prose deep-dives per CiroScript command handler group (cavebot walker,
+  targeting evaluator, healer) — the pseudo-C is on disk, narrative pending.
+- `loader.exe` (Delphi) per-function; `.elfc`/`.elft` byte layout from the
+  loaders.
 
 ## TODO (deep passes)
 
