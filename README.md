@@ -55,6 +55,7 @@ scripts), `elfsettings/`, `lootitems.txt`, `outfits.txt`, `hotkeys.ini`,
 | [`docs/25-cavebot-targeting-sync.md`](docs/25-cavebot-targeting-sync.md) | Cavebot ↔ targeting ↔ healer synchrony (the flag triad) |
 | [`docs/26-aimbot-combo.md`](docs/26-aimbot-combo.md) | AutoAim square-scan engine + combo sync (PvP core) |
 | [`docs/27-subsystem-relations.md`](docs/27-subsystem-relations.md) | **All 23 tabs + every inter-tab relation** (the graph) |
+| [`docs/28-runtime-validation.md`](docs/28-runtime-validation.md) | **Live injection into genuine Tibia 8.6** — unpack, DllMain, hooks confirmed |
 | [`docs/functions/index.md`](docs/functions/index.md) | Master index — every function (7125) decompiled + purpose |
 
 ## Method
