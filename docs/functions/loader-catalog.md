@@ -1,6 +1,6 @@
-# loader.exe — function catalog (Delphi injector)
+# loader.exe — function catalog (Delphi injector + madCodeHook)
 
-All 1780 decompiled functions of the Delphi GUI injector. The injection logic is documented in [doc 06](../06-injection-chain.md); the injection/API-bearing functions are described, the rest (Delphi RTL/VCL) carry a structural purpose from their decompiled C. Full pseudo-C in [decompiled/loader-index.md](decompiled/loader-index.md).
+All 1780 decompiled functions. The Tibia-detection/privilege logic and the **madCodeHook** injection internals (trampoline builder, remote-thread injection, shared-memory IPC) are described; Delphi RTL/VCL functions carry a structural purpose. Injection overview in [doc 06](../06-injection-chain.md). Pseudo-C in [decompiled/loader-index.md](decompiled/loader-index.md).
 
 | Address | Name | Size | Purpose |
 |---|---|---|---|
@@ -20,7 +20,7 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x004010e6` | `sub_004010e6` | 2 | Delphi RTL/support: leaf helper |
 | `0x004010e8` | `sub_004010e8` | 6 | Delphi RTL/support: uses GetModuleHandleA |
 | `0x004010ee` | `sub_004010ee` | 2 | Delphi RTL/support: leaf helper |
-| `0x004010f0` | `sub_004010f0` | 6 | Delphi RTL/support: uses GetProcAddress |
+| `0x004010f0` | `getProcAddressThunk` | 6 | Thin thunk calling kernel32 GetProcAddress(hModule,name) to resolve an export by name. |
 | `0x004010f6` | `sub_004010f6` | 2 | Delphi RTL/support: leaf helper |
 | `0x004010f8` | `sub_004010f8` | 6 | Delphi RTL/support: uses GetStartupInfoA |
 | `0x004010fe` | `sub_004010fe` | 2 | Delphi RTL/support: uses GetThreadLocale |
@@ -462,8 +462,8 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x00405102` | `sub_00405102` | 2 | Delphi RTL/support: uses GetTokenInformation |
 | `0x0040510a` | `sub_0040510a` | 2 | Delphi RTL/support: uses InitializeSecurityDescriptor |
 | `0x00405112` | `sub_00405112` | 2 | Delphi RTL/support: uses IsValidSid |
-| `0x0040511a` | `sub_0040511a` | 2 | Delphi RTL/support: uses LookupPrivilegeValueA |
-| `0x00405122` | `sub_00405122` | 2 | Delphi RTL/support: uses OpenProcessToken |
+| `0x0040511a` | `lookupPrivilegeValueThunk` | 2 | Import thunk wrapping advapi32 LookupPrivilegeValueA — used to get the LUID for a privilege like SeDebugPrivilege. |
+| `0x00405122` | `openProcessTokenThunk` | 2 | Import thunk wrapping advapi32 OpenProcessToken(handle,accessMask,tokenOut). |
 | `0x0040512a` | `sub_0040512a` | 2 | Delphi RTL/support: uses RegCloseKey |
 | `0x00405132` | `sub_00405132` | 2 | Delphi RTL/support: uses RegCreateKeyExA |
 | `0x0040513a` | `sub_0040513a` | 2 | Delphi RTL/support: uses RegDeleteKeyA |
@@ -477,7 +477,7 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x0040517a` | `sub_0040517a` | 2 | Delphi RTL/support: uses CreateEventA |
 | `0x00405182` | `sub_00405182` | 2 | Delphi RTL/support: uses CreateFileA |
 | `0x0040518a` | `sub_0040518a` | 2 | Delphi RTL/support: uses CreateFileW |
-| `0x00405192` | `sub_00405192` | 2 | Delphi RTL/support: uses CreateFileMappingA |
+| `0x00405192` | `createFileMappingAThunk` | 2 | Import thunk wrapping kernel32 CreateFileMappingA(hFile,secAttr,protect,sizeHigh,sizeLow,name). |
 | `0x0040519a` | `sub_0040519a` | 2 | Delphi RTL/support: uses CreateFileMappingW |
 | `0x004051a2` | `sub_004051a2` | 2 | Delphi RTL/support: uses CreateMutexA |
 | `0x004051aa` | `sub_004051aa` | 2 | Delphi RTL/support: leaf helper |
@@ -521,14 +521,14 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x004052c2` | `sub_004052c2` | 2 | Delphi RTL/support: leaf helper |
 | `0x004052c4` | `sub_004052c4` | 6 | Delphi RTL/support: uses GetModuleHandleA |
 | `0x004052ca` | `sub_004052ca` | 2 | Delphi RTL/support: uses GetModuleHandleW |
-| `0x004052d2` | `sub_004052d2` | 2 | Delphi RTL/support: uses GetProcAddress |
+| `0x004052d2` | `getProcAddressThunk2` | 2 | Import thunk wrapping kernel32 GetProcAddress(hModule,name). |
 | `0x004052da` | `sub_004052da` | 2 | Delphi RTL/support: leaf helper |
 | `0x004052dc` | `sub_004052dc` | 6 | Delphi RTL/support: uses GetStdHandle |
 | `0x004052e2` | `sub_004052e2` | 2 | Delphi RTL/support: uses GetStringTypeExA |
 | `0x004052ea` | `sub_004052ea` | 2 | Delphi RTL/support: uses GetSystemDirectoryA |
 | `0x004052f2` | `sub_004052f2` | 2 | Delphi RTL/support: uses GetSystemDirectoryW |
 | `0x004052fa` | `sub_004052fa` | 2 | Delphi RTL/support: uses GetTempPathW |
-| `0x00405302` | `sub_00405302` | 2 | Delphi RTL/support: uses GetThreadContext |
+| `0x00405302` | `getThreadContextThunk` | 2 | Import thunk wrapping kernel32 GetThreadContext(hThread,CONTEXT*). |
 | `0x0040530a` | `sub_0040530a` | 2 | Delphi RTL/support: leaf helper |
 | `0x0040530c` | `sub_0040530c` | 6 | Delphi RTL/support: uses GetThreadLocale |
 | `0x00405312` | `sub_00405312` | 2 | Delphi RTL/support: uses GetTickCount |
@@ -542,21 +542,21 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x00405342` | `sub_00405342` | 2 | Delphi RTL/support: uses IsBadReadPtr |
 | `0x0040534a` | `sub_0040534a` | 2 | Delphi RTL/support: leaf helper |
 | `0x0040534c` | `sub_0040534c` | 6 | Delphi RTL/support: uses LeaveCriticalSection |
-| `0x00405352` | `sub_00405352` | 2 | Delphi RTL/support: uses LoadLibraryA |
+| `0x00405352` | `loadLibraryAThunk` | 2 | Import thunk wrapping kernel32 LoadLibraryA(name). |
 | `0x0040535a` | `sub_0040535a` | 2 | Delphi RTL/support: uses LoadLibraryW |
 | `0x00405362` | `sub_00405362` | 2 | Delphi RTL/support: uses LoadLibraryExA |
 | `0x0040536a` | `sub_0040536a` | 2 | Delphi RTL/support: leaf helper |
 | `0x0040536c` | `sub_0040536c` | 6 | Delphi RTL/support: allocate; uses LocalAlloc |
 | `0x00405372` | `sub_00405372` | 2 | Delphi RTL/support: free; uses LocalFree |
-| `0x0040537a` | `sub_0040537a` | 2 | Delphi RTL/support: uses MapViewOfFile |
+| `0x0040537a` | `mapViewOfFileThunk` | 2 | Import thunk wrapping kernel32 MapViewOfFile(hMapping,access,offHigh,offLow,numBytes). |
 | `0x00405382` | `sub_00405382` | 2 | Delphi RTL/support: uses OpenEventA |
 | `0x0040538a` | `sub_0040538a` | 2 | Delphi RTL/support: uses OpenFileMappingA |
 | `0x00405392` | `sub_00405392` | 2 | Delphi RTL/support: uses OpenFileMappingW |
 | `0x0040539a` | `sub_0040539a` | 2 | Delphi RTL/support: uses OpenMutexA |
 | `0x004053a2` | `sub_004053a2` | 2 | Delphi RTL/support: uses OpenMutexW |
-| `0x004053aa` | `sub_004053aa` | 2 | Delphi RTL/support: uses OpenProcess |
+| `0x004053aa` | `openProcessThunk` | 2 | Import thunk wrapping kernel32 OpenProcess(accessRights,inheritHandle,pid) — used to open the target Tibia process. |
 | `0x004053b2` | `sub_004053b2` | 2 | Delphi RTL/support: uses ReadFile |
-| `0x004053ba` | `sub_004053ba` | 2 | Delphi RTL/support: client memory RW; uses ReadProcessMemory |
+| `0x004053ba` | `readProcessMemoryThunk` | 2 | Import thunk wrapping kernel32 ReadProcessMemory(hProc,base,buf,size,bytesRead). |
 | `0x004053c2` | `sub_004053c2` | 2 | Delphi RTL/support: uses ReleaseMutex |
 | `0x004053ca` | `sub_004053ca` | 2 | Delphi RTL/support: uses SetEvent |
 | `0x004053d2` | `sub_004053d2` | 2 | Delphi RTL/support: uses SetLastError |
@@ -568,14 +568,14 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x004053fa` | `sub_004053fa` | 2 | Delphi RTL/support: leaf helper |
 | `0x004053fc` | `sub_004053fc` | 6 | Delphi RTL/support: free; uses VirtualFree |
 | `0x00405402` | `sub_00405402` | 2 | Delphi RTL/support: uses VirtualProtect |
-| `0x0040540a` | `sub_0040540a` | 2 | Delphi RTL/support: uses VirtualProtectEx |
+| `0x0040540a` | `virtualProtectExThunk` | 2 | Import thunk wrapping kernel32 VirtualProtectEx(hProc,addr,size,newProtect,oldProtect). |
 | `0x00405412` | `sub_00405412` | 2 | Delphi RTL/support: uses VirtualQuery |
 | `0x0040541a` | `sub_0040541a` | 2 | Delphi RTL/support: uses VirtualQueryEx |
 | `0x00405422` | `sub_00405422` | 2 | Delphi RTL/support: uses WaitForMultipleObjects |
 | `0x0040542a` | `sub_0040542a` | 2 | Delphi RTL/support: uses WaitForSingleObject |
 | `0x00405432` | `sub_00405432` | 2 | Delphi RTL/support: leaf helper |
 | `0x00405434` | `sub_00405434` | 6 | Delphi RTL/support: uses WriteFile |
-| `0x0040543a` | `sub_0040543a` | 2 | Delphi RTL/support: client memory RW; uses WriteProcessMemory |
+| `0x0040543a` | `writeProcessMemoryThunk` | 2 | Import thunk wrapping kernel32 WriteProcessMemory(hProc,base,buf,size,bytesWritten) — writes into the target process. |
 | `0x00405442` | `sub_00405442` | 2 | Delphi RTL/support: string concat |
 | `0x0040544a` | `sub_0040544a` | 2 | Delphi RTL/support: compare |
 | `0x00405452` | `sub_00405452` | 2 | Delphi RTL/support: compare |
@@ -585,10 +585,10 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x00405472` | `sub_00405472` | 2 | Delphi RTL/support: leaf helper |
 | `0x0040547a` | `sub_0040547a` | 2 | Delphi RTL/support: leaf helper |
 | `0x0040547c` | `sub_0040547c` | 6 | Delphi RTL/support: uses CharNextA |
-| `0x00405482` | `sub_00405482` | 2 | Delphi RTL/support: uses FindWindowA |
-| `0x0040548a` | `sub_0040548a` | 2 | Delphi RTL/support: uses FindWindowExA |
+| `0x00405482` | `findWindowAThunk` | 2 | Import thunk wrapping user32 FindWindowA(className,windowName) — locates the TibiaClient window. |
+| `0x0040548a` | `findWindowExAThunk` | 2 | Import thunk wrapping user32 FindWindowExA(parent,child,class,title). |
 | `0x00405492` | `sub_00405492` | 2 | Delphi RTL/support: uses GetSystemMetrics |
-| `0x0040549a` | `sub_0040549a` | 2 | Delphi RTL/support: uses GetWindowThreadProcessId |
+| `0x0040549a` | `getWindowThreadProcessIdThunk` | 2 | Import thunk wrapping user32 GetWindowThreadProcessId(hwnd,pidOut) — resolves the Tibia PID from its window. |
 | `0x004054a2` | `sub_004054a2` | 2 | Delphi RTL/support: leaf helper |
 | `0x004054a4` | `sub_004054a4` | 6 | Delphi RTL/support: uses LoadStringA |
 | `0x004054aa` | `sub_004054aa` | 2 | Delphi RTL/support: leaf helper |
@@ -601,7 +601,7 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x004054e6` | `sub_004054e6` | 2 | Delphi RTL/support: leaf helper |
 | `0x004054e8` | `sub_004054e8` | 2 | Delphi RTL/support: leaf helper |
 | `0x004054ea` | `sub_004054ea` | 10 | Delphi RTL/support: leaf helper |
-| `0x004054f4` | `sub_004054f4` | 346 | Delphi RTL/support: client memory RW; uses GetProcAddress |
+| `0x004054f4` | `initToolhelp32Api` | 346 | Lazily loads kernel32.dll and resolves the ToolHelp32 snapshot/process/thread/module enumeration exports into globals, returning success if CreateToolhelp32Snapshot is present. |
 | `0x00405770` | `sub_00405770` | 31 | Delphi RTL/support: leaf helper |
 | `0x0040578f` | `sub_0040578f` | 1 | Delphi RTL/support: leaf helper |
 | `0x00405790` | `sub_00405790` | 31 | Delphi RTL/support: leaf helper |
@@ -824,7 +824,7 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x0040882e` | `sub_0040882e` | 5 | Delphi RTL/support: leaf helper |
 | `0x004088d4` | `sub_004088d4` | 31 | Delphi RTL/support: 1 loop |
 | `0x004088f3` | `sub_004088f3` | 1 | Delphi RTL/support: leaf helper |
-| `0x004088f4` | `sub_004088f4` | 54 | Delphi RTL/support: uses GetProcAddress |
+| `0x004088f4` | `initGetDiskFreeSpaceExA` | 54 | Lazily resolves kernel32 GetDiskFreeSpaceExA into a global, falling back to a stub pointer if unavailable (madCodeHook/Delphi RTL disk helper). |
 | `0x00408950` | `sub_00408950` | 14 | Delphi RTL/support: leaf helper |
 | `0x00408c30` | `sub_00408c30` | 372 | Delphi RTL/support: routine (372b) |
 | `0x00408da4` | `sub_00408da4` | 1 | Delphi RTL/support: leaf helper |
@@ -891,7 +891,7 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x00409c00` | `sub_00409c00` | 119 | Delphi RTL/support: 2 loops |
 | `0x00409caf` | `sub_00409caf` | 343 | Delphi RTL/support: 1 loop; uses LoadLibraryExA,FormatMessageA |
 | `0x00409ccc` | `sub_00409ccc` | 33 | Delphi RTL/support: leaf helper |
-| `0x00409d18` | `sub_00409d18` | 29 | Delphi RTL/support: uses GetProcAddress |
+| `0x00409d18` | `callResolvedExport` | 29 | Resolves a named export via GetProcAddress on a module and tail-calls it with one argument. |
 | `0x00409e0c` | `sub_00409e0c` | 10 | Delphi RTL/support: free; uses LocalFree |
 | `0x00409e16` | `sub_00409e16` | 5 | Delphi RTL/support: leaf helper |
 | `0x00409e1b` | `sub_00409e1b` | 2 | Delphi RTL/support: leaf helper |
@@ -912,7 +912,7 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x00409fdc` | `sub_00409fdc` | 2 | Delphi RTL/support: leaf helper |
 | `0x00409fde` | `sub_00409fde` | 2 | Delphi RTL/support: leaf helper |
 | `0x00409fe0` | `sub_00409fe0` | 8 | Delphi RTL/support: leaf helper |
-| `0x0040a0d8` | `sub_0040a0d8` | 869 | Delphi RTL/support: 1 loop; uses GetSystemMetrics,GetVersionExW,GetVersion |
+| `0x0040a0d8` | `detectWindowsVersion` | 869 | Delphi RTL Windows version detector: calls GetVersion/GetVersionExW/GetNativeSystemInfo/GetSystemMetrics to classify the OS into internal platform/edition globals. |
 | `0x0040a4d0` | `sub_0040a4d0` | 23 | Delphi RTL/support: leaf helper |
 | `0x0040a534` | `sub_0040a534` | 9 | Delphi RTL/support: leaf helper |
 | `0x0040a54c` | `sub_0040a54c` | 238 | Delphi RTL/support: uses VirtualQuery,GetVersion,GetModuleFileNameW |
@@ -938,13 +938,13 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x0040a827` | `sub_0040a827` | 1 | Delphi RTL/support: leaf helper |
 | `0x0040a828` | `sub_0040a828` | 19 | Delphi RTL/support: leaf helper |
 | `0x0040a83b` | `sub_0040a83b` | 1 | Delphi RTL/support: leaf helper |
-| `0x0040a83c` | `sub_0040a83c` | 218 | Delphi RTL/support: free; uses LocalFree,MapViewOfFile,CreateFileMappingW |
+| `0x0040a83c` | `mapOwnModuleImage` | 218 | Opens the loader's own module file (GetModuleFileNameW/CreateFileW), creates a read-only file mapping and maps a view of its on-disk PE image, then closes handles. |
 | `0x0040a916` | `sub_0040a916` | 2 | Delphi RTL/support: leaf helper |
-| `0x0040a918` | `sub_0040a918` | 485 | Delphi RTL/support: compare; 1 loop; uses UnmapViewOfFile,GetProcAddress |
+| `0x0040a918` | `resolveApiViaMappedImage` | 485 | madCodeHook export resolver that walks a mapped module's PE export table by name (lstrcmpA) to return a function pointer, using UnmapViewOfFile cleanup and falling back to GetProcAddress. |
 | `0x0040aa9c` | `sub_0040aa9c` | 5 | Delphi RTL/support: leaf helper |
 | `0x0040aaa1` | `sub_0040aaa1` | 5 | Delphi RTL/support: leaf helper |
 | `0x0040ab07` | `sub_0040ab07` | 1 | Delphi RTL/support: leaf helper |
-| `0x0040ab08` | `sub_0040ab08` | 97 | Delphi RTL/support: uses GetProcAddress |
+| `0x0040ab08` | `resolveExportByOrdinalRange` | 97 | Resolves a PE export by ordinal within the export-table bounds against a mapped image, falling back to GetProcAddress if out of range. |
 | `0x0040ab69` | `sub_0040ab69` | 3 | Delphi RTL/support: leaf helper |
 | `0x0040ab6c` | `sub_0040ab6c` | 263 | Delphi RTL/support: 2 loops |
 | `0x0040ac73` | `sub_0040ac73` | 14 | Delphi RTL/support: leaf helper |
@@ -985,10 +985,10 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x0040b359` | `sub_0040b359` | 3 | Delphi RTL/support: leaf helper |
 | `0x0040b35c` | `sub_0040b35c` | 724 | Delphi RTL/support: routine (724b) |
 | `0x0040b650` | `sub_0040b650` | 228 | Delphi RTL/support: routine (228b) |
-| `0x0040b734` | `sub_0040b734` | 1239 | Delphi RTL/support: routine (1239b) |
+| `0x0040b734` | `decodeInsnFlagEffect` | 1239 | madCodeHook length-disassembler helper: given a decoded x86 instruction descriptor, classifies opcodes to determine flag/branch-condition semantics. |
 | `0x0040bc24` | `sub_0040bc24` | 639 | Delphi RTL/support: routine (639b) |
 | `0x0040bea3` | `sub_0040bea3` | 1 | Delphi RTL/support: leaf helper |
-| `0x0040bea4` | `sub_0040bea4` | 1262 | Delphi RTL/support: 2 loops |
+| `0x0040bea4` | `applyInsnRegDefs` | 1262 | madCodeHook disassembler helper that, per decoded x86 opcode, invalidates/updates a register-tracking table (ModRM reg/rm slots) used during trampoline analysis. |
 | `0x0040c392` | `sub_0040c392` | 2 | Delphi RTL/support: leaf helper |
 | `0x0040c394` | `sub_0040c394` | 532 | Delphi RTL/support: 2 loops |
 | `0x0040c534` | `sub_0040c534` | 5 | Delphi RTL/support: leaf helper |
@@ -1001,18 +1001,18 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x0040c7ed` | `sub_0040c7ed` | 3 | Delphi RTL/support: leaf helper |
 | `0x0040c7f0` | `sub_0040c7f0` | 195 | Delphi RTL/support: routine (195b) |
 | `0x0040c8b3` | `sub_0040c8b3` | 1 | Delphi RTL/support: leaf helper |
-| `0x0040c8b4` | `sub_0040c8b4` | 1364 | Delphi RTL/support: 6 loops |
+| `0x0040c8b4` | `analyzeHookRelocInstr` | 1364 | madCodeHook trampoline builder step: decodes an instruction, follows call/jmp targets and relocations, and records fixups/relocation entries for the copied hook prologue. |
 | `0x0040ce08` | `sub_0040ce08` | 22 | Delphi RTL/support: leaf helper |
 | `0x0040ce1e` | `sub_0040ce1e` | 5 | Delphi RTL/support: leaf helper |
 | `0x0040ce23` | `sub_0040ce23` | 2 | Delphi RTL/support: leaf helper |
 | `0x0040ce25` | `sub_0040ce25` | 7 | Delphi RTL/support: leaf helper |
-| `0x0040ce2c` | `sub_0040ce2c` | 1070 | Delphi RTL/support: 6 loops |
+| `0x0040ce2c` | `scanHookPrologue` | 1070 | madCodeHook prologue scanner: disassembles the target function's leading bytes (via sub_40c5b8), tracking branches and jump tables to compute how many bytes to relocate for the hook. |
 | `0x0040d25a` | `sub_0040d25a` | 2 | Delphi RTL/support: leaf helper |
 | `0x0040d25c` | `sub_0040d25c` | 150 | Delphi RTL/support: 1 loop |
 | `0x0040d2f2` | `sub_0040d2f2` | 2 | Delphi RTL/support: leaf helper |
 | `0x0040d2f4` | `sub_0040d2f4` | 74 | Delphi RTL/support: 1 loop |
 | `0x0040d33e` | `sub_0040d33e` | 2 | Delphi RTL/support: leaf helper |
-| `0x0040d340` | `sub_0040d340` | 1411 | Delphi RTL/support: 9 loops; uses VirtualQuery |
+| `0x0040d340` | `buildTrampolineRegions` | 1411 | madCodeHook core: VirtualQuery's the target, walks the module's PE section bounds, and iteratively disassembles instructions to assemble the relocatable trampoline/code-region table for hooking. |
 | `0x0040d8c3` | `sub_0040d8c3` | 12 | Delphi RTL/support: leaf helper |
 | `0x0040d8cf` | `sub_0040d8cf` | 5 | Delphi RTL/support: leaf helper |
 | `0x0040d8d4` | `sub_0040d8d4` | 2 | Delphi RTL/support: leaf helper |
@@ -1078,13 +1078,13 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x0040e679` | `sub_0040e679` | 5 | Delphi RTL/support: leaf helper |
 | `0x0040e67e` | `sub_0040e67e` | 2 | Delphi RTL/support: leaf helper |
 | `0x0040e680` | `sub_0040e680` | 7 | Delphi RTL/support: leaf helper |
-| `0x0040e6a4` | `sub_0040e6a4` | 216 | Delphi RTL/support: 1 loop; uses OpenProcess |
+| `0x0040e6a4` | `findProcessByModulePath` | 216 | Enumerates processes (ToolHelp) matching the current module path and OpenProcess(PROCESS_DUP_HANDLE) on the found PID — madCodeHook helper process locator. |
 | `0x0040e77c` | `sub_0040e77c` | 26 | Delphi RTL/support: leaf helper |
 | `0x0040e796` | `sub_0040e796` | 5 | Delphi RTL/support: leaf helper |
 | `0x0040e79b` | `sub_0040e79b` | 2 | Delphi RTL/support: leaf helper |
 | `0x0040e79d` | `sub_0040e79d` | 9 | Delphi RTL/support: leaf helper |
 | `0x0040e7a6` | `sub_0040e7a6` | 2 | Delphi RTL/support: leaf helper |
-| `0x0040e7a8` | `sub_0040e7a8` | 168 | Delphi RTL/support: 1 loop; uses OpenProcess |
+| `0x0040e7a8` | `findHelperProcess` | 168 | Enumerates processes to locate a matching madCodeHook helper/IPC process and OpenProcess(PROCESS_DUP_HANDLE) on its PID, caching the result in a global. |
 | `0x0040e850` | `sub_0040e850` | 23 | Delphi RTL/support: leaf helper |
 | `0x0040e867` | `sub_0040e867` | 5 | Delphi RTL/support: leaf helper |
 | `0x0040e86c` | `sub_0040e86c` | 2 | Delphi RTL/support: leaf helper |
@@ -1092,7 +1092,7 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x0040e877` | `sub_0040e877` | 1 | Delphi RTL/support: leaf helper |
 | `0x0040e878` | `sub_0040e878` | 79 | Delphi RTL/support: uses CloseHandle,DuplicateHandle,GetVersion |
 | `0x0040e8c7` | `sub_0040e8c7` | 1 | Delphi RTL/support: leaf helper |
-| `0x0040e8c8` | `sub_0040e8c8` | 145 | Delphi RTL/support: uses GetVersion,LoadLibraryA |
+| `0x0040e8c8` | `initHelperExports` | 145 | On Win9x-class systems, LoadLibraryA's a helper module and resolves two exports via ordinal into cached globals (madCodeHook IPC setup). |
 | `0x0040e959` | `sub_0040e959` | 9 | Delphi RTL/support: leaf helper |
 | `0x0040e962` | `sub_0040e962` | 5 | Delphi RTL/support: leaf helper |
 | `0x0040e967` | `sub_0040e967` | 2 | Delphi RTL/support: leaf helper |
@@ -1120,7 +1120,7 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x0040ef2a` | `sub_0040ef2a` | 55 | Delphi RTL/support: leaf helper |
 | `0x0040ef61` | `sub_0040ef61` | 352 | Delphi RTL/support: 2 loops; uses NtGetCurrentPeb |
 | `0x0040f0c1` | `sub_0040f0c1` | 3 | Delphi RTL/support: leaf helper |
-| `0x0040f0c4` | `sub_0040f0c4` | 564 | Delphi RTL/support: 1 loop; uses MapViewOfFile,Sleep,GetLastError |
+| `0x0040f0c4` | `initSharedIpcMapping` | 564 | Resolves madCodeHook exports and sets up a named shared CreateFileMappingA/MapViewOfFile IPC region (with Sleep-poll handshake) to obtain cross-process hook/session tokens. |
 | `0x0040f2f8` | `sub_0040f2f8` | 9 | Delphi RTL/support: leaf helper |
 | `0x0040f301` | `sub_0040f301` | 5 | Delphi RTL/support: leaf helper |
 | `0x0040f306` | `sub_0040f306` | 2 | Delphi RTL/support: leaf helper |
@@ -1135,7 +1135,7 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x0040f460` | `sub_0040f460` | 5 | Delphi RTL/support: leaf helper |
 | `0x0040f465` | `sub_0040f465` | 5 | Delphi RTL/support: leaf helper |
 | `0x0040f473` | `sub_0040f473` | 1 | Delphi RTL/support: leaf helper |
-| `0x0040f474` | `sub_0040f474` | 1597 | Delphi RTL/support: 5 loops; uses GetCurrentThread,CloseHandle,GetCurrentProcessId |
+| `0x0040f474` | `createRemoteThreadHook` | 1597 | madCodeHook remote-injection core: on NT duplicates thread handles and calls ntdll RtlCreateUserThread-style APIs (g_41ed08) to create a thread in the target for DLL/hook injection, with a Win9x code- |
 | `0x0040f88e` | `sub_0040f88e` | 43 | Delphi RTL/support: leaf helper |
 | `0x0040f8b9` | `sub_0040f8b9` | 5 | Delphi RTL/support: leaf helper |
 | `0x0040f8be` | `sub_0040f8be` | 2 | Delphi RTL/support: leaf helper |
@@ -1187,8 +1187,8 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x00410f63` | `sub_00410f63` | 1 | Delphi RTL/support: leaf helper |
 | `0x00410f64` | `sub_00410f64` | 55 | Delphi RTL/support: leaf helper |
 | `0x00410f9b` | `sub_00410f9b` | 1 | Delphi RTL/support: leaf helper |
-| `0x00410f9c` | `sub_00410f9c` | 128 | Delphi RTL/support: free; uses LocalFree,OpenProcessToken,CloseHandle |
-| `0x0041101c` | `sub_0041101c` | 476 | Delphi RTL/support: free; 2 loops; uses LocalFree,AllocateAndInitializeSid,SetSecurityDescriptorDacl |
+| `0x00410f9c` | `getProcessTokenUser` | 128 | OpenProcessToken(TOKEN_QUERY) then GetTokenInformation(TokenUser) to allocate and fill the current process's user SID buffer. |
+| `0x0041101c` | `buildInjectionSecurityDescriptor` | 476 | Builds a SECURITY_DESCRIPTOR/DACL (AllocateAndInitializeSid for owner+SYSTEM, token user SID, SetEntriesInAcl) granting cross-process access for madCodeHook shared objects. |
 | `0x004111f8` | `sub_004111f8` | 14 | Delphi RTL/support: leaf helper |
 | `0x00411206` | `sub_00411206` | 5 | Delphi RTL/support: leaf helper |
 | `0x0041120b` | `sub_0041120b` | 2 | Delphi RTL/support: leaf helper |
@@ -1205,7 +1205,7 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x004113ca` | `sub_004113ca` | 2 | Delphi RTL/support: leaf helper |
 | `0x004113cc` | `sub_004113cc` | 10 | Delphi RTL/support: leaf helper |
 | `0x004113d6` | `sub_004113d6` | 2 | Delphi RTL/support: leaf helper |
-| `0x004113d8` | `sub_004113d8` | 247 | Delphi RTL/support: free; uses CreateFileMappingA,LocalFree,GetVersion |
+| `0x004113d8` | `createSharedMemoryMapping` | 247 | Creates a named page-backed shared memory section via CreateFileMappingW/A (pagefile-backed, size a1, name a0) using the injection security descriptor for IPC between loader and injected DLL. |
 | `0x004114cf` | `sub_004114cf` | 14 | Delphi RTL/support: leaf helper |
 | `0x004114dd` | `sub_004114dd` | 5 | Delphi RTL/support: leaf helper |
 | `0x004114e2` | `sub_004114e2` | 2 | Delphi RTL/support: leaf helper |
@@ -1222,7 +1222,7 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x004116b8` | `sub_004116b8` | 5 | Delphi RTL/support: leaf helper |
 | `0x004116bd` | `sub_004116bd` | 2 | Delphi RTL/support: leaf helper |
 | `0x004116bf` | `sub_004116bf` | 9 | Delphi RTL/support: leaf helper |
-| `0x004116df` | `sub_004116df` | 170 | Delphi RTL/support: uses UnmapViewOfFile,MapViewOfFile,Conv |
+| `0x004116df` | `readSharedMappingDword` | 170 | Opens a named file mapping via helper, MapViewOfFile FILE_MAP_READ to read one dword out, then UnmapViewOfFile/CloseHandle (shared-memory IPC read). |
 | `0x00411789` | `sub_00411789` | 14 | Delphi RTL/support: leaf helper |
 | `0x00411797` | `sub_00411797` | 5 | Delphi RTL/support: leaf helper |
 | `0x0041179c` | `sub_0041179c` | 2 | Delphi RTL/support: leaf helper |
@@ -1259,7 +1259,7 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x00411dd4` | `sub_00411dd4` | 35 | Delphi RTL/support: leaf helper |
 | `0x00411df7` | `sub_00411df7` | 1 | Delphi RTL/support: leaf helper |
 | `0x00411df8` | `sub_00411df8` | 88 | Delphi RTL/support: routine (88b) |
-| `0x00411e50` | `sub_00411e50` | 526 | Delphi RTL/support: 1 loop; uses MapViewOfFile,Sleep,GetLastError |
+| `0x00411e50` | `getOrInitSharedProcessInfo` | 526 | CreateFileMappingA(20 bytes) named-shared block, spin-waits with Sleep(50) for owner match, publishes/reads three globals (g_41f03c/40/44) as madCodeHook shared session state. |
 | `0x0041205e` | `sub_0041205e` | 9 | Delphi RTL/support: leaf helper |
 | `0x00412067` | `sub_00412067` | 5 | Delphi RTL/support: leaf helper |
 | `0x0041206c` | `sub_0041206c` | 2 | Delphi RTL/support: leaf helper |
@@ -1298,8 +1298,8 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x004124a8` | `sub_004124a8` | 9 | Delphi RTL/support: leaf helper |
 | `0x004124b1` | `sub_004124b1` | 5 | Delphi RTL/support: leaf helper |
 | `0x004124b6` | `sub_004124b6` | 2 | Delphi RTL/support: leaf helper |
-| `0x004124b8` | `sub_004124b8` | 460 | Delphi RTL/support: 3 loops; uses WaitForMultipleObjects,MapViewOfFile,Sleep |
-| `0x0041261a` | `sub_0041261a` | 252 | Delphi RTL/support: 1 loop; uses SetThreadPriority,CloseHandle,GetCurrentProcessId |
+| `0x004124b8` | `injectRemoteThreadsIntoProcesses` | 460 | Uses a shared file mapping to coordinate then loops OpenProcess(0x1f0fff)+CreateRemoteThread(sub_40f474) into targets, WaitForMultipleObjects/CloseHandle on the thread handles. |
+| `0x0041261a` | `createRemoteThreadPerProcess` | 252 | Iterates process-id list (skipping GetCurrentProcessId), OpenProcess(PROCESS_ALL_ACCESS 0x1f0fff) and CreateRemoteThread, optionally SetThreadPriority(-15) and CloseHandle. |
 | `0x004126ed` | `sub_004126ed` | 10 | Delphi RTL/support: uses CloseHandle |
 | `0x004126f7` | `sub_004126f7` | 5 | Delphi RTL/support: leaf helper |
 | `0x004126fc` | `sub_004126fc` | 2 | Delphi RTL/support: leaf helper |
@@ -1311,7 +1311,7 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x004127e0` | `sub_004127e0` | 5 | Delphi RTL/support: leaf helper |
 | `0x004127e5` | `sub_004127e5` | 2 | Delphi RTL/support: leaf helper |
 | `0x004127e7` | `sub_004127e7` | 7 | Delphi RTL/support: leaf helper |
-| `0x004127ee` | `sub_004127ee` | 1553 | Delphi RTL/support: 10 loops |
+| `0x004127ee` | `cleanupSharedHookTables` | 1553 | Walks a 64-slot shared hook/session table under named mutex+mapping (g_41efe4/eff4/eff8 = OpenMutex/CreateFileMapping/MapViewOfFile), removing entries matching a process id and freeing memory. |
 | `0x00412dff` | `sub_00412dff` | 1 | Delphi RTL/support: leaf helper |
 | `0x00412e00` | `sub_00412e00` | 274 | Delphi RTL/support: 3 loops |
 | `0x00412f12` | `sub_00412f12` | 2 | Delphi RTL/support: leaf helper |
@@ -1322,7 +1322,7 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x00412f97` | `sub_00412f97` | 5 | Delphi RTL/support: leaf helper |
 | `0x00412f9c` | `sub_00412f9c` | 273 | Delphi RTL/support: 5 loops |
 | `0x004130ad` | `sub_004130ad` | 3 | Delphi RTL/support: leaf helper |
-| `0x004130b0` | `sub_004130b0` | 1300 | Delphi RTL/support: 7 loops; uses SetEvent,MapViewOfFile,GetLastError |
+| `0x004130b0` | `registerHookInSharedTableAndInject` | 1300 | Manages a shared session table, DuplicateHandle of mapping/events into a target (v20), OpenEvent/CreateEvent/SetEvent signaling, then CreateRemoteThread(sub_40f474) to inject. |
 | `0x004135aa` | `sub_004135aa` | 10 | Delphi RTL/support: uses ReleaseMutex |
 | `0x004135b4` | `sub_004135b4` | 5 | Delphi RTL/support: leaf helper |
 | `0x004135b9` | `sub_004135b9` | 2 | Delphi RTL/support: leaf helper |
@@ -1335,7 +1335,7 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x00413602` | `sub_00413602` | 2 | Delphi RTL/support: leaf helper |
 | `0x00413604` | `sub_00413604` | 7 | Delphi RTL/support: leaf helper |
 | `0x0041360b` | `sub_0041360b` | 1 | Delphi RTL/support: leaf helper |
-| `0x0041360c` | `sub_0041360c` | 339 | Delphi RTL/support: uses MapViewOfFile,GetLastError,WaitForSingleObject |
+| `0x0041360c` | `openSharedTableCreateInject` | 339 | Opens/creates a named event(sub_411214) and file mapping(sub_4113d8), MapViewOfFile, allocates list head if new, then calls sub_4130b0/sub_412f9c to register+inject. |
 | `0x00413752` | `sub_00413752` | 10 | Delphi RTL/support: uses ReleaseMutex |
 | `0x0041375c` | `sub_0041375c` | 5 | Delphi RTL/support: leaf helper |
 | `0x00413761` | `sub_00413761` | 2 | Delphi RTL/support: leaf helper |
@@ -1345,7 +1345,7 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x0041378c` | `sub_0041378c` | 2 | Delphi RTL/support: leaf helper |
 | `0x0041378e` | `sub_0041378e` | 9 | Delphi RTL/support: leaf helper |
 | `0x00413797` | `sub_00413797` | 1 | Delphi RTL/support: leaf helper |
-| `0x00413798` | `sub_00413798` | 501 | Delphi RTL/support: 2 loops; uses WaitForSingleObject,UnmapViewOfFile,MapViewOfFile |
+| `0x00413798` | `unregisterFromSharedHookTable` | 501 | Opens named event+mapping, MapViewOfFile, scans 24-byte records removing entries matching a triple (pid/addr/x) and frees empty buckets via g_41f028 (LocalFree wrapper). |
 | `0x00413980` | `sub_00413980` | 10 | Delphi RTL/support: uses ReleaseMutex |
 | `0x0041398a` | `sub_0041398a` | 5 | Delphi RTL/support: leaf helper |
 | `0x0041398f` | `sub_0041398f` | 2 | Delphi RTL/support: leaf helper |
@@ -1356,7 +1356,7 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x004139bc` | `sub_004139bc` | 7 | Delphi RTL/support: leaf helper |
 | `0x00413a19` | `sub_00413a19` | 52 | Delphi RTL/support: 1 loop; uses InterlockedCompareExchange |
 | `0x00413a4d` | `sub_00413a4d` | 1 | Delphi RTL/support: leaf helper |
-| `0x00413a78` | `sub_00413a78` | 892 | Delphi RTL/support: 7 loops; uses MapViewOfFile,Sleep,GetLastError |
+| `0x00413a78` | `enumRelatedProcessWindows` | 892 | GetModuleHandle-based check, CreateFileMappingA(16 bytes) shared-cache, builds a list of related process ids by comparing per-process thread window rects, storing into shared view. |
 | `0x00413df4` | `sub_00413df4` | 53 | Delphi RTL/support: leaf helper |
 | `0x00413e29` | `sub_00413e29` | 5 | Delphi RTL/support: leaf helper |
 | `0x00413e2e` | `sub_00413e2e` | 2 | Delphi RTL/support: leaf helper |
@@ -1376,7 +1376,7 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x0041409d` | `sub_0041409d` | 3 | Delphi RTL/support: leaf helper |
 | `0x004140a0` | `sub_004140a0` | 121 | Delphi RTL/support: 1 loop; uses GetVersion |
 | `0x00414119` | `sub_00414119` | 3 | Delphi RTL/support: leaf helper |
-| `0x0041411c` | `sub_0041411c` | 80 | Delphi RTL/support: uses CloseHandle,MapViewOfFile,UnmapViewOfFile |
+| `0x0041411c` | `validateSharedMappingHandle` | 80 | MapViewOfFile a handle to test its first dword; if zero/unmappable CloseHandle and null the handle out-param, else UnmapViewOfFile (mapping liveness check). |
 | `0x0041416c` | `sub_0041416c` | 184 | Delphi RTL/support: 2 loops |
 | `0x00414224` | `sub_00414224` | 63 | Delphi RTL/support: leaf helper |
 | `0x00414263` | `sub_00414263` | 1 | Delphi RTL/support: leaf helper |
@@ -1384,7 +1384,7 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x00414399` | `sub_00414399` | 5 | Delphi RTL/support: leaf helper |
 | `0x0041439e` | `sub_0041439e` | 5 | Delphi RTL/support: leaf helper |
 | `0x004143ad` | `sub_004143ad` | 3 | Delphi RTL/support: leaf helper |
-| `0x004143b0` | `madCodeHookInject` | 3849 | large LoadLibraryA-driven madCodeHook injection of elfload.dll |
+| `0x004143b0` | `installCodeHook` | 3849 | Core madCodeHook HookCode: allocates trampoline stub (bytes 0xFF/0x25 jmp table), GetVersion W/A branch, LoadLibraryW/A the target module, writes hook via shared mapping and system-wide install (sub_4 |
 | `0x00414ac8` | `sub_00414ac8` | 5 | Delphi RTL/support: leaf helper |
 | `0x00414acd` | `sub_00414acd` | 5 | Delphi RTL/support: leaf helper |
 | `0x004152b6` | `sub_004152b6` | 16 | Delphi RTL/support: uses UnmapViewOfFile |
@@ -1429,7 +1429,7 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x00415932` | `sub_00415932` | 9 | Delphi RTL/support: leaf helper |
 | `0x00415948` | `sub_00415948` | 129 | Delphi RTL/support: uses VirtualProtect,CloseHandle,ReleaseMutex |
 | `0x004159c9` | `sub_004159c9` | 3 | Delphi RTL/support: leaf helper |
-| `0x004159cc` | `sub_004159cc` | 1077 | Delphi RTL/support: 2 loops; uses MapViewOfFile,Sleep,WaitForSingleObject |
+| `0x004159cc` | `applyHookToRunningThreads` | 1077 | Opens named event/mapping, MapViewOfFile, uses GetThreadContext in a loop with Sleep(10) to safely patch the hooked bytes at a code address while no thread's EIP is inside it, then WriteProcessMemory- |
 | `0x00415d8f` | `sub_00415d8f` | 10 | Delphi RTL/support: uses UnmapViewOfFile |
 | `0x00415d99` | `sub_00415d99` | 5 | Delphi RTL/support: leaf helper |
 | `0x00415d9e` | `sub_00415d9e` | 2 | Delphi RTL/support: leaf helper |
@@ -1447,7 +1447,7 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x00415e79` | `sub_00415e79` | 5 | Delphi RTL/support: leaf helper |
 | `0x00415e7e` | `sub_00415e7e` | 2 | Delphi RTL/support: leaf helper |
 | `0x00415e80` | `sub_00415e80` | 7 | Delphi RTL/support: leaf helper |
-| `0x00415e93` | `sub_00415e93` | 1332 | Delphi RTL/support: free; 6 loops; uses LocalFree,MapViewOfFile,VirtualQuery |
+| `0x00415e93` | `uninstallCodeHook` | 1332 | madCodeHook UnhookCode: opens shared event/mapping, removes the hook record, restores original 6 bytes checking IsBadReadPtr, uses GetThreadContext/Sleep(10) to avoid patching threads mid-instruction, |
 | `0x004161b2` | `sub_004161b2` | 10 | Delphi RTL/support: uses UnmapViewOfFile |
 | `0x004161bc` | `sub_004161bc` | 5 | Delphi RTL/support: leaf helper |
 | `0x004161c1` | `sub_004161c1` | 2 | Delphi RTL/support: leaf helper |
@@ -1484,7 +1484,7 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x004166a1` | `sub_004166a1` | 5 | Delphi RTL/support: leaf helper |
 | `0x004166a6` | `sub_004166a6` | 7 | Delphi RTL/support: leaf helper |
 | `0x004166f1` | `sub_004166f1` | 3 | Delphi RTL/support: leaf helper |
-| `0x004166f4` | `sub_004166f4` | 875 | Delphi RTL/support: 2 loops; uses MapViewOfFile,Sleep,GetLastError |
+| `0x004166f4` | `initInjectionDriverContext` | 875 | One-time init (g_41f124 guard): GetVersion branch, on 9x uses shared CreateFileMappingA(12 bytes) to locate a driver stub, GetCurrentProcessId, allocates exec stub (VirtualAlloc PAGE_EXECUTE) and patc |
 | `0x00416a5f` | `sub_00416a5f` | 36 | Delphi RTL/support: leaf helper |
 | `0x00416a83` | `sub_00416a83` | 5 | Delphi RTL/support: leaf helper |
 | `0x00416a88` | `sub_00416a88` | 2 | Delphi RTL/support: leaf helper |
@@ -1498,7 +1498,7 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x00416d88` | `sub_00416d88` | 10 | Delphi RTL/support: leaf helper |
 | `0x00416d93` | `sub_00416d93` | 5 | Delphi RTL/support: leaf helper |
 | `0x00416d98` | `sub_00416d98` | 2 | Delphi RTL/support: leaf helper |
-| `0x00416d9a` | `sub_00416d9a` | 249 | Delphi RTL/support: uses CloseHandle,GetCurrentProcessId,MapViewOfFile |
+| `0x00416d9a` | `registerModuleInSharedList` | 249 | Calls init then GetCurrentProcessId, opens named mapping(sub_4113d8), MapViewOfFile, writes a pointer (g_4192e0) and stores handle in g_41f130 — registers this module for the '$mch' shared naming sche |
 | `0x00416ead` | `sub_00416ead` | 13 | Delphi RTL/support: leaf helper |
 | `0x00416ecb` | `sub_00416ecb` | 5 | Delphi RTL/support: leaf helper |
 | `0x00416ed0` | `sub_00416ed0` | 2 | Delphi RTL/support: leaf helper |
@@ -1621,7 +1621,7 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x0041872b` | `sub_0041872b` | 5 | Delphi RTL/support: leaf helper |
 | `0x00418730` | `sub_00418730` | 2 | Delphi RTL/support: leaf helper |
 | `0x00418732` | `sub_00418732` | 9 | Delphi RTL/support: leaf helper |
-| `0x00418748` | `sub_00418748` | 447 | Delphi RTL/support: 1 loop; uses GetVersion,LoadLibraryA,GetProcAddress |
+| `0x00418748` | `loadMadCodeHookDriverApis` | 447 | On NT (guard g_420b3c) LoadLibraryA a helper DLL and GetProcAddress ten entry points into g_420b2c..g_420b50 (driver/kernel API resolution). |
 | `0x00418907` | `sub_00418907` | 14 | Delphi RTL/support: leaf helper |
 | `0x00418915` | `sub_00418915` | 5 | Delphi RTL/support: leaf helper |
 | `0x0041891a` | `sub_0041891a` | 2 | Delphi RTL/support: leaf helper |
@@ -1639,7 +1639,7 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x00418ba6` | `sub_00418ba6` | 2 | Delphi RTL/support: leaf helper |
 | `0x00418ba8` | `sub_00418ba8` | 6 | Delphi RTL/support: leaf helper |
 | `0x00418bae` | `sub_00418bae` | 2 | Delphi RTL/support: leaf helper |
-| `0x00418bb0` | `sub_00418bb0` | 1054 | Delphi RTL/support: string concat; 1 loop; uses RegQueryValueExA,RegCloseKey,DeleteFileW |
+| `0x00418bb0` | `installServiceOrRunKeyEntry` | 1054 | Builds a registry path, RegOpenKeyExA/RegCreateKeyExA under HKLM (0x80000002), RegSetValueExA DWORDs + RegSetValueExW string, then DeleteFileW cleanup — persists a driver/service registration. |
 | `0x00418fce` | `sub_00418fce` | 17 | Delphi RTL/support: leaf helper |
 | `0x00418fdf` | `sub_00418fdf` | 5 | Delphi RTL/support: leaf helper |
 | `0x00418fe4` | `sub_00418fe4` | 2 | Delphi RTL/support: leaf helper |
@@ -1654,14 +1654,14 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x004192cf` | `sub_004192cf` | 5 | Delphi RTL/support: leaf helper |
 | `0x004192d4` | `sub_004192d4` | 2 | Delphi RTL/support: leaf helper |
 | `0x004192d6` | `sub_004192d6` | 7 | Delphi RTL/support: leaf helper |
-| `0x004192dd` | `sub_004192dd` | 454 | Delphi RTL/support: 3 loops; uses MapViewOfFile,CloseHandle,GetModuleHandleW |
+| `0x004192dd` | `isModuleInSharedProcessList` | 454 | Opens shared mapping, MapViewOfFile FILE_MAP_READ, iterates per-process records (286/156-dword structs) comparing GetModuleHandleW/sub_4052c4 to detect if this module is already loaded, else calls sub |
 | `0x0041949a` | `sub_0041949a` | 16 | Delphi RTL/support: leaf helper |
 | `0x004194b3` | `sub_004194b3` | 5 | Delphi RTL/support: leaf helper |
 | `0x004194b8` | `sub_004194b8` | 2 | Delphi RTL/support: leaf helper |
 | `0x004194ba` | `sub_004194ba` | 7 | Delphi RTL/support: leaf helper |
 | `0x004194c1` | `sub_004194c1` | 370 | Delphi RTL/support: 3 loops; uses NtGetCurrentPeb |
 | `0x00419633` | `sub_00419633` | 1 | Delphi RTL/support: leaf helper |
-| `0x00419634` | `sub_00419634` | 1024 | Delphi RTL/support: string copy; 3 loops; uses MapViewOfFile,IsValidSid,GetLastError |
+| `0x00419634` | `enumProcessesIntoSharedTable` | 1024 | Grows a named file mapping (sub_4113d8, size scaling per attempt), MapViewOfFile, fills per-process entries with GetModuleFileNameW/path/SID (IsValidSid/GetLengthSid) — builds the shared process regis |
 | `0x00419a27` | `sub_00419a27` | 10 | Delphi RTL/support: uses ReleaseMutex |
 | `0x00419a31` | `sub_00419a31` | 5 | Delphi RTL/support: leaf helper |
 | `0x00419a36` | `sub_00419a36` | 2 | Delphi RTL/support: leaf helper |
@@ -1680,13 +1680,13 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x00419d94` | `sub_00419d94` | 305 | Delphi RTL/support: uses GetSystemDirectoryA,GetSystemDirectoryW,GetCurrentDirectoryW |
 | `0x00419ec5` | `sub_00419ec5` | 658 | Delphi RTL/support: 4 loops |
 | `0x0041a157` | `sub_0041a157` | 1 | Delphi RTL/support: leaf helper |
-| `0x0041a158` | `sub_0041a158` | 436 | Delphi RTL/support: 1 loop; uses MapViewOfFile,DuplicateHandle,Sleep |
+| `0x0041a158` | `getOrCreateKeyedSharedRecord` | 436 | 9x: CreateFileMappingA; NT: named mapping(sub_4113d8) 16-byte record, spin-wait Sleep(50) for owner match keyed on field_8, publishes handle via DuplicateHandle, reads field_c. |
 | `0x0041a30c` | `sub_0041a30c` | 22 | Delphi RTL/support: leaf helper |
 | `0x0041a322` | `sub_0041a322` | 5 | Delphi RTL/support: leaf helper |
 | `0x0041a327` | `sub_0041a327` | 2 | Delphi RTL/support: leaf helper |
 | `0x0041a329` | `sub_0041a329` | 10 | Delphi RTL/support: leaf helper |
 | `0x0041a333` | `sub_0041a333` | 1 | Delphi RTL/support: leaf helper |
-| `0x0041a334` | `sub_0041a334` | 195 | Delphi RTL/support: string copy/client memory RW; uses SetLastError,GetLastError,WriteProcessMemory |
+| `0x0041a334` | `injectStubWriteRemoteThread` | 195 | Copies W/A module-path strings, gets a shared record (sub_41a158), VirtualAllocEx(sub_40e970, 814 bytes) in target, WriteProcessMemory the 0x32e-byte stub, CreateRemoteThread(sub_40f474); frees on fai |
 | `0x0041a3f7` | `sub_0041a3f7` | 1 | Delphi RTL/support: leaf helper |
 | `0x0041a3f8` | `sub_0041a3f8` | 115 | Delphi RTL/support: uses GetExitCodeThread,GetLastError,WaitForSingleObject |
 | `0x0041a46b` | `sub_0041a46b` | 1 | Delphi RTL/support: leaf helper |
@@ -1695,11 +1695,11 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x0041a4ea` | `sub_0041a4ea` | 5 | Delphi RTL/support: leaf helper |
 | `0x0041a4ef` | `sub_0041a4ef` | 2 | Delphi RTL/support: leaf helper |
 | `0x0041a4f1` | `sub_0041a4f1` | 7 | Delphi RTL/support: leaf helper |
-| `0x0041a4f8` | `sub_0041a4f8` | 43 | Delphi RTL/support: client memory RW; uses ReadProcessMemory |
+| `0x0041a4f8` | `readProcessMemoryWrapper` | 43 | Thin wrapper around ReadProcessMemory(hProcess,addr,buf,size,&bytesRead). |
 | `0x0041a523` | `sub_0041a523` | 1 | Delphi RTL/support: leaf helper |
-| `0x0041a524` | `sub_0041a524` | 43 | Delphi RTL/support: client memory RW; uses ReadProcessMemory |
+| `0x0041a524` | `readProcessMemoryWrapper2` | 43 | Duplicate thin wrapper around ReadProcessMemory (identical to sub_41a4f8). |
 | `0x0041a54f` | `sub_0041a54f` | 1 | Delphi RTL/support: leaf helper |
-| `0x0041a550` | `sub_0041a550` | 78 | Delphi RTL/support: client memory RW; uses VirtualProtectEx,WriteProcessMemory |
+| `0x0041a550` | `writeProcessMemoryWithProtect` | 78 | Optionally VirtualProtectEx(PAGE_EXECUTE_READWRITE) then WriteProcessMemory(hProcess,addr,buf,size,&written) — patch-remote-memory helper. |
 | `0x0041a59e` | `sub_0041a59e` | 2 | Delphi RTL/support: leaf helper |
 | `0x0041a5a0` | `sub_0041a5a0` | 339 | Delphi RTL/support: 1 loop; uses GetVersion |
 | `0x0041a6b8` | `sub_0041a6b8` | 5 | Delphi RTL/support: leaf helper |
@@ -1712,7 +1712,7 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x0041a864` | `sub_0041a864` | 624 | Delphi RTL/support: string copy; 3 loops |
 | `0x0041aad4` | `sub_0041aad4` | 194 | Delphi RTL/support: 2 loops |
 | `0x0041ab96` | `sub_0041ab96` | 2 | Delphi RTL/support: leaf helper |
-| `0x0041ab98` | `writeRemoteBootstrap` | 794 | WriteProcessMemory into the Tibia process (bootstrap/param passing) |
+| `0x0041ab98` | `patchRemoteApiRedirectTable` | 794 | Reads/writes a remote redirection table via ReadProcessMemory/WriteProcessMemory, allocates growing remote buffer (sub_40e970), installs a 0xE9 jmp (VirtualProtectEx) and appends a 0x208-byte wide-str |
 | `0x0041aeb2` | `sub_0041aeb2` | 2 | Delphi RTL/support: leaf helper |
 | `0x0041aeb4` | `sub_0041aeb4` | 182 | Delphi RTL/support: uses GetVersionExA |
 | `0x0041af6a` | `sub_0041af6a` | 2 | Delphi RTL/support: leaf helper |
@@ -1720,8 +1720,8 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x0041b047` | `sub_0041b047` | 21 | Delphi RTL/support: leaf helper |
 | `0x0041b063` | `sub_0041b063` | 30 | Delphi RTL/support: leaf helper |
 | `0x0041b081` | `sub_0041b081` | 26 | Delphi RTL/support: leaf helper |
-| `0x0041b09b` | `sub_0041b09b` | 1269 | Delphi RTL/support: 5 loops; uses Conv |
-| `0x0041b590` | `sub_0041b590` | 820 | Delphi RTL/support: 4 loops |
+| `0x0041b09b` | `enumRemoteModulesViaNtapi` | 1269 | Via indirect Nt* pointers in a context struct, NtQuerySystemInformation/NtOpenProcess/NtReadVirtualMemory-style calls to enumerate modules ('kernel32.dll') across processes and drive per-process hook  |
+| `0x0041b590` | `findModuleInProcessSnapshot` | 820 | Uses indirect ntdll pointers to snapshot processes/modules, VirtualAlloc scratch, walks per-process 1144-byte module records matching a target pid and returns match flag. |
 | `0x0041b8c4` | `sub_0041b8c4` | 405 | Delphi RTL/support: 2 loops; uses UnmapViewOfFile |
 | `0x0041ba59` | `sub_0041ba59` | 31 | Delphi RTL/support: leaf helper |
 | `0x0041ba78` | `sub_0041ba78` | 5 | Delphi RTL/support: leaf helper |
@@ -1731,14 +1731,14 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x0041ba8c` | `sub_0041ba8c` | 16 | Delphi RTL/support: leaf helper |
 | `0x0041ba9c` | `sub_0041ba9c` | 42 | Delphi RTL/support: leaf helper |
 | `0x0041bac6` | `sub_0041bac6` | 2 | Delphi RTL/support: leaf helper |
-| `0x0041bac8` | `sub_0041bac8` | 1279 | Delphi RTL/support: 1 loop; uses UnmapViewOfFile,MapViewOfFile,InterlockedExchange |
+| `0x0041bac8` | `buildInjectionStubImage` | 1279 | Assembles a 329+ byte remote stub image in local buffer: computes many resolved API addresses (sub_40da7c=GetProcAddress-like) and relative offsets, writes it to a shared mapping (sub_4113d8/MapViewOf |
 | `0x0041bfc7` | `sub_0041bfc7` | 39 | Delphi RTL/support: leaf helper |
 | `0x0041bfee` | `sub_0041bfee` | 5 | Delphi RTL/support: leaf helper |
 | `0x0041bff3` | `sub_0041bff3` | 2 | Delphi RTL/support: leaf helper |
 | `0x0041bff5` | `sub_0041bff5` | 9 | Delphi RTL/support: leaf helper |
-| `0x0041c00c` | `sub_0041c00c` | 346 | Delphi RTL/support: client memory RW; uses VirtualProtectEx,WriteProcessMemory,ReadProcessMemory |
+| `0x0041c00c` | `writeInjectionStubToRemote` | 346 | VirtualAllocEx(sub_40e970) then WriteProcessMemory the stub header(0x149), payload and tail into target; fixes up a relative 0xE8 call via ReadProcessMemory/VirtualProtectEx/WriteProcessMemory. |
 | `0x0041c166` | `sub_0041c166` | 2 | Delphi RTL/support: leaf helper |
-| `0x0041c168` | `sub_0041c168` | 1121 | Delphi RTL/support: free; 4 loops; uses LocalFree,Sleep,GetLastError |
+| `0x0041c168` | `injectIntoAllTibiaProcesses` | 1121 | Enumerates target processes (sub_419634), and per process OpenProcess(0x47a=1146), builds/writes the stub (sub_41c00c) and CreateRemoteThread-injects (sub_41af6c), retry loop with GetTickCount/Sleep(1 |
 | `0x0041c5c9` | `sub_0041c5c9` | 69 | Delphi RTL/support: routine (69b) |
 | `0x0041c60e` | `sub_0041c60e` | 5 | Delphi RTL/support: leaf helper |
 | `0x0041c613` | `sub_0041c613` | 2 | Delphi RTL/support: leaf helper |
@@ -1761,7 +1761,7 @@ All 1780 decompiled functions of the Delphi GUI injector. The injection logic is
 | `0x0041c90b` | `sub_0041c90b` | 1 | Delphi RTL/support: leaf helper |
 | `0x0041c90c` | `sub_0041c90c` | 119 | Delphi RTL/support: uses CloseHandle,UnmapViewOfFile |
 | `0x0041c983` | `sub_0041c983` | 1 | Delphi RTL/support: leaf helper |
-| `0x0041c984` | `sub_0041c984` | 1493 | Delphi RTL/support: routine (1493b) |
+| `0x0041c984` | `initHookLibraryOnce` | 1493 | Guarded (g_4208d4 refcount) one-time madCodeHook init calling _ccall(4,18,...) then a long fixed sequence of RTL init helpers (sub_403a10/sub_404814) to register finalizers. |
 | `0x0041cf59` | `sub_0041cf59` | 1 | Delphi RTL/support: leaf helper |
 | `0x0041cf5a` | `sub_0041cf5a` | 5 | Delphi RTL/support: leaf helper |
 | `0x0041cf5f` | `sub_0041cf5f` | 2 | Delphi RTL/support: leaf helper |

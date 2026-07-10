@@ -95,6 +95,38 @@ a script VM driving cavebot/targeting.
 | `0x0041AB98`, `0x0041C00C`, `0x0041A334` | remote writers | `WriteProcessMemory` into the Tibia process (bootstrap/parameter passing) |
 
 The full per-function catalog is in
-[functions/decompiled/loader/](functions/decompiled/loader-index.md) (1780
-functions, pseudo-C). Delphi decompiles less cleanly than the MSVC binaries, so
-names are assigned from the WinAPI/string anchors above.
+[functions/loader-catalog.md](functions/loader-catalog.md) (1780 functions).
+
+### madCodeHook injection internals (reversed)
+
+The statically-linked **madCodeHook** (Madshi) machinery inside loader.exe was
+decompiled and named. The injection works by building a hook trampoline and
+spawning a remote thread in the target:
+
+- **Trampoline builder** — a length-disassembler engine: `scanHookPrologue`
+  `0x40CE2C` disassembles the target's leading bytes tracking branches/jump
+  tables; `analyzeHookRelocInstr` `0x40C8B4` follows call/jmp targets and records
+  relocations; `buildTrampolineRegions` `0x40D340` `VirtualQuery`s the target,
+  walks its PE sections and assembles the relocatable copied prologue;
+  `decodeInsnFlagEffect` / `applyInsnRegDefs` are per-opcode helpers.
+- **Remote-thread injection** — `createRemoteThreadHook` `0x40F474` duplicates
+  thread handles and uses an ntdll `RtlCreateUserThread`-style API to create a
+  thread in the target (Win9x code-patch fallback); `injectRemoteThreadsIntoProcesses`
+  `0x4124B8` and `createRemoteThreadPerProcess` `0x41261A` `OpenProcess(0x1F0FFF)`
+  + `CreateRemoteThread` across target PIDs.
+- **Shared-memory IPC** — `createSharedMemoryMapping` `0x4113D8` /
+  `initSharedIpcMapping` `0x40F0C4` set up named pagefile-backed sections;
+  `buildInjectionSecurityDescriptor` `0x41101C` builds a DACL granting owner +
+  SYSTEM access (via `getProcessTokenUser` `0x410F9C`) so loader and injected DLL
+  share hook/session state (`getOrInitSharedProcessInfo`, `cleanupSharedHookTables`).
+- **PE export resolution** — `mapOwnModuleImage` `0x40A83C` maps the module's
+  on-disk image; `resolveApiViaMappedImage` `0x40A918` / `resolveExportByOrdinalRange`
+  `0x40AB08` walk the export table by name/ordinal (avoids IAT hooks).
+- **Process discovery** — `initToolhelp32Api` `0x4054F4` +
+  `findProcessByModulePath` `0x40E6A4` / `findHelperProcess` `0x40E7A8` enumerate
+  processes via ToolHelp32.
+
+Net: loader.exe uses madCodeHook to inject `elfload.dll` into `Tibia.exe` by
+`OpenProcess` + shared-memory-coordinated `CreateRemoteThread`, with a relocated
+trampoline so the DLL maps cleanly. Delphi decompiles less cleanly than the MSVC
+binaries, so names come from the WinAPI/string anchors.
