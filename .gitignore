@@ -3,6 +3,9 @@
 scratch/
 tmp/
 
+# MCP config carries an access token — keep local
+.mcp.json
+
 # IDA working files (regenerable)
 *.i64
 *.idb

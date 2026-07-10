@@ -27,12 +27,18 @@ scripts), `elfsettings/`, `lootitems.txt`, `outfits.txt`, `hotkeys.ini`,
 
 | Doc | What |
 |---|---|
+| [`docs/00-status.md`](docs/00-status.md) | Resume point — what's done / in progress / TODO |
 | [`docs/01-overview.md`](docs/01-overview.md) | Architecture, injection chain, subsystem map |
 | [`docs/02-static-analysis.md`](docs/02-static-analysis.md) | PE structure, sections, imports, strings per binary |
-| [`docs/03-packer-armadillo.md`](docs/03-packer-armadillo.md) | The Armadillo protection on `elfbot.dll`; why static RE still works |
+| [`docs/03-packer-armadillo.md`](docs/03-packer-armadillo.md) | The Armadillo protection; why static RE still works |
 | [`docs/04-navnet-server.md`](docs/04-navnet-server.md) | `navserv.exe` complete function-by-function + wire protocol |
-| `docs/05-injection-chain.md` | `loader.exe` + `elfload.dll` + `EcInit` (WIP) |
-| `docs/06+` | `elfbot.dll` core + subsystems (WIP) |
+| [`docs/05-ui-init-framework.md`](docs/05-ui-init-framework.md) | Boot path, `EcInit`, the 23-dialog framework |
+| [`docs/06-injection-chain.md`](docs/06-injection-chain.md) | loader.exe (madCodeHook) → elfload.dll → EcInit |
+| [`docs/07-ciroscript-language.md`](docs/07-ciroscript-language.md) | CiroScript commands/conditionals, `.elfc`/`.elft` |
+| [`docs/08-client-hooks-engine.md`](docs/08-client-hooks-engine.md) | Inline hooks, packet-parser hook, full-light, shadow tables |
+| [`docs/09-packet-proxy.md`](docs/09-packet-proxy.md) | Embedded proxy server, protocol, packet injection |
+| [`docs/10-feature-subsystems.md`](docs/10-feature-subsystems.md) | All 23 feature dialogs mapped + named |
+| `docs/functions/` | Full per-function catalog (in progress) |
 
 ## Method
 
