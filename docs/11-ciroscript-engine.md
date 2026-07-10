@@ -13,6 +13,23 @@ The interpreter for ElfBot's hotkey, cavebot and targeting scripts. Every comman
 | `sub_100172b0` `0x100172b0` | targeting `.elft` record + HUD-icon field parser (`Name:/Hpmin:/ActionSpell:/AttackMode:/...`) |
 | `sub_10015b79` / `sub_10015843` `0x10015b79` | `.elfc` / `.elft` file open loaders |
 
+### Dispatch mechanism
+
+`registerCommand` (`sub_1002c1b6`) is a **perfect-hash inserter** into one of three
+fixed open-addressed tables (no chaining):
+
+- `g_10292304` — 0x4000 (16384) slots, mask `& 0x3fff`
+- `g_102b2404` — 0x4000 slots, mask `& 0x3fff`
+- `g_102d2504` — 0x2000 (8192) slots, mask `& 0x1fff`
+
+Each slot is 8 bytes: `{ char* name, uint32 handler }`. The name hash is
+multiplicative (`idx = idx*5 + bits(ch)` over the string); `sub_1002ff87` picks
+which of the three tables (the three namespaces: statements, conditions, record
+fields). The 422 command names are chosen so the hash is collision-free — a real
+collision raises `MessageBoxA`. Execution hashes the parsed token the same way
+and calls `table[idx].handler(args)`, so dispatch is O(1) with no `lstrcmpi`
+chain in the hot path.
+
 ## Movement / walk
 
 | Command | Handler |
