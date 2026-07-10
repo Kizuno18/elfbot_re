@@ -47,6 +47,22 @@ Imports confirm the flow: `LoadLibraryA`, `GetProcAddress`, `CreateThread`,
 `CreateDialogParamA`, `WriteProcessMemory`; references `elfbot.dll`, `USkin.dll`,
 `wsock32.dll`, `comctl32.dll`.
 
+### elfload.dll functions (all 6, decompiled)
+
+| Address | Name | What it does |
+|---|---|---|
+| `0x10001000` | `DllMain` | on `DLL_PROCESS_ATTACH` save hinstance, `GetCurrentProcess`, spawn `bootstrapThread` |
+| `0x10001041` | `bootstrapThread` | call `mapBotAndRun(hinst,0,0,10)`, then `ExitThread` |
+| `0x10001198` | `mapBotAndRun` | **the bootstrap**: `InitCommonControls`; `RegisterClassExA`; `LoadLibraryA("USkin.dll")`+`USkinInit`; `LoadLibraryA("elfbot.dll")`; `GetProcAddress("EcInit")`; `CreateDialogParamA("TBOTDLG00")`; `WriteProcessMemory`; `GetMessage`/`TranslateMessage`/`DispatchMessage` pump; `USkinExit` on exit |
+| `0x10001060` | `bootstrapDlgProc` | dialog proc for `TBOTDLG00`; on `WM_COMMAND 0x539` registers a window class + creates the child window |
+| `0x10001326` | `exitProc` | `ExitProcess` |
+| `0x1000132b` | `nullsub` | empty |
+
+So the confirmed sequence: `USkin.dll`→`USkinInit`, then `elfbot.dll`→
+`GetProcAddress("EcInit")`, create the `TBOTDLG00` bootstrap dialog, and run a
+message pump that ultimately drives `EcInit`. The rest of elfload's 47 functions
+are import thunks and the MSVC CRT.
+
 ## Stage 3 — elfbot.dll::EcInit (bot init)
 
 Documented in [`05-ui-init-framework.md`](05-ui-init-framework.md):
