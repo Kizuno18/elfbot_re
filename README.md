@@ -6,7 +6,9 @@ game client (circa 2010). Every binary in the distribution is disassembled with
 IDA Pro + Hex-Rays and documented here.
 
 Everything is RE of binaries the operator legally possesses, on the operator's
-own lab. No game servers are touched; this is pure static analysis.
+own lab. No game servers are touched — the static RE was additionally confirmed
+by injecting the bot into a genuine, offline Tibia 8.6 client and observing it
+live ([docs/28](docs/28-runtime-validation.md)).
 
 ## The distribution
 
@@ -39,7 +41,7 @@ scripts), `elfsettings/`, `lootitems.txt`, `outfits.txt`, `hotkeys.ini`,
 | [`docs/09-packet-proxy.md`](docs/09-packet-proxy.md) | Embedded proxy server, protocol, packet injection |
 | [`docs/10-feature-subsystems.md`](docs/10-feature-subsystems.md) | All 23 feature dialogs mapped + named |
 | [`docs/11-ciroscript-engine.md`](docs/11-ciroscript-engine.md) | CiroScript VM: 422 commands → handlers, hash dispatch |
-| [`docs/12-script-crypto-compression.md`](docs/12-script-crypto-compression.md) | `.elfc`/`.elft` protection: Blowfish, BWT, LZW, block ciphers |
+| [`docs/12-script-crypto-compression.md`](docs/12-script-crypto-compression.md) | Crypto/compression cluster = **unused static lib** (zlib 1.2.3); net cipher is client XTEA |
 | [`docs/13-engine-tick-loop.md`](docs/13-engine-tick-loop.md) | **Master control flow** — `botMainTickLoop`, the timed subsystem dispatch |
 | [`docs/14-ciroscript-runtime.md`](docs/14-ciroscript-runtime.md) | CiroScript interpreter runtime (script execution each tick) |
 | [`docs/15-healer-engine.md`](docs/15-healer-engine.md) | Healer: heal-spell/potion ladder + offensive casting |
