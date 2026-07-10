@@ -2,7 +2,24 @@
 
 Resume point for the ElfBot NG 8.60 RE. What is done, what is in progress.
 
-## Done
+## Complete
+
+RE is finished. Every function of every binary is decompiled and carries a
+purpose (0 blanks: jdrv 1190, jiru 5935, loader 1780, elfload 6, navserv 12).
+All 23 tabs are mapped to a named engine + deep doc, and every inter-tab relation
+is documented ([27](27-subsystem-relations.md), [25](25-cavebot-targeting-sync.md),
+[26](26-aimbot-combo.md)). The crypto/compression cluster is resolved as **unused
+statically-linked library code** (zlib 1.2.3 + archive lib; no path to bot logic
+even via pointer dispatch — [12](12-script-crypto-compression.md)); the real
+network cipher is the Tibia client's XTEA at `0x549F60` and `.elfc`/`.elft` are
+plaintext opcode streams ([22](22-elfc-file-format.md)). IDA `.i64` fully named
+and saved. 28 docs (00–27).
+
+Open only if a live target appears: dynamic confirmation of runtime behaviour
+(re-x64dbg/re-frida on a running Tibia 8.60), and per-function RE of the
+third-party `USkin.dll` (out of scope — not ElfBot code).
+
+## Done (detail)
 
 - **Recon & tooling** — all 6 PE binaries triaged (`tools/pe_recon.py`,
   `tools/strings_recon.py`); IDA (idalib) headless over MCP; binaries delivered

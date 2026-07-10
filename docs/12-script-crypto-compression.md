@@ -18,6 +18,13 @@
 > - **Not online DRM** — elfbot.dll imports no HTTP/WinINet; there is no reachable
 >   caller from bot code.
 >
+> **Indirect-dispatch check (airtight):** a raw scan for stored pointers to the
+> cipher/compression entries finds refs only inside the library's own dispatch
+> tables — `.rdata` at `0x1038F70C`/`0x103901C4`/`0x1038F770`/`0x10390228` and
+> jiru code `0x1031C730` — all `>= 0x1031C000`, i.e. still the statically-linked
+> runtime, never `.jdrv` bot logic (`< 0x1002C000`). So even accounting for
+> function-pointer dispatch, no path reaches ElfBot's code.
+>
 > The function inventory below is still a correct RE of the library; it simply is
 > not part of ElfBot's runtime behaviour.
 
