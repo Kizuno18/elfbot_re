@@ -2193,7 +2193,7 @@
 },
 "0x10037973": {
 "name": "directionToOffset",
-"purpose": "Switch on a direction code 1-7 (else default), structurally a direction-to-delta lookup; stripped branches all return."
+"purpose": "Switch on a direction code 1..7 (with a default 8th branch) that maps a walk/movement direction constant to its handling case; the decompiler has elided the per-branch bodies (each returns), consistent with a direction-to-delta or direction-dispatch table."
 },
 "0x100379b6": {
 "name": "reportLevelSpyStatus",
@@ -2934,5 +2934,1829 @@
 "0x10040a76": {
 "name": "srandSeed",
 "purpose": "Seeds the LCG PRNG by storing a0 into g_1005a280."
+},
+"0x100346c1": {
+"name": "cmd_countlower",
+"purpose": "CiroScript 'countlower' condition: parses the numeric argument via sub_100300ce and, if the current item count g_100f0e7c is NOT below it (count >= arg), executes the conditional block via sub_10030442; returns early (skips block) when count is lower. (CiroScript 'countlower', doc 11)"
+},
+"0x100346e3": {
+"name": "cmd_counthigher",
+"purpose": "CiroScript 'counthigher' condition: parses the numeric argument via sub_100300ce and, if item count g_100f0e7c is NOT above it (count < arg), runs the block via sub_10030442; the mirror of cmd_countlower. (CiroScript 'counthigher', doc 11)"
+},
+"0x10034705": {
+"name": "cmd_caplower",
+"purpose": "CiroScript 'caplower' condition: reads arg via sub_100300ce, multiplies by 100 (cap stored in hundredths), and executes the block via sub_10030442 only when the player capacity global *0x63fe68 is below arg*100. (CiroScript 'caplower', doc 11)"
+},
+"0x1003472d": {
+"name": "cmd_caphigher",
+"purpose": "CiroScript 'caphigher' condition: reads arg via sub_100300ce, scales by 100, and runs the block via sub_10030442 only when player capacity *0x63fe68 is above arg*100; mirror of cmd_caplower. (CiroScript 'caphigher', doc 11)"
+},
+"0x10034755": {
+"name": "cmd_hplower",
+"purpose": "CiroScript 'hplower' condition: parses arg via sub_100300ce and executes the block via sub_10030442 only when the player's current HP global *0x63fe94 is below arg (returns early when HP >= arg). (CiroScript 'hplower', doc 11)"
+},
+"0x10034776": {
+"name": "cmd_if",
+"purpose": "CiroScript 'if' condition: evaluates the argument expression via sub_100300ce; when truthy runs the block via sub_10030442 and marks the branch-taken flag g_1008ab9f[idx]=1, when falsy sets g_1008ab9f[idx]=0 so a following 'else' can fire. (CiroScript 'if', doc 11)"
+},
+"0x100347b0": {
+"name": "cmd_exec",
+"purpose": "CiroScript 'exec' statement: evaluates the argument via sub_10030225 and, when the guard byte v1 is nonzero, runs the referenced command/block through sub_10030442 with the parsed-token buffer. (CiroScript 'exec', doc 11)"
+},
+"0x100347dd": {
+"name": "cmd_ifnot",
+"purpose": "CiroScript 'ifnot' condition: evaluates the argument via sub_100300ce; when FALSY runs the block via sub_10030442 and sets branch flag g_1008ab9f[idx]=1, when truthy sets g_1008ab9f[idx]=0; inverse of cmd_if. (CiroScript 'ifnot', doc 11)"
+},
+"0x10034817": {
+"name": "cmd_else",
+"purpose": "CiroScript 'else' statement: checks the branch-taken flag g_1008ab9f[idx] set by the preceding if/ifnot and runs the else-block via sub_10030442 only when that flag is 0 (the if branch was not taken). (CiroScript 'else', doc 11)"
+},
+"0x10034836": {
+"name": "cmd_hpmissinglower",
+"purpose": "CiroScript 'hpmissinglower' condition: parses arg via sub_100300ce and runs the block via sub_10030442 only when missing HP (maxHP *0x63fe90 minus curHP *0x63fe94) is below arg. (CiroScript 'hpmissinglower', doc 11)"
+},
+"0x10034860": {
+"name": "cmd_hpmissinghigher",
+"purpose": "CiroScript 'hpmissinghigher' condition: parses arg via sub_100300ce and runs the block via sub_10030442 only when missing HP (*0x63fe90 - *0x63fe94) is above arg; mirror of cmd_hpmissinglower. (CiroScript 'hpmissinghigher', doc 11)"
+},
+"0x1003488a": {
+"name": "cmd_mpmissinglower",
+"purpose": "CiroScript 'mpmissinglower' condition: parses arg via sub_100300ce and runs the block via sub_10030442 only when missing mana (maxMP *0x63fe74 minus curMP *0x63fe78) is below arg. (CiroScript 'mpmissinglower', doc 11)"
+},
+"0x100348b4": {
+"name": "cmd_mpmissinghigher",
+"purpose": "CiroScript 'mpmissinghigher' condition: parses arg via sub_100300ce and runs the block via sub_10030442 only when missing mana (*0x63fe74 - *0x63fe78) is above arg; mirror of cmd_mpmissinglower. (CiroScript 'mpmissinghigher', doc 11)"
+},
+"0x100348de": {
+"name": "cmd_hphigher",
+"purpose": "CiroScript 'hphigher' condition: parses arg via sub_100300ce and runs the block via sub_10030442 only when the player's current HP global *0x63fe94 is above arg; mirror of cmd_hplower. (CiroScript 'hphigher', doc 11)"
+},
+"0x100348ff": {
+"name": "cmd_ringattacking",
+"purpose": "CiroScript 'ringattacking' handler: uses the parsed ring/item id (sub_100300ce) to auto-equip a ring while attacking; when the attack-flag *0x63fe64 is set it stages a use-ring packet into the g_10043344 record (id g_1004334c/g_10043349, flags) and enqueues it via sub_1002ade7, otherwise builds the un-equip packet in g_10043454. (CiroScript 'ringattacking', doc 11)"
+},
+"0x10034989": {
+"name": "cmd_exivalast",
+"purpose": "CiroScript 'exivalast' handler: builds the say string \"exiva \" + last-target name g_10042c7b into the 2032-byte scratch buffer via lstrcpy/lstrcat and sends it as a chat/say command through sub_10039413. (CiroScript 'exivalast', doc 11)"
+},
+"0x100349bb": {
+"name": "cmd_exivatarget",
+"purpose": "CiroScript 'exivatarget' handler: builds \"exiva \\\"\" + target name g_10042cbb into the scratch buffer via lstrcpy/lstrcat and sends the quoted exiva say command via sub_10039413. (CiroScript 'exivatarget', doc 11)"
+},
+"0x100349ed": {
+"name": "cmd_lootitems",
+"purpose": "CiroScript 'lootitems' handler: thin wrapper that triggers the looter routine sub_10038725 (open-corpse / take-items pass). (CiroScript 'lootitems', doc 11)"
+},
+"0x100350cd": {
+"name": "cmd_magwall",
+"purpose": "CiroScript action handler that clears g_100f9328, parses args via sub_10030225, resolves a target with sub_10038eb3 (stack-buffer arg), and on success sets g_100f9328=1 and dispatches via sub_10037a0f; a spell/attack command variant. (CiroScript 'magwall', doc 11)"
+},
+"0x1003510c": {
+"name": "cmd_mwallcover",
+"purpose": "Near-identical CiroScript handler to cmd_castSpellOnResolvedTarget: clears g_100f9328, parses args (sub_10030225), resolves target (sub_10038eb3), then dispatches via sub_10037b0c instead of setting the handled flag before dispatch. (CiroScript 'mwallcover', doc 11)"
+},
+"0x10035141": {
+"name": "cmd_mwallshield",
+"purpose": "Minimal CiroScript handler that clears g_100f9328, parses args via sub_10030225, and directly tail-calls the sub_10037b0c dispatcher without resolving any target. (CiroScript 'mwallshield', doc 11)"
+},
+"0x10035167": {
+"name": "cmd_mplower",
+"purpose": "Reads a numeric arg via sub_100300ce and returns early if the client value at *0x63fe78 (character level/state) is >= it; otherwise invokes sub_10030442 with the parsed args, i.e. a conditional level-gated action. (CiroScript 'mplower', doc 11)"
+},
+"0x10035188": {
+"name": "cmd_mphigher",
+"purpose": "Inverse of cmd_runIfLevelBelowArg: reads a numeric arg (sub_100300ce), returns early if *0x63fe78 (level/state) is below it, otherwise runs sub_10030442 with the args; level-threshold conditional action. (CiroScript 'mphigher', doc 11)"
+},
+"0x100351a9": {
+"name": "cmd_exorihur",
+"purpose": "Cavebot/attack handler for 'exori hur': requires *0x63fe78 (level) >= 40, resolves current target g_1008b89b via sub_1003997e/sub_1003c23e, optionally faces it (sub_10011678 when g_100fa97a set), then sets g_100f9328=1 and says the spell via sub_10039413(\"exori hur\"). (CiroScript 'exorihur', doc 11)"
+},
+"0x10035238": {
+"name": "cmd_exoricon",
+"purpose": "Attack handler for 'exori con': requires level >= 35 (*0x63fe78), resolves target g_1008b89b (sub_1003997e/sub_1003c23e), optionally turns to face it (sub_10011678 if g_100fa97a), sets g_100f9328=1 and casts via sub_10039413(\"exori con\"). (CiroScript 'exoricon', doc 11)"
+},
+"0x100352c7": {
+"name": "cmd_exorigran",
+"purpose": "Attack handler for 'exori gran': requires level >= 340 (*0x63fe78), copies an arg string (lstrcpy), resolves target g_1008b89b, and only casts \"exori gran\" via sub_10039413 (setting g_100f9328=1) when the target is within range 2 in both axes of the player position g_1005f7ed. (CiroScript 'exorigran', doc 11)"
+},
+"0x10035365": {
+"name": "cmd_targethplower",
+"purpose": "Reads a numeric arg (sub_100300ce), resolves current target via sub_1003997e(g_1008b89b), and if the target's HP/attribute field (at +0x88) is below the arg, invokes sub_10030442; otherwise returns the target unchanged. (CiroScript 'targethplower', doc 11)"
+},
+"0x100353a6": {
+"name": "cmd_spydown",
+"purpose": "Bounds-checks the counter g_102e2a08 (short-circuits when 5<g<50), otherwise increments it, computes a 1..15-clamped index from *0x64f600 + counter, passes it to sub_10002c01, then runs sub_100379b6; a cycling/rotation action selector. (CiroScript 'spydown', doc 11)"
+},
+"0x100353f6": {
+"name": "cmd_spyup",
+"purpose": "Mirror of cmd_incrementCounterAndAct: bounds-checks g_102e2a08 (short-circuits when 50<g<0xFFFFFFFB), else decrements it, derives a 1..15-clamped index from *0x64f600 + counter for sub_10002c01, then runs sub_100379b6; reverse cycling action. (CiroScript 'spyup', doc 11)"
+},
+"0x10035446": {
+"name": "cmd_refillmana",
+"purpose": "Reads two numeric args (sub_100300ce), fetches an item/tile record via sub_1003927b, populates the use-item packet fields g_100433a6/g_100433a0-a5 with g_10044610[g_10134e65] as the item id, and enqueues it via sub_1002ade7(&g_1004339b); a use-item action builder. (CiroScript 'refillmana', doc 11)"
+},
+"0x100354ab": {
+"name": "cmd_refillhealth",
+"purpose": "Variant of cmd_buildUseItemPacketA using sub_1003919a as the record source and g_100445f8[g_10134e64] as the item id, filling the same use-item packet header (g_100433a6/g_100433a0-a5) and dispatching via sub_1002ade7(&g_1004339b). (CiroScript 'refillhealth', doc 11)"
+},
+"0x1003550e": {
+"name": "cmd_healparalysis",
+"purpose": "CiroScript handler that clears g_100f9328, aborts if the toggle g_1005f7dd is unset, else parses args (sub_10030225), sets g_100f9328=1 and says a spell string (stack buffer) via sub_10039413. (CiroScript 'healparalysis', doc 11)"
+},
+"0x10035549": {
+"name": "cmd_paralyze",
+"purpose": "Handler requiring *0x63fe78 (level) >= 1200: parses args (sub_10030225), resolves target via sub_10038eb3, and on success sets g_100f9328=1 and sends action opcode 42 via sub_1003a60a. (CiroScript 'paralyze', doc 11)"
+},
+"0x1003559c": {
+"name": "cmd_keepmagwall",
+"purpose": "Handler that clears g_100f9328 and, if the stored coordinate g_100ee8bc is nonzero, loads the cached (x,y,z) g_100ee8bc/c0/c4 into a packet buffer, sets g_100f9328=1 and sends action opcode 41 via sub_1003a60a; replays the last targeted coordinate action. (CiroScript 'keepmagwall', doc 11)"
+},
+"0x100355ec": {
+"name": "cmd_dashchase",
+"purpose": "Parses args via sub_10030225, resolves a target with sub_10038eb3 (stack buffer), and on success tail-calls sub_100375d9; a thin target-resolve-then-dispatch action wrapper. (CiroScript 'dashchase', doc 11)"
+},
+"0x10035619": {
+"name": "cmd_race",
+"purpose": "Reads a numeric arg (sub_100300ce), stores it plus a stack value into g_1005f878/g_1005f87c; if g_1005f878 was zero and the flag g_100ee8d8 is set, builds a small packet (subtype 1, byte g_100ee8d8) and enqueues via sub_1002ade7. (CiroScript 'race', doc 11)"
+},
+"0x100359d8": {
+"name": "cmd_clear",
+"purpose": "Reads a script token via sub_10030326 (requires a '$' sigil, v2==36), then linearly scans the 512-byte-stride variable table at g_100f49d1 (0x200 records) for a free slot (field_0==0) to lstrcpy the name into, or an existing case-insensitive match; on a fresh slot it initializes the value field (offset 32) to 0. (CiroScript 'clear', doc 11)"
+},
+"0x10035a44": {
+"name": "cmd_inc",
+"purpose": "Parses a '$'-sigil variable name (sub_10030326, v3==36), scans the 0x200-stride table at g_100f49d1; on a new slot seeds the numeric value field (offset 0x20) to '1' via lstrcpy, and on an existing match reads the current value with sub_10040900, adds 1, and writes it back with wsprintfA(\"%d\") \u2014 an increment-variable script op. (CiroScript 'inc', doc 11)"
+},
+"0x10035aca": {
+"name": "cmd_dec",
+"purpose": "Parses a '$'-sigil variable name (sub_10030326, v3==36) and walks the g_100f49d1 record table (0x200 stride); on a case-insensitive name match it reads the stored counter at offset 32 via sub_10040900, subtracts 1, and rewrites it with wsprintfA(\"%d\") \u2014 a decrement-variable script op. (CiroScript 'dec', doc 11)"
+},
+"0x10035b3b": {
+"name": "cmd_swapequip",
+"purpose": "Pops two script-stack/argument values via two sub_10030225 calls, feeds the result of sub_10036bb2 back into sub_10036bb2, then invokes sub_10036e69 \u2014 a compound CiroScript operation wrapper. (CiroScript 'swapequip', doc 11)"
+},
+"0x10035b75": {
+"name": "cmd_unequip",
+"purpose": "Pops an index argument (sub_10030225), resolves a 12-byte creature/entry record at base 0x64d0cc (index*12+6605964) via sub_10036bb2, and if sub_10036c87 returns a valid handle, fills the g_1004337c..g_10043387 target-descriptor block (id, coord, type, dir with a +1 fixup when zero) and commits it via sub_1002ade7 with count 0x11. (CiroScript 'unequip', doc 11)"
+},
+"0x10035c15": {
+"name": "cmd_setcaption",
+"purpose": "Thin wrapper that pops/consumes one script argument via sub_10030225 and returns. (CiroScript 'setcaption', doc 11)"
+},
+"0x10035c27": {
+"name": "cmd_makerune",
+"purpose": "Fetches a value via sub_100300ce, pops one argument with sub_10030225, and dispatches to sub_10036eb6 \u2014 a CiroScript operation wrapper. (CiroScript 'makerune', doc 11)"
+},
+"0x10035655": {
+"name": "cmd_moven",
+"purpose": "Sets up a key descriptor (char=101 'e', word=1, count=3) and tail-calls the hotkey/keypress dispatcher sub_1002ade7 with a stack pointer to it, injecting the 'e' key event. (CiroScript 'moven', doc 11)"
+},
+"0x1003565b": {
+"name": "cmd_movee",
+"purpose": "Key-code selector stub that loads local char v1 with 0x66 ('f'); a per-key thunk entry that shares the fall-through dispatch tail of the preceding hotkey table (paired with sub_10035655's 'e' handler). (CiroScript 'movee', doc 11)"
+},
+"0x10035661": {
+"name": "cmd_moves",
+"purpose": "Key-code selector stub that loads local char v1 with 103 ('g'); one entry in the sequential per-key hotkey dispatch table. (CiroScript 'moves', doc 11)"
+},
+"0x10035667": {
+"name": "cmd_movew",
+"purpose": "Key-code selector stub that loads local char v1 with 104 ('h'); one entry in the sequential per-key hotkey dispatch table. (CiroScript 'movew', doc 11)"
+},
+"0x1003566d": {
+"name": "cmd_movene",
+"purpose": "Key-code selector stub that loads local char v1 with 106 ('j'); one entry in the sequential per-key hotkey dispatch table. (CiroScript 'movene', doc 11)"
+},
+"0x10035673": {
+"name": "cmd_movese",
+"purpose": "Key-code selector stub that loads local char v1 with 107 ('k'); one entry in the sequential per-key hotkey dispatch table. (CiroScript 'movese', doc 11)"
+},
+"0x10035679": {
+"name": "cmd_movesw",
+"purpose": "Key-code selector stub that loads local char v1 with 108 ('l'); one entry in the sequential per-key hotkey dispatch table. (CiroScript 'movesw', doc 11)"
+},
+"0x1003567f": {
+"name": "cmd_movenw",
+"purpose": "Key-code selector stub that loads local char v1 with 109 ('m'); one entry in the sequential per-key hotkey dispatch table. (CiroScript 'movenw', doc 11)"
+},
+"0x10035685": {
+"name": "cmd_turnn",
+"purpose": "Key-code selector stub that loads local char v1 with 111 ('o'); one entry in the sequential per-key hotkey dispatch table. (CiroScript 'turnn', doc 11)"
+},
+"0x1003568b": {
+"name": "cmd_turne",
+"purpose": "Key-code selector stub that loads local char v1 with 112 ('p'); one entry in the sequential per-key hotkey dispatch table. (CiroScript 'turne', doc 11)"
+},
+"0x10035691": {
+"name": "cmd_turns",
+"purpose": "Key-code selector stub that loads local char v1 with 113 ('q'); one entry in the sequential per-key hotkey dispatch table. (CiroScript 'turns', doc 11)"
+},
+"0x10035697": {
+"name": "cmd_turnw",
+"purpose": "Key-code selector stub that loads local char v1 with 114 ('r'); one entry in the sequential per-key hotkey dispatch table. (CiroScript 'turnw', doc 11)"
+},
+"0x100356b2": {
+"name": "cmd_scrollview",
+"purpose": "Cycles the walk/step direction offsets g_100ee8d0 and g_100ee8d4 between 0, 64, and -32 based on mode field_50 (1/3 vs 2) of g_1005f7ed, then WriteProcessMemory-patches the client at 0x4f4693 and 0x4f46a3 (via handle g_1005f612) with the resulting offset+32 byte to steer auto-walking. (CiroScript 'scrollview', doc 11)"
+},
+"0x10035786": {
+"name": "cmd_settargeting",
+"purpose": "CiroScript command handler that sets boolean flag g_100f0d3b from an on/off/toggle argument (recording GetTickCount() into g_100f0de0 when turned on), then pushes the new state to dialog control 1046 of window g_10072f8c via SendDlgItemMessageA (BM_SETCHECK). (CiroScript 'settargeting', doc 11)"
+},
+"0x10035807": {
+"name": "cmd_runtargeting",
+"purpose": "Trivial setter that stores 2 into global byte g_100f0d3c (a mode/state flag). (CiroScript 'runtargeting', doc 11)"
+},
+"0x10035812": {
+"name": "cmd_setfollowwaypoints",
+"purpose": "CiroScript on/off/toggle handler that resolves a checkbox state from flag g_100f0e42, sets checkbox control 1012 of window g_10072f94 via SendDlgItemMessageA (BM_SETCHECK), then calls sub_100163d8 to apply the change. (CiroScript 'setfollowwaypoints', doc 11)"
+},
+"0x1003587e": {
+"name": "cmd_setopennextbp",
+"purpose": "CiroScript on/off/toggle handler that computes and stores boolean flag g_10207f35, then reflects it into checkbox control 1037 of window g_10072f94 via SendDlgItemMessageA (BM_SETCHECK). (CiroScript 'setopennextbp', doc 11)"
+},
+"0x100358e9": {
+"name": "cmd_set",
+"purpose": "Parses an argument string: if it is a dotted numeric IP (contains '.' and digits) it resolves it via sub_10040940/sub_100300ce, otherwise if prefixed with '$' it looks up or registers a named entry in the 0x200-stride table g_100f49d1 (0x40000 slots) using lstrcmpi/lstrcpyn, storing name (32 bytes) plus value (0x200 bytes). (CiroScript 'set', doc 11)"
+},
+"0x100349f6": {
+"name": "cmd_stackitems",
+"purpose": "Thin wrapper that invokes sub_100384fb and short-circuits (returns) if its result is zero; used as a guarded step in a bot action chain. (CiroScript 'stackitems', doc 11)"
+},
+"0x10034a2c": {
+"name": "cmd_collectitems",
+"purpose": "Scans the 3x3 tile neighborhood around the player (g_1005f854/g_1005f858 x/y, g_1005f85c z) via sub_1003a065, matches a creature id from sub_100300ce, fills the rune-use packet struct at g_100434b5 (target coords g_100434b8/ba, z g_100434bc, creature id g_100434bd, stack g_100434c5) and resolves item slot via sub_10036c87, then sends it with sub_1002ade7 (opcode 0x11). (CiroScript 'collectitems', doc 11)"
+},
+"0x10034ba7": {
+"name": "cmd_pickupitemsamount",
+"purpose": "Looks up the current player tile stack via sub_1003a03f(g_1005f854,g_1005f858,g_1005f85c); if more than one thing is on it, fills the rune-use packet at g_100434b5 with player coords, top creature id (sub_100300ce) and stack pos, resolves item slot via sub_10036c87, and sends opcode 0x11 through sub_1002ade7. (CiroScript 'pickupitemsamount', doc 11)"
+},
+"0x10034c89": {
+"name": "cmd_pickupitems",
+"purpose": "Repeatedly reads the player tile stack (sub_1003a03f), finds the stack entry whose type field == 99 (creature), builds the rune-use packet at g_100434b5 and sends opcode 0x11 (sub_1002ade7); loops with a stall guard (max 3 repeats of unchanged stack count) and, when flagged, Sleep(300) and clears g_100f0e18 between iterations. (CiroScript 'pickupitems', doc 11)"
+},
+"0x10034ddf": {
+"name": "cmd_moveitemonground",
+"purpose": "Reads three script args (x/y/z via sub_100300ce) into g_100434e1/e3/e5, validates the tile with sub_1003a065, fills the extended rune/target packet at g_100434de (target id g_100434e6, stack g_100434ee, plus three trailing arg bytes g_100434e9/eb/ed), and sends opcode 0x11 via sub_1002ade7. (CiroScript 'moveitemonground', doc 11)"
+},
+"0x10034e5b": {
+"name": "cmd_dropitemsxyz",
+"purpose": "Reads target coords (g_100434af/b1/b3) then iterates creature ids from sub_100300ce, resolves each to an item/target via sub_1002ae92, fills the use-on-target packet at g_100434a4 (creature id g_100434ac, results g_100434a9/ab/ae, stack g_100434b4) and sends opcode 0x11; on the flagged path Sleep(300)s and clears g_100f0e18 to retry. (CiroScript 'dropitemsxyz', doc 11)"
+},
+"0x10034e86": {
+"name": "cmd_dropitemsxyzamount",
+"purpose": "Single-shot variant of the use-on-target action: reads coords g_100434af/b1/b3 and one creature id (sub_100300ce), resolves it via sub_1002ae92, populates the packet struct at g_100434a4 and sends opcode 0x11 through sub_1002ade7. (CiroScript 'dropitemsxyzamount', doc 11)"
+},
+"0x10034ef4": {
+"name": "cmd_dropitems",
+"purpose": "Copies the current player position (g_1005f854/g_1005f858/g_1005f85c) into the use-on-target packet's coordinate fields g_100434af/g_100434b1/g_100434b3. (CiroScript 'dropitems', doc 11)"
+},
+"0x10034f9a": {
+"name": "cmd_gfbsd",
+"purpose": "Clears the g_100f9328 state/busy flag and tail-calls the dispatcher sub_1003ca03. (CiroScript 'gfbsd', doc 11)"
+},
+"0x10034fb2": {
+"name": "cmd_aimavalanche",
+"purpose": "Duplicate of sub_10034f9a: zeroes g_100f9328 and calls sub_1003ca03 (distinct command handler entry mapping to the same reset-and-dispatch behavior). (CiroScript 'aimavalanche', doc 11)"
+},
+"0x10034fca": {
+"name": "cmd_aimthunderstorm",
+"purpose": "Duplicate handler that clears g_100f9328 and tail-calls sub_1003ca03. (CiroScript 'aimthunderstorm', doc 11)"
+},
+"0x10034fe2": {
+"name": "cmd_aimstoneshower",
+"purpose": "Duplicate handler that clears g_100f9328 and tail-calls sub_1003ca03. (CiroScript 'aimstoneshower', doc 11)"
+},
+"0x10034ffa": {
+"name": "cmd_logout",
+"purpose": "Builds a small stack packet (word field=1, byte field=20) and sends it via sub_1002ade7, then sets the reconnect/backoff timer g_100f9317 to 50. (CiroScript 'logout', doc 11)"
+},
+"0x10035023": {
+"name": "cmd_crosshair",
+"purpose": "Initializes the network/session state struct at g_79cf30..g_79cf88 (seq g_79cfe0 from sub_100300ce, mask g_79cf38=0xffff, g_79cf88=7) and, if g_100f94c6 is set, bumps it to 2; returns pointer to g_79cf88. (CiroScript 'crosshair', doc 11)"
+},
+"0x10035078": {
+"name": "cmd_xlog",
+"purpose": "Calls shutdown(g_100428d5, SD_BOTH) on the bot's proxy socket and sets the reconnect/backoff timer g_100f9317 to 50. (CiroScript 'xlog', doc 11)"
+},
+"0x10035090": {
+"name": "cmd_throwpot",
+"purpose": "Snapshots player state (sub_10030225), sends a prepared stack packet via sub_10038eb3, and on success tail-calls an absolute address (0x100384f7) to continue processing. (CiroScript 'throwpot', doc 11)"
+},
+"0x100350bb": {
+"name": "cmd_pickuppot",
+"purpose": "Thin wrapper that tail-calls sub_1003d60f (a command/feature handler). (CiroScript 'pickuppot', doc 11)"
+},
+"0x100350c4": {
+"name": "cmd_surroundpot",
+"purpose": "Thin wrapper that tail-calls sub_10038449 (a command/feature handler). (CiroScript 'surroundpot', doc 11)"
+},
+"0x10032ccc": {
+"name": "cmd_seticontext",
+"purpose": "CiroScript handler that reads two string args, walks the 4308-byte-stride spell/creature table from g_1014f420 to g_101d5e20 comparing the name field with lstrcmpi, and on match lstrcpy's the second arg into the record at +32 (the spell-words field). (CiroScript 'seticontext', doc 11)"
+},
+"0x10032d31": {
+"name": "cmd_seticonactive",
+"purpose": "CiroScript handler that reads a name and a numeric arg (divided by 100, capped at 250), finds the matching 4308-byte record between g_1014f420 and g_101d5e20 by lstrcmpi, and writes the mana value into the parallel index arrays g_1008a90b and g_1008a98b at the record's ordinal. (CiroScript 'seticonactive', doc 11)"
+},
+"0x10032dad": {
+"name": "cmd_setoutfitcolor",
+"purpose": "CiroScript handler that resolves a target creature record (default g_1005f7ed, or by name via sub_100399af) and reads four numeric values (each capped at 132) into struct fields field_64/68/6c/70 plus a packed field_74 - configuring per-creature HP/threshold trigger levels for the targeting engine. (CiroScript 'setoutfitcolor', doc 11)"
+},
+"0x10032e85": {
+"name": "cmd_setoutfit",
+"purpose": "CiroScript handler that resolves a creature record (g_1005f7ed or by name) and a spell arg, looks the spell up either via sub_10040900 (numeric) or by lstrcmpi scan of the 32-byte-stride spell table g_100f4d09..g_100f78e9, validates the id is in range 0..0x15f and stores it into the record's field_60. (CiroScript 'setoutfit', doc 11)"
+},
+"0x10032f46": {
+"name": "cmd_setitemoutfit",
+"purpose": "CiroScript handler that resolves a creature record (g_1005f7ed or by name via sub_100399af) and a numeric value via sub_10040900 bounded to 100..10477 (0x64..0x28ed), clearing field_60 and storing the value in field_64 - a per-creature distance/range setting. (CiroScript 'setitemoutfit', doc 11)"
+},
+"0x10032fb1": {
+"name": "cmd_setrelation",
+"purpose": "CiroScript handler that reads a creature name plus a mode arg (0..2), fetches a record via sub_100399af/sub_10023861, and sets its relation byte at +140 to 1/2/3/4 by matching the second string arg against \"enemy\", \"subenemy\", \"friend\", or \"subfriend\". (CiroScript 'setrelation', doc 11)"
+},
+"0x1003308d": {
+"name": "cmd_setdebug",
+"purpose": "CiroScript handler that reads one numeric arg via sub_100300ce and stores it into global g_100f931c (a bot config/mode value). (CiroScript 'setdebug', doc 11)"
+},
+"0x1003309e": {
+"name": "cmd_getproperties",
+"purpose": "CiroScript handler that reads a numeric arg, transforms it via sub_1003c4fa, formats both values with wsprintfA using \"%lX %lX\" and emits the resulting string through sub_10039374 (script output/echo). (CiroScript 'getproperties', doc 11)"
+},
+"0x100330d2": {
+"name": "cmd_gettile",
+"purpose": "CiroScript handler that reads three numeric args, computes a value via sub_1003a03f(a,b,c), formats it as \"%lX\" with wsprintfA and outputs it via sub_10039374. (CiroScript 'gettile', doc 11)"
+},
+"0x1003311b": {
+"name": "cmd_goinvisible",
+"purpose": "CiroScript handler that, when the current creature record g_1005f7ed is set and its field_60 flag is non-zero, casts the invisibility spell by sending \"utana vid\" through sub_10039413 (the say/cast channel). (CiroScript 'goinvisible', doc 11)"
+},
+"0x10033139": {
+"name": "cmd_moveitems",
+"purpose": "CiroScript handler that reads a target id, resolves a path node via sub_10036daf, then loops issuing sub_100371fd (walk step) clearing g_100f49f9 each pass and, while g_100f0e42 (walking-enabled) is set, Sleep(300)s and retries until arrival - a walk-to-coordinate command with retry. (CiroScript 'moveitems', doc 11)"
+},
+"0x100331b4": {
+"name": "cmd_movenitems",
+"purpose": "CiroScript handler that reads two numeric args, resolves a path target via sub_10036daf and, unless it returns the -2 sentinel, issues a single walk step via sub_100371fd (a fire-and-forget go-to variant of sub_10033139). (CiroScript 'movenitems', doc 11)"
+},
+"0x100331ed": {
+"name": "cmd_moveitemsonto",
+"purpose": "CiroScript handler reading three numeric args (x, y, count) that resolves a tile via sub_10036daf and loops sub_10037384 (use-on-tile), clearing g_100f49f5, and while g_100f0e42 is set Sleep(300)s/Sleep(500)s retrying up to the count, incrementing on each miss - a use-item-on-tile command with repeat. (CiroScript 'moveitemsonto', doc 11)"
+},
+"0x100332b7": {
+"name": "cmd_openitem",
+"purpose": "CiroScript handler that reads two numeric args, resolves a tile via sub_10036daf and issues a single sub_10037100 (use action) on it - a one-shot use-on-tile variant. (CiroScript 'openitem', doc 11)"
+},
+"0x100332e9": {
+"name": "cmd_openbpitem",
+"purpose": "Builds a client->server packet in the g_100434d7 buffer with opcode 3, reads a session word from *0x64ccb0 into g_100434da and a byte from sub_10038d20, sets length 12 and flushes it via sub_1002ade7. (CiroScript 'openbpitem', doc 11)"
+},
+"0x10033325": {
+"name": "cmd_openbeltitem",
+"purpose": "Builds a client->server packet in the g_100434d7 buffer with opcode 0x0A (10), reads a session word from *0x64cd04 into g_100434da and a byte from sub_10038d20, sets length 12 and flushes it via sub_1002ade7 - a sibling of sub_100332e9 with a different opcode. (CiroScript 'openbeltitem', doc 11)"
+},
+"0x10033361": {
+"name": "cmd_closeallwindows",
+"purpose": "Iterates the 16 container slots (492-byte stride from base 6606096/0x64cd10), and for each open container (non-null first field) queues a 4-byte script/packet record (tag 8847362) via sub_1002ade7 carrying the slot index. (CiroScript 'closeallwindows', doc 11)"
+},
+"0x100333bb": {
+"name": "cmd_reopenwindows",
+"purpose": "Same 16-container 492-byte-stride flush loop as sub_10033361 emitting tag-8847362 records via sub_1002ade7, then resets bot state: clears g_100f9318, sets g_100f45bc=6 and g_100f9326=1 (reinitializing the container/looter subsystem). (CiroScript 'reopenwindows', doc 11)"
+},
+"0x1003342d": {
+"name": "cmd_loadcavebot",
+"purpose": "One-line CiroScript command thunk that just calls sub_10030225 (the arg/token consumer/state reset helper) and returns; wraps that single helper. (CiroScript 'loadcavebot', doc 11)"
+},
+"0x1003343e": {
+"name": "cmd_loadtargeting",
+"purpose": "Identical single-call thunk to sub_10030225 (arg/token consumer helper), one of a series of near-duplicate command dispatch stubs. (CiroScript 'loadtargeting', doc 11)"
+},
+"0x1003344f": {
+"name": "cmd_loadsetting",
+"purpose": "Another duplicate command stub that only invokes sub_10030225 and returns; a distinct opcode entry sharing the same handler body. (CiroScript 'loadsetting', doc 11)"
+},
+"0x10033460": {
+"name": "cmd_loadscript",
+"purpose": "Duplicate command stub calling only sub_10030225; distinct dispatch-table slot with the same trivial body. (CiroScript 'loadscript', doc 11)"
+},
+"0x10033471": {
+"name": "cmd_openitemnew",
+"purpose": "CiroScript command that reads two args via sub_100300ce, calls sub_10030225, then applies the second value through sub_10036daf and finalizes with sub_10037100 (a memory-write/config commit sequence). (CiroScript 'openitemnew', doc 11)"
+},
+"0x100334a6": {
+"name": "cmd_useitemsonground",
+"purpose": "Reads two coord/type triples (addr, size, flag via sub_100300ce), resolves each into pointers via sub_1003a065, tags them into the g_10043427 record block, checks type bytes with sub_1003c4fa (rejecting 0x30003000/536879112 and testing bit 0x10 to set g_10043439), then commits opcode 19 via sub_1002ade7. (CiroScript 'useitemsonground', doc 11)"
+},
+"0x10033567": {
+"name": "cmd_useongroundxyz",
+"purpose": "Reads a target plus a coord/type triple, resolves via sub_1003a065; if the resolved type equals 0x30003000/536879112 it falls back to sub_1002ae92 to store the raw value into g_10043419, else tests bit 0x10 to flag g_10043426, then commits opcode 19 to the g_10043414 record via sub_1002ade7. (CiroScript 'useongroundxyz', doc 11)"
+},
+"0x10033619": {
+"name": "cmd_repeatuseongroundxyz",
+"purpose": "Reads target/coord args then loops calling sub_1003a065 until the resolved address equals the expected value v2, writing opcode-19 records into g_10043414 each pass; between failed polls it Sleep(100)s up to 500ms while g_100f0e42 stays set and clears g_100f0e18, forming a wait-for-memory-state command. (CiroScript 'repeatuseongroundxyz', doc 11)"
+},
+"0x100336d9": {
+"name": "cmd_useongrounditem",
+"purpose": "Reads a target and an id, translates the id via sub_1002be32, stores it as the coord source with the global slot g_1005f85c as extra field, then follows the same sub_1003c4fa type check + sub_1002ae92 fallback and commits opcode 19 into g_10043414 record via sub_1002ade7. (CiroScript 'useongrounditem', doc 11)"
+},
+"0x10033778": {
+"name": "cmd_useoninventoryitem",
+"purpose": "Reads two args, scans a 10-entry/12-byte-stride table at 0x64 CB98 (6605976) for a slot whose first dword matches arg2, storing the matching index into the g_1004343a record, otherwise resolves via sub_1002ae92, then commits opcode 19 via sub_1002ade7. (CiroScript 'useoninventoryitem', doc 11)"
+},
+"0x100337fd": {
+"name": "cmd_useoncreature",
+"purpose": "Clears g_100f9328, reads an arg, builds a 2032-byte(-offset) record via sub_10038eb3, populates the g_100432e5 block; when g_100fa4f0 is unset it stores the sub_1002ae92 raw value, else zeroes the fields, sets g_100f9328=1 and commits opcode 15 with the '\\r' key via sub_1002ade7. (CiroScript 'useoncreature', doc 11)"
+},
+"0x1003389f": {
+"name": "cmd_eatfood",
+"purpose": "Trivial command thunk that calls sub_1003867e and returns; wraps that single subsystem call. (CiroScript 'eatfood', doc 11)"
+},
+"0x100338a8": {
+"name": "cmd_uhpc",
+"purpose": "Variant of cmdBuildCreatureRecordAt2032: builds the sub_10038eb3 record but only commits when record field[0x22] < 3160, then fills the g_100432e5 block (raw sub_1002ae92 value or zeros depending on g_100fa4f0), sets g_100f9328 and commits opcode 15 via sub_1002ade7('\\r'). (CiroScript 'uhpc', doc 11)"
+},
+"0x1003396b": {
+"name": "cmd_soulf",
+"purpose": "Clears g_100f9328, builds a record via sub_10038eb3, then scans the g_1008b7f3..g_1008b893 id table for a matching creature id (or empty slot, or one older than 20000ms via GetTickCount); on match stores id into g_1008b893, sets opcode 8/g_100f9328, and dispatches via sub_1003a60a, refreshing through sub_1003bc54/sub_1003bec5 per mode. (CiroScript 'soulf', doc 11)"
+},
+"0x10033a86": {
+"name": "cmd_annisd",
+"purpose": "Walks the client creature array (0x63fef8..0x64a308, 148-byte stride) for the nearest live entry named \"Demon\" (lstrcmpi) whose coords match g_1005f858/g_1005f85c, then invokes sub_1003a60a on it with action g_100f94cb and returns its id field_24 (attack-nearest-Demon command). (CiroScript 'annisd', doc 11)"
+},
+"0x10033b23": {
+"name": "cmd_fish",
+"purpose": "Consumes one arg via sub_100300ce then tail-calls sub_10037694, forwarding its result; thin command wrapper around that handler. (CiroScript 'fish', doc 11)"
+},
+"0x10033b38": {
+"name": "cmd_safe",
+"purpose": "If flag g_10080ba6 is clear, invokes sub_10030442 with three stack args and returns its result; gates a subsystem call on that global. (CiroScript 'safe', doc 11)"
+},
+"0x10033b53": {
+"name": "cmd_filewrite",
+"purpose": "Consumes two tokens via sub_10030225 then tail-calls sub_1002583e with the -2032/-0x1000 offset constants and 0; thin command wrapper forwarding to that handler. (CiroScript 'filewrite', doc 11)"
+},
+"0x1003442c": {
+"name": "cmd_istargeting",
+"purpose": "Conditional cast wrapper: if the boolean config flag g_100f0e20 is set, invokes the common action/packet dispatcher sub_10030442 with the three stack args (target/spell context) and returns its result. (CiroScript 'istargeting', doc 11)"
+},
+"0x10034447": {
+"name": "cmd_isnottargeting",
+"purpose": "Walks the creature/battle-list table (records at 0x63fef8..0x64a308, ~24-byte stride) and, when a slot is active (field[36]) and its id (field[11]) matches the selected target g_1005f85c, does a case-insensitive lstrcmpi name compare and fires the cast dispatcher sub_10030442; ensures the table is loaded first via sub_10030442/sub_10030225 when g_100f0e20 is clear. (CiroScript 'isnottargeting', doc 11)"
+},
+"0x100344ba": {
+"name": "cmd_isnotonscreen",
+"purpose": "Refreshes the creature table via sub_10030225 then scans records 0x63fef8..0x64a308 for an active slot whose id (field[11]) equals the selected target g_1005f85c and whose name matches via lstrcmpi; returns early on match, otherwise falls through to the cast dispatcher sub_10030442. (CiroScript 'isnotonscreen', doc 11)"
+},
+"0x1003451a": {
+"name": "cmd_ifpoisoned",
+"purpose": "Thin conditional wrapper: if config flag g_1005f7de is set, calls the cast/action dispatcher sub_10030442 with the three stack args and returns its result. (CiroScript 'ifpoisoned', doc 11)"
+},
+"0x10034535": {
+"name": "cmd_ifdrunk",
+"purpose": "Thin conditional wrapper: if config flag g_1005f7df is set, calls the cast/action dispatcher sub_10030442 with the three stack args and returns its result. (CiroScript 'ifdrunk', doc 11)"
+},
+"0x10034550": {
+"name": "cmd_ifhasted",
+"purpose": "Thin conditional wrapper: if config flag g_1005f7dc is set, calls the cast/action dispatcher sub_10030442 with the three stack args and returns its result. (CiroScript 'ifhasted', doc 11)"
+},
+"0x1003456b": {
+"name": "cmd_ifparalyzed",
+"purpose": "Thin conditional wrapper: if config flag g_1005f7dd is set, calls the cast/action dispatcher sub_10030442 with the three stack args and returns its result. (CiroScript 'ifparalyzed', doc 11)"
+},
+"0x10034586": {
+"name": "cmd_ifnotparalyzed",
+"purpose": "Inverse-gated wrapper: if config flag g_1005f7dd is NOT set, calls the cast/action dispatcher sub_10030442 with the three stack args and returns its result. (CiroScript 'ifnotparalyzed', doc 11)"
+},
+"0x100345a1": {
+"name": "cmd_ifnothasted",
+"purpose": "Inverse-gated wrapper: if config flag g_1005f7dc is NOT set, calls the cast/action dispatcher sub_10030442 with the three stack args and returns its result. (CiroScript 'ifnothasted', doc 11)"
+},
+"0x100345bc": {
+"name": "cmd_ifmanashielded",
+"purpose": "Thin conditional wrapper: if config flag g_1005f7d9 is set, calls the cast/action dispatcher sub_10030442 with the three stack args and returns its result. (CiroScript 'ifmanashielded', doc 11)"
+},
+"0x100345d7": {
+"name": "cmd_ifnotmanashielded",
+"purpose": "Inverse-gated wrapper: if config flag g_1005f7d9 is NOT set, calls the cast/action dispatcher sub_10030442 with the three stack args and returns its result. (CiroScript 'ifnotmanashielded', doc 11)"
+},
+"0x100345f2": {
+"name": "cmd_haste",
+"purpose": "Auto-haste helper: unless config flag g_1005f7dc is set, sends the spell say 'utani hur' (light haste) via the spell/say dispatcher sub_10039413. (CiroScript 'haste', doc 11)"
+},
+"0x10034609": {
+"name": "cmd_stronghaste",
+"purpose": "Auto-haste helper: unless config flag g_1005f7dc is set, sends the spell say 'utani gran hur' (strong haste) via sub_10039413. (CiroScript 'stronghaste', doc 11)"
+},
+"0x10034620": {
+"name": "cmd_charge",
+"purpose": "Auto-haste helper: unless config flag g_1005f7dc is set, sends the knight/paladin haste spell 'utani tempo hur' via sub_10039413. (CiroScript 'charge', doc 11)"
+},
+"0x10034637": {
+"name": "cmd_swiftfoot",
+"purpose": "Auto-buff helper: unless config flag g_1005f7dc is set, sends the paladin protection spell 'utamo tempo san' via sub_10039413. (CiroScript 'swiftfoot', doc 11)"
+},
+"0x1003464e": {
+"name": "cmd_manashield",
+"purpose": "Auto-magic-shield helper: when g_1005f7d9 is set it skips casting if mana-shield/soul counter g_1008b8dc is >=50 or ==0, otherwise sends the magic-shield spell 'utamo vita' via sub_10039413. (CiroScript 'manashield', doc 11)"
+},
+"0x10034677": {
+"name": "cmd_ewave",
+"purpose": "Clears state flag g_100ee8dc then, when the value at 0x63fe78 (a player stat/coord) is >=250 and gate flag g_1008b8e8 is clear, invokes action sub_10024d66 returning its struct pointer. (CiroScript 'ewave', doc 11)"
+},
+"0x1003469d": {
+"name": "cmd_wave",
+"purpose": "Refreshes bot state via sub_10030225, then returns early if gate flag g_1008b8e8 is set, otherwise invokes action sub_10024d66 and returns its result. (CiroScript 'wave', doc 11)"
+},
+"0x10033b85": {
+"name": "cmd_filewriteline",
+"purpose": "CiroScript block handler that primes iteration state by calling sub_10030225 twice, then dispatches the loop body via sub_1002583e with mode arg 1 over the parser's local buffers. (CiroScript 'filewriteline', doc 11)"
+},
+"0x10033bb7": {
+"name": "cmd_log",
+"purpose": "Thin CiroScript wrapper that calls sub_10030225 to advance the parser state then hands the current token buffer to sub_100252ba for evaluation. (CiroScript 'log', doc 11)"
+},
+"0x10033bd5": {
+"name": "cmd_filedelete",
+"purpose": "Variant of sub_10033b85: advances parser state via sub_10030225 then dispatches the loop body through sub_1002583e with mode arg 2 instead of 1. (CiroScript 'filedelete', doc 11)"
+},
+"0x10033bfc": {
+"name": "cmd_while",
+"purpose": "Bounded (max 1000) iteration loop: clears g_1008ab97 or g_1008ab93 depending on whether the sentinel arg is 0xffffffff, then per pass calls sub_100300ce, lstrcpy's the entry into the parse buffer, runs sub_10030442, and stops early when the match flag (g_1008ab97/g_100f0e30 or g_1008ab93) is set. (CiroScript 'while', doc 11)"
+},
+"0x10033c87": {
+"name": "cmd_loop",
+"purpose": "Count-bounded variant of sub_10033bfc: iterates i over the count returned by sub_100300ce (capped at 1000), copying each entry with lstrcpy and invoking sub_10030442, breaking early when the g_1008ab97/g_100f0e30 or g_1008ab93 match flag fires based on the 0xffffffff sentinel. (CiroScript 'loop', doc 11)"
+},
+"0x10033d17": {
+"name": "cmd_foreach",
+"purpose": "CiroScript $-prefixed creature-list selector: parses a named list into the g_100f49d1 512-byte-stride creature table (add/find by lstrcmpi), then maps selector keywords (allcreatures/allmonsters/allplayers/floor*/screen*/shootable* and newmessages) to filter tuples (monster flag, player flag, floor bound from g_1005f85c, screen/shootable mode 0/1/2). (CiroScript 'foreach', doc 11)"
+},
+"0x10034264": {
+"name": "cmd_ifgm",
+"purpose": "Conditional CiroScript action: runs the body sub_10030442(v1,v2,v3) only when global flag g_100f49c9 is nonzero. (CiroScript 'ifgm', doc 11)"
+},
+"0x1003427f": {
+"name": "cmd_ifnogm",
+"purpose": "Inverse of sub_10034264: executes body sub_10030442 only when global flag g_100f49c9 is zero. (CiroScript 'ifnogm', doc 11)"
+},
+"0x1003429a": {
+"name": "cmd_ifplayeronscreen",
+"purpose": "Conditional CiroScript action: runs body sub_10030442 only when global flag g_100f49cd is nonzero. (CiroScript 'ifplayeronscreen', doc 11)"
+},
+"0x100342b5": {
+"name": "cmd_ifnoplayeronscreen",
+"purpose": "Inverse of sub_1003429a: executes body sub_10030442 only when global flag g_100f49cd is zero. (CiroScript 'ifnoplayeronscreen', doc 11)"
+},
+"0x100342d0": {
+"name": "cmd_ifdefaultmessage",
+"purpose": "Conditional CiroScript action: runs body sub_10030442 only when global flag g_1005f561 is nonzero. (CiroScript 'ifdefaultmessage', doc 11)"
+},
+"0x100342eb": {
+"name": "cmd_ifprivatemessage",
+"purpose": "Conditional CiroScript action: runs body sub_10030442 only when global flag g_1005f565 is nonzero. (CiroScript 'ifprivatemessage', doc 11)"
+},
+"0x10034306": {
+"name": "cmd_ifplayerattacking",
+"purpose": "Conditional CiroScript action: runs body sub_10030442 only when global flag g_1005f569 is nonzero. (CiroScript 'ifplayerattacking', doc 11)"
+},
+"0x10034321": {
+"name": "cmd_isposz",
+"purpose": "Conditional action: fetches a value via sub_100300ce and runs body sub_10030442 only when it matches the current floor global *g_1005f85c (returns without acting otherwise). (CiroScript 'isposz', doc 11)"
+},
+"0x10034341": {
+"name": "cmd_istargetname",
+"purpose": "Resolves the selected/target creature id in g_1008b89b through sub_1003997e and sub_1003c23e, and if the resulting creature record has field_90 set and its name (at +4) matches the parsed argument via lstrcmpi, executes the body sub_10030442. (CiroScript 'istargetname', doc 11)"
+},
+"0x1003439c": {
+"name": "cmd_isattackedname",
+"purpose": "Same name-match conditional as sub_10034341 but keyed on the creature id stored at absolute global 0x63fe64: looks it up via sub_1003997e/sub_1003c23e and runs body sub_10030442 when the record's +4 name matches the argument (lstrcmpi). (CiroScript 'isattackedname', doc 11)"
+},
+"0x100343f4": {
+"name": "cmd_isattacking",
+"purpose": "Conditional action: runs body sub_10030442 only when the creature-id global at 0x63fe64 is nonzero (otherwise returns the global itself). (CiroScript 'isattacking', doc 11)"
+},
+"0x10034410": {
+"name": "cmd_isnotattacking",
+"purpose": "Inverse of sub_100343f4: executes body sub_10030442 only when the global at 0x63fe64 is zero. (CiroScript 'isnotattacking', doc 11)"
+},
+"0x10032766": {
+"name": "cmd_listboxaddline",
+"purpose": "Parses up to four script args via sub_100300ce (a 24-bit value assembled from 3 bytes) and writes into a 520-byte-stride ring of 32 timed-action slots (idx[6] wraps at 31), storing the packed value at slot+128 and a GetTickCount-derived fire time (tick + interval) at slot+129, seeding g_100f49f1 base offset. (CiroScript 'listboxaddline', doc 11)"
+},
+"0x10032803": {
+"name": "cmd_setcolor",
+"purpose": "If the passed slot index isn't -1, indexes a 276-byte-stride record table at g_100ba736 and fills three consecutive fields (offsets 66/67/68 as uint) with three parsed script args from sub_100300ce. (CiroScript 'setcolor', doc 11)"
+},
+"0x1003284d": {
+"name": "cmd_displaytext",
+"purpose": "Guarded by slot index != -1: flushes pending state via sub_10030225 and sets the global mode flag g_100ee8b6 to 1. (CiroScript 'displaytext', doc 11)"
+},
+"0x1003287c": {
+"name": "cmd_listas",
+"purpose": "For a valid slot index, writes 3 into the 276-byte-stride record at g_100ba736[276*idx], flushes via sub_10030225, and sets global mode g_100ee8b6 to 3. (CiroScript 'listas', doc 11)"
+},
+"0x100328af": {
+"name": "cmd_dontlist",
+"purpose": "If the slot index isn't -1, sets the global mode flag g_100ee8b6 to 2 (no flush, unlike the mode-1/mode-3 variants). (CiroScript 'dontlist', doc 11)"
+},
+"0x100328c7": {
+"name": "cmd_sio",
+"purpose": "Builds an 'exura sio \"<name>' self/targeted heal spell string: clears g_100f9328, resolves a record via sub_10038eb3, and when the record's name field fits, lstrcpy/lstrcat's the spell prefix with the target name and dispatches it via sub_10039413, gated by g_10080ba6 mode. (CiroScript 'sio', doc 11)"
+},
+"0x1003295a": {
+"name": "cmd_usegrounditem",
+"purpose": "Reads a script arg and a coord word (v2), runs sub_1002be32 on the parsed id, and populates the attack/use packet header block at g_100433ff (id, coord, g_1005f85c stack byte, flags=1) then emits a 12-byte packet via sub_1002ade7. (CiroScript 'usegrounditem', doc 11)"
+},
+"0x100329a7": {
+"name": "cmd_opengrounditem",
+"purpose": "Flushes state, resolves the currently-selected item id via sub_10036daf + sub_1002be32, fills the use-packet header at g_100433ff (embedding a stack buffer pointer, g_1005f85c stack, and a mode from sub_10038d20), and sends a 12-byte packet via sub_1002ade7. (CiroScript 'opengrounditem', doc 11)"
+},
+"0x10032a08": {
+"name": "cmd_playsound",
+"purpose": "Flushes pending packet state via sub_10030225 then hands the on-stack command buffer to sub_1000954e for dispatch. (CiroScript 'playsound', doc 11)"
+},
+"0x10032a26": {
+"name": "cmd_useitem",
+"purpose": "Fills the second packet-header block at g_1004340b with a fixed 0xffff item id, zeroed coords, a parsed coord word (sub_100300ce), and flags=1, then sends a 12-byte packet via sub_1002ade7. (CiroScript 'useitem', doc 11)"
+},
+"0x10032a6b": {
+"name": "cmd_usegroundxyz",
+"purpose": "Reads three script args (item id, x, y) into g_100433ff header fields, resolves a target/tile via sub_1003a065, and on success sets flags=1 and emits a 12-byte packet via sub_1002ade7. (CiroScript 'usegroundxyz', doc 11)"
+},
+"0x10032acb": {
+"name": "cmd_opengroundxyz",
+"purpose": "Same as sub_10032a6b (three args -> sub_1003a065 target resolve -> g_100433ff header -> 12-byte sub_1002ade7 packet) but takes the trailing mode byte from sub_10038d20 instead of a hardcoded 1. (CiroScript 'opengroundxyz', doc 11)"
+},
+"0x10032b2e": {
+"name": "cmd_reachgrounditem",
+"purpose": "Flushes state, resolves selected item via sub_10036daf, then loops on sub_100374ba: while the result is 2 and slot index is -1 and g_100f0e42 is set, Sleeps 300ms and clears g_100f0e18, effectively polling/retrying until the action completes. (CiroScript 'reachgrounditem', doc 11)"
+},
+"0x10032b80": {
+"name": "cmd_skin",
+"purpose": "Resolves a target via sub_100377cb, sets g_100f0dfc length to 12, fills the 19-byte move/throw packet header at g_10043414 with opcode 5908, target id, coord word, g_1005f85c stack, and sets a flag if sub_1003c4fa returns bit 0x10, then sends via sub_1002ade7. (CiroScript 'skin', doc 11)"
+},
+"0x10032bf6": {
+"name": "cmd_stake",
+"purpose": "Identical to sub_10032b80 but uses opcode 5942 in the 19-byte packet header at g_10043414 (a sibling move/throw variant) resolved via sub_100377cb and sent through sub_1002ade7. (CiroScript 'stake', doc 11)"
+},
+"0x10032c6c": {
+"name": "cmd_moveto",
+"purpose": "Parses three script args (sub_100300ce), clears g_1028987c, and forwards the three values to sub_100147eb for the actual action (likely a move/turn/look command). (CiroScript 'moveto', doc 11)"
+},
+"0x10032c9e": {
+"name": "cmd_addloot",
+"purpose": "Thin wrapper that calls sub_100265d3 with the player's current position triple g_1005f854/g_1005f858/g_1005f85c (x/y/z). (CiroScript 'addloot', doc 11)"
+},
+"0x10032cb9": {
+"name": "cmd_setammy",
+"purpose": "Reads one parsed script arg via sub_100300ce and stores it into global g_64cca4, returning the same value. (CiroScript 'setammy', doc 11)"
+},
+"0x10032219": {
+"name": "cmd_smana",
+"purpose": "Stub CiroScript command handler that writes the 16-bit script status/error code 237 (0xED) into g_100433a3 before returning to the interpreter dispatch loop. (CiroScript 'smana', doc 11)"
+},
+"0x10032224": {
+"name": "cmd_gmana",
+"purpose": "Stub CiroScript command handler that writes the 16-bit script status/error code 0xEE (238) into g_100433a3 before returning to the interpreter. (CiroScript 'gmana', doc 11)"
+},
+"0x1003222f": {
+"name": "cmd_gsmana",
+"purpose": "Stub CiroScript command handler that writes the 16-bit script opcode/status code 7642 (0x1DDA) into g_100433a3. (CiroScript 'gsmana', doc 11)"
+},
+"0x100322bb": {
+"name": "cmd_health",
+"purpose": "CiroScript command that sets status code 266 in g_100433a3, resets the success flag g_100f9328, pops a script string arg via sub_100300ce, resolves it to an item/container record with sub_10038eb3, and on success caches the record id in g_100433a6, clears state bytes g_100433a0/a2/a5, sets g_100f9328=1 and tail-calls sub_1002ade7 on g_1004339b. (CiroScript 'health', doc 11)"
+},
+"0x100322c6": {
+"name": "cmd_shealth",
+"purpose": "Stub CiroScript command handler that writes the 16-bit script status/error code 236 (0xEC) into g_100433a3. (CiroScript 'shealth', doc 11)"
+},
+"0x100322d1": {
+"name": "cmd_ghealth",
+"purpose": "Stub CiroScript command handler that writes the 16-bit script status/error code 239 (0xEF) into g_100433a3. (CiroScript 'ghealth', doc 11)"
+},
+"0x100322dc": {
+"name": "cmd_uhealth",
+"purpose": "Stub CiroScript command handler that writes the 16-bit script opcode/status code 7643 (0x1DDB) into g_100433a3. (CiroScript 'uhealth', doc 11)"
+},
+"0x100322e7": {
+"name": "cmd_gshealth",
+"purpose": "Stub CiroScript command handler that writes the 16-bit script opcode/status code 7642 (0x1DDA) into g_100433a3. (CiroScript 'gshealth', doc 11)"
+},
+"0x10032372": {
+"name": "cmd_retarget",
+"purpose": "Resolves a target window/creature id from *(0x63fe64) or fallback g_10084bf7, maps it to a slot via sub_1003997e/sub_1003c23e, then dispatches sub_1003a60a with either g_100f94cb or a code derived from g_10084bfb (3198->1, 3155->4, 3200->5); sets success flag g_100f9328 on the fallback path. (CiroScript 'retarget', doc 11)"
+},
+"0x10032403": {
+"name": "cmd_pm",
+"purpose": "CiroScript command that pops two string args from the interpreter (two sub_10030225 calls) and passes the two stack buffers (bp-2032 and bp-1904) to sub_10038e29 for processing. (CiroScript 'pm', doc 11)"
+},
+"0x10032433": {
+"name": "cmd_auto",
+"purpose": "Toggles an AutoAim/auto-action slot indexed by v3: if g_10084c0b[idx] is set it clears that slot's parallel state arrays (g_1008578b/g_1008630b/g_1008858b/g_10087a0b) and prints \"Auto Off: <name>\", otherwise arms the slot (stores conditions, computes iteration count into g_10086e8b[idx]) and prints \"Auto On: <name>\" via sub_10039374. (CiroScript 'auto', doc 11)"
+},
+"0x10032529": {
+"name": "cmd_end",
+"purpose": "Requests stopping an auto-action slot: for a valid index sets the per-slot stop marker g_10087a0b[idx]=0xFFFFFFFF and pending flag g_1008ab93; for index 0xFFFFFFFF sets the stop-all flag g_1008ab97. (CiroScript 'end', doc 11)"
+},
+"0x10032559": {
+"name": "cmd_break",
+"purpose": "Sets auto-action refresh flags: g_1008ab97 when the index arg is 0xFFFFFFFF (all slots), otherwise g_1008ab93 (single-slot pending). (CiroScript 'break', doc 11)"
+},
+"0x10032579": {
+"name": "cmd_turnoff",
+"purpose": "Clears the enable byte g_10084c0b[idx] for a valid (non-0xFFFFFFFF) auto-action slot index, disabling that slot. (CiroScript 'turnoff', doc 11)"
+},
+"0x10032595": {
+"name": "cmd_reconnect",
+"purpose": "Thin CiroScript command wrapper that immediately tail-calls the interpreter return/continue routine sub_10039bbb. (CiroScript 'reconnect', doc 11)"
+},
+"0x1003259e": {
+"name": "cmd_connect",
+"purpose": "Parses script args and appends a server entry: lazily allocates a 0x1000 heap block (g_79cedc) via HeapAlloc(GetProcessHeap,ZERO,...), fills a struct_0 with name/host, default port 7171, resolves an IP override from the [Servers] section of serverlist.txt via GetPrivateProfileStringA + inet_addr, and stores extra string fields before returning through sub_10039bbb. (CiroScript 'connect', doc 11)"
+},
+"0x1003269d": {
+"name": "cmd_setpos",
+"purpose": "For a valid slot index v2, computes the record base at g_100ba736+276*idx and stores two script-popped values (via sub_100300ce) into fields +0x100 and +0x104 of that 276-byte slot record. (CiroScript 'setpos', doc 11)"
+},
+"0x100326d5": {
+"name": "cmd_listboxsetup",
+"purpose": "Configures a timer/scheduler slot (index from sub_100300ce, capped at 32) in the 16668-byte-stride table at g_100f49f1: fills fields 0/4/0x14/0xc from script args, sets field_10=1 when the arg equals \"up\", and computes the next-fire tick as GetTickCount() + field_c*field_14 into field_8. (CiroScript 'listboxsetup', doc 11)"
+},
+"0x100319f5": {
+"name": "cmd_savescreen",
+"purpose": "CiroScript handler that pops one script arg via sub_10030225 and calls setter sub_10040318(0, value) with either -2032 (the popped string buffer) when the flag byte is set or 0 otherwise, toggling a global feature state. (CiroScript 'savescreen', doc 11)"
+},
+"0x10031a20": {
+"name": "cmd_changestance",
+"purpose": "CiroScript command that resolves a hotkey/modifier name against the g_100424d2 key-name table (up to \"No change\") and an optional \"Any\" modifier table via lstrcmpi, then scans the g_101d5e78..g_101dfe78 hotkey-record array (56-byte stride) to store the resolved key code into the matching slot's field_10; refreshes UI via sub_100188bf(g_10072f8c,1040,392) if the edited record is the current selection. (CiroScript 'changestance', doc 11)"
+},
+"0x10031b41": {
+"name": "cmd_npcsay",
+"purpose": "CiroScript handler that pops one arg and calls sub_1003945d on it (use-item action); if the action returned -1 (queued), it polls up to 11 times sleeping 100ms while g_100f0e42 (bot-running flag) stays set, clearing g_100f0e18 each iteration to keep the action pump alive. (CiroScript 'npcsay', doc 11)"
+},
+"0x10031b90": {
+"name": "cmd_gamesay",
+"purpose": "CiroScript handler that pops one arg and invokes sub_100393c2(arg, 5); on a -1 (queued) result it polls up to 11x at 100ms while g_100f0e42 is set, resetting g_100f0e18 each loop -- a mode-5 variant of the use-action wait wrapper. (CiroScript 'gamesay', doc 11)"
+},
+"0x10031be1": {
+"name": "cmd_tradesay",
+"purpose": "CiroScript handler that pops one arg and calls sub_100393c2(arg, 6), then runs the same 11x/100ms wait-while-running loop gated on g_100f0e42, clearing g_100f0e18 -- mode-6 use-action wrapper. (CiroScript 'tradesay', doc 11)"
+},
+"0x10031c32": {
+"name": "cmd_rlsay",
+"purpose": "CiroScript handler popping one arg and calling sub_100393c2(arg, 8) with the shared 11x/100ms wait-while-g_100f0e42 loop (g_100f0e18 reset each iteration) -- mode-8 use-action wrapper. (CiroScript 'rlsay', doc 11)"
+},
+"0x10031c83": {
+"name": "cmd_helpsay",
+"purpose": "CiroScript handler popping one arg and calling sub_100393c2(arg, 9), followed by the standard 11x/100ms wait-while-running loop on g_100f0e42 with g_100f0e18 cleared -- mode-9 use-action wrapper. (CiroScript 'helpsay', doc 11)"
+},
+"0x10031cd4": {
+"name": "cmd_guildsay",
+"purpose": "CiroScript handler popping one arg and calling sub_100393c2(arg, 0), then the shared 11x/100ms wait-while-g_100f0e42 loop resetting g_100f0e18 -- mode-0 use-action wrapper. (CiroScript 'guildsay', doc 11)"
+},
+"0x10031d25": {
+"name": "cmd_sayin",
+"purpose": "CiroScript handler that pops a name arg, walks the g_100f9109 record-pointer array comparing each entry's field_2c string via lstrcmpi, and on match calls sub_100393c2(arg, record->field_24->field_2c) (using the linked record's mode field); wraps it in the 11x/100ms wait-while-g_100f0e42 loop clearing g_100f0e18. (CiroScript 'sayin', doc 11)"
+},
+"0x10031db8": {
+"name": "cmd_navsay",
+"purpose": "CiroScript handler that, if the NavNet socket g_1005f539 is open, builds a type-7 packet (leading byte 7, then 0) from the popped string arg and send()s it with length lstrlen(arg)+2 over the proxy socket; no-op when the socket is closed. (CiroScript 'navsay', doc 11)"
+},
+"0x10031e05": {
+"name": "cmd_setautocombo",
+"purpose": "CiroScript handler parsing an on/off/toggle arg to set global flag g_100fa4ef, then pushes the new bool state to dialog control 1010 of window g_10072fbc via SendDlgItemMessageA(msg 241 = BM_SETCHECK) to sync the checkbox. (CiroScript 'setautocombo', doc 11)"
+},
+"0x10031e7c": {
+"name": "cmd_statusmessage",
+"purpose": "Thin CiroScript handler that pops one arg via sub_10030225 and tail-calls sub_10039374(arg); wraps a single-argument bot action (likely a walk/turn or simple use). (CiroScript 'statusmessage', doc 11)"
+},
+"0x10031e9a": {
+"name": "cmd_settradeoptions",
+"purpose": "CiroScript config handler that reads three args and sets looter/NPC-trade flags: g_100f9311 (buywithbps/buynobps), g_100f9312 (considercap/ignorecap), and g_100f9313 (sellequipped=0/ignoreequipped=1) by lstrcmpi against those keyword strings. (CiroScript 'settradeoptions', doc 11)"
+},
+"0x10031f6a": {
+"name": "cmd_buyitems",
+"purpose": "CiroScript NPC-buy handler: pops item id and count (capped at 100), looks the id up in the g_100f8d09..g_100f9109 shop-item table to get per-slot subtype/count, builds a type-7 opcode-122 (NPC buy) trade packet including g_100f9312/g_100f9311 cap/backpack flags, and sends it via sub_1002ade7 then sleeps 220ms clearing g_100f0e18. (CiroScript 'buyitems', doc 11)"
+},
+"0x10032023": {
+"name": "cmd_buyitemsupto",
+"purpose": "CiroScript NPC-buy variant that pops id, subtype, an already-have count, and a target amount, uses g_100f0e7c (current cap/have) or the supplied count to compute how many more to buy (capped at 100), resolves per-slot count from the g_100f8d09 shop table, and sends an opcode-122 buy packet via sub_1002ade7 followed by a 220ms sleep resetting g_100f0e18. (CiroScript 'buyitemsupto', doc 11)"
+},
+"0x10032102": {
+"name": "cmd_sellitemsdownto",
+"purpose": "CiroScript NPC-sell handler popping id, subtype, current-have and target-keep counts; if the current amount (g_100f0e7c or supplied) exceeds the target it sends an opcode-123 (NPC sell) type-6 packet of the difference (capped 100) including the g_100f9313 sell-equipped flag via sub_1002ade7, then sleeps 220ms clearing g_100f0e18. (CiroScript 'sellitemsdownto', doc 11)"
+},
+"0x1003219a": {
+"name": "cmd_sellitems",
+"purpose": "CiroScript NPC-sell handler that pops item id and a count (capped at 100) and sends an opcode-123 (NPC sell) type-6 trade packet with the g_100f9313 sell-equipped flag via sub_1002ade7, then sleeps 220ms and clears g_100f0e18. (CiroScript 'sellitems', doc 11)"
+},
+"0x1003220e": {
+"name": "cmd_mana",
+"purpose": "CiroScript look/inspect handler that sets look-mode state g_100433a3=268 and clears g_100f9328, resolves the popped arg to a target via sub_10038eb3; on success stores the object id in g_100433a6 and, unless it matches the local player g_1005f7ed with equal self-coords, populates the look coordinate globals (g_100433a0/a2/a5), sets g_100f9328, and dispatches an opcode-15 look packet through sub_1002ade7(&g_1004339b). (CiroScript 'mana', doc 11)"
+},
+"0x10031358": {
+"name": "cmd_equipammy",
+"purpose": "Parses a spell/item id via sub_100300ce and, unless it already equals the cached client value at *0x64ccXX, stores it into the g_10043333 spell-record block (g_1004333b/g_10043338/g_1004333a/g_1004333d), resolving it through sub_1002ae92 before committing the 0x11-byte record via sub_1002ade7. (CiroScript 'equipammy', doc 11)"
+},
+"0x1003139e": {
+"name": "cmd_fastequipammy",
+"purpose": "Unconditional variant of registerSpellRecordChecked: parses a spell/item id via sub_100300ce, stores it into the g_10043333 record block, resolves it with sub_1002ae92, and commits the 0x11-byte spell record through sub_1002ade7 without the cached-value early-out. (CiroScript 'fastequipammy', doc 11)"
+},
+"0x100313db": {
+"name": "cmd_equipring",
+"purpose": "Parses an id, walks the g_10008a26..g_10008a7e alias-pair table matching either column, then builds action-record g_10043344 with slot index g_10043351=9, resolving via sub_1002ae92 and committing the 0x11-byte record through sub_1002ade7. (CiroScript 'equipring', doc 11)"
+},
+"0x10031457": {
+"name": "cmd_equipsring",
+"purpose": "Reads three tokens via sub_100300ce (discarding first, using second as id), skips if the id matches the cached client value at *0x64ccd8-area, then registers it as action slot g_10043351=9 into g_10043344 via sub_1002ae92/sub_1002ade7. (CiroScript 'equipsring', doc 11)"
+},
+"0x100314b7": {
+"name": "cmd_equipboots",
+"purpose": "Parses a spell id, remaps id 3549 to 6529, and registers it as action slot g_10043351=8 into g_10043344 unless already cached at *0x64cd0c/*0x64ccec, via sub_1002ae92/sub_1002ade7. (CiroScript 'equipboots', doc 11)"
+},
+"0x1003152a": {
+"name": "cmd_equiphelm",
+"purpose": "Parses an id and registers it as action slot g_10043351=1 into the g_10043344 record (via sub_1002ae92/sub_1002ade7) unless it already matches the cached client value at *0x64ccd8. (CiroScript 'equiphelm', doc 11)"
+},
+"0x10031582": {
+"name": "cmd_equipchest",
+"purpose": "Parses an id and registers it as action slot g_10043351=4 into the g_10043344 record (via sub_1002ae92/sub_1002ade7) unless it already matches the cached client value at *0x64ccfc. (CiroScript 'equipchest', doc 11)"
+},
+"0x100315da": {
+"name": "cmd_equiphead",
+"purpose": "Duplicate of registerActionRuneIndex1a: parses an id and registers it as action slot g_10043351=1 into g_10043344 via sub_1002ae92/sub_1002ade7 unless already cached at *0x64ccd8. (CiroScript 'equiphead', doc 11)"
+},
+"0x10031632": {
+"name": "cmd_equiplegs",
+"purpose": "Parses an id and registers it as action slot g_10043351=7 into the g_10043344 record (via sub_1002ae92/sub_1002ade7) unless it already matches the cached client value at *0x64cd20. (CiroScript 'equiplegs', doc 11)"
+},
+"0x1003168a": {
+"name": "cmd_equiprhand",
+"purpose": "Reads three tokens (id plus a count cap in v2), registers the id as action slot g_10043351=6 into g_10043344, and clamps the resolved quantity g_10043354 to the supplied cap; skips only when cached at *0x64cd14 and *0x64ccd8 is in 1..99. (CiroScript 'equiprhand', doc 11)"
+},
+"0x10031706": {
+"name": "cmd_equiplhand",
+"purpose": "Reads three tokens (id plus a count cap), registers the id as action slot g_10043351=5 into g_10043344 with quantity g_10043354 clamped to the cap; skips only when cached at *0x64cd08 and *0x64cccc is in 1..99. (CiroScript 'equiplhand', doc 11)"
+},
+"0x10031782": {
+"name": "cmd_equipbelt",
+"purpose": "Reads three tokens (id plus a count cap), registers the id as action slot g_10043351=10 into g_10043344 with quantity g_10043354 clamped to the cap; skips only when cached at *0x64cd44 and *0x64cd08 is in 1..99. (CiroScript 'equipbelt', doc 11)"
+},
+"0x100317fe": {
+"name": "cmd_equipback",
+"purpose": "Parses an id and registers it as action slot g_10043351=3 into the g_10043344 record (via sub_1002ae92/sub_1002ade7) unless it already matches the cached client value at *0x64ccf0. (CiroScript 'equipback', doc 11)"
+},
+"0x10031856": {
+"name": "cmd_say",
+"purpose": "Fetches the action arg via sub_10030225 and dispatches through sub_10039413; if the result is -1 it retries up to 11 times, Sleep(100) between attempts and clearing g_100f0e18 each pass, aborting early if the g_100f0e42 enabled-flag drops. (CiroScript 'say', doc 11)"
+},
+"0x100318a5": {
+"name": "cmd_allowwalk",
+"purpose": "Loops parsing ids via sub_100300ce, passing each id together with the previous one to sub_1003c496 as long as ids are >=100, stopping when a token is 0 or below 100. (CiroScript 'allowwalk', doc 11)"
+},
+"0x100318c4": {
+"name": "cmd_disallowwalk",
+"purpose": "Variant of applyActionToTargetsAbove100 that feeds each parsed id (>=100) and the previous one to a different handler sub_1003c4c8, terminating on a 0 or sub-100 token. (CiroScript 'disallowwalk', doc 11)"
+},
+"0x100318e3": {
+"name": "cmd_setalarm",
+"purpose": "CiroScript handler that matches a category name (defaultmessages/playeronscreen/gmdetected/playerattacking/privatemessages) to a color-byte slot (g_10207f12..g_10207f1e), writes three parsed color bytes, then refreshes dialog list items 1100-1114 in g_10072f94 via SendDlgItemMessageA using color table g_10207ac6. (CiroScript 'setalarm', doc 11)"
+},
+"0x100319da": {
+"name": "cmd_flash",
+"purpose": "Sets global flag g_100580f8 to 1, arming a bot state toggle (likely a pending refresh/dirty flag). (CiroScript 'flash', doc 11)"
+},
+"0x1002ea85": {
+"name": "cmd_attackedme",
+"purpose": "Fetches a status record via sub_10023861 and writes ASCII '0' (0x30) into the caller's output buffer, bumping it to '1' (0x31) when field_89 of that record is set. Renders a boolean player/state flag as a one-character string for script variable expansion. (CiroScript 'attackedme', doc 11)"
+},
+"0x1002eaa9": {
+"name": "cmd_exposedcount",
+"purpose": "Reads a state value via sub_10037fa1, defaults the output char buffer to ASCII '0', and if the value is nonzero calls sub_10040940 to stringify it into the buffer. Expands a numeric bot/client state into a script string token. (CiroScript 'exposedcount', doc 11)"
+},
+"0x1002eaca": {
+"name": "cmd_shotcount",
+"purpose": "Twin of sub_1002eaa9 but sources its value from sub_10037f84; defaults output to ASCII '0' and calls sub_10040940 to stringify a nonzero result into the buffer. (CiroScript 'shotcount', doc 11)"
+},
+"0x10030442": {
+"name": "registerCommands_table",
+"purpose": "One-time (guarded by g_10292302) registration of the CiroScript command dispatch table: calls sub_1002c1b6 to bind every cmd string ('gotolabel','islocation','wait','refillammo','autoheal','say','buyitems','moveto','useoncreature','while','loop','foreach', equip*/say*/nav* handlers, etc.) to its handler sub. Also the shared cavebot-label executor invoked by the isXlocation/isXdistance conditionals."
+},
+"0x1003068a": {
+"name": "cmd_gotolabel",
+"purpose": "Implements the 'gotolabel' cavebot command: resolves the argument label name via sub_10030225, linearly scans the g_101e6ea8 label table (48-byte stride, count at g_10202f06) with lstrcmpi, stores the found index in g_100f0e00, sets g_100f0e45, and either sets g_100f0e30 or stamps GetTickCount into g_100f0e04. (CiroScript 'gotolabel', doc 11)"
+},
+"0x1003070e": {
+"name": "cmd_islocation",
+"purpose": "Cavebot 'islocation' conditional: when the mode arg is -1, compares the player's current position (g_1005f854/x, g_1005f858/y, g_1005f85c/z) against the target waypoint at g_101e6ea8[12*g_100f0e00] and, on exact match, runs the label body via sub_10030442. (CiroScript 'islocation', doc 11)"
+},
+"0x10030754": {
+"name": "cmd_isdistance",
+"purpose": "Cavebot 'isdistance' conditional: reads a distance threshold via sub_100300ce, computes abs(dx) and abs(dy) between player pos (g_1005f854/g_1005f858) and the current waypoint, and executes the label body (sub_10030442) only when both axis distances are within threshold and z (g_1005f85c) matches. (CiroScript 'isdistance', doc 11)"
+},
+"0x100307b9": {
+"name": "cmd_isnotdistance",
+"purpose": "Cavebot 'isnotdistance' conditional: inverse of cmd_isdistance -- runs the label body via sub_10030442 when either axis distance to the waypoint exceeds the threshold from sub_100300ce or the z floor (g_1005f85c) differs. (CiroScript 'isnotdistance', doc 11)"
+},
+"0x1003081e": {
+"name": "cmd_isnotlocation",
+"purpose": "Cavebot 'isnotlocation' conditional: executes the label body (sub_10030442) when the player position (g_1005f854/g_1005f858/g_1005f85c) does NOT exactly match the current waypoint at g_101e6ea8[12*g_100f0e00]. (CiroScript 'isnotlocation', doc 11)"
+},
+"0x10030864": {
+"name": "cmd_skip",
+"purpose": "Cavebot 'skip' command: when invoked with mode arg -1, sets the skip-waypoint flag g_100f0e30 so the walker advances past the current waypoint. (CiroScript 'skip', doc 11)"
+},
+"0x10030878": {
+"name": "cmd_wait",
+"purpose": "Implements 'wait': reads a millisecond duration via sub_100300ce; if a slot index is given, stores the value into (&g_10087a0b)[idx], otherwise sleeps in 100ms increments (Sleep(100), clearing g_100f0e18 each tick) while the script-running flag g_100f0e42 stays set. (CiroScript 'wait', doc 11)"
+},
+"0x100308bf": {
+"name": "cmd_refillammo",
+"purpose": "Implements 'refillammo': for each configured ammo slot (g_100f0e48/4c/50) checks container item count via sub_1003c52a and, when below 100, sets the move packet fields (g_100433c5 item id, g_100433ca source container 5/6/10) and issues sub_1002ae92 to pull ammo, then flushes a 0x11-byte packet via sub_1002ade7 on g_100433bd. (CiroScript 'refillammo', doc 11)"
+},
+"0x100309b8": {
+"name": "cmd_countolditems",
+"purpose": "Implements 'countolditems'/timed item lookup: parses two counts via sub_100300ce, strips a trailing 's' from the item name, scans the 256-entry g_100ec0b6 name table (36-byte stride) with lstrcmpi checking a GetTickCount age against threshold, then depending on flag byte 128 either waits ~900ms in 100ms Sleep loops or sends a count packet via sub_1002ade7 (g_100433d6/e9). (CiroScript 'countolditems', doc 11)"
+},
+"0x10030a3e": {
+"name": "cmd_sspecial",
+"purpose": "Implements 'sspecial': reads a value via sub_100300ce and, when it equals the magic 137453, sets g_10042294 to 200 (arms a special-mode timer/counter). (CiroScript 'sspecial', doc 11)"
+},
+"0x10030a5b": {
+"name": "cmd_countitems",
+"purpose": "Implements 'countitems': clears the item-count result global g_100f0e7c and reads/consumes the command argument via sub_100300ce. (CiroScript 'countitems', doc 11)"
+},
+"0x10030b5c": {
+"name": "cmd_getcount",
+"purpose": "Implements 'getcount': resolves the item argument via sub_10030225 and stores the computed item count from sub_1002fff4 into the result global g_100f0e7c. (CiroScript 'getcount', doc 11)"
+},
+"0x10030b7e": {
+"name": "cmd_countitemsvisible",
+"purpose": "Implements 'countitemsvisible': consumes the argument via sub_100300ce, calls sub_1003004d to count visible (on-screen) items, and stores the count into g_100f0e7c. (CiroScript 'countitemsvisible', doc 11)"
+},
+"0x10030b97": {
+"name": "cmd_uh",
+"purpose": "Implements 'uh' (use ultimate healing rune): resolves the target via sub_10030225, locates rune item 95 via sub_10038eb3, and when available builds a use-item packet (item id 3160 into g_100432e8, count g_100432eb) via sub_1002ae92 and flushes it with sub_1002ade7, toggling g_100f9328/g_100fa4f0. (CiroScript 'uh', doc 11)"
+},
+"0x10030c4c": {
+"name": "cmd_ihpc",
+"purpose": "Resolves a creature/target via sub_10038eb3, builds a chat/talk packet by writing the message type (3152), channel id and a speech-type byte into the g_100432e5 record fields (branching on g_100fa4f0), sets g_100f9328=1 and flushes it via sub_1002ade7 with the '\\r' send-tag. (CiroScript 'ihpc', doc 11)"
+},
+"0x10030d0e": {
+"name": "cmd_sd",
+"purpose": "CiroScript use-item handler: resolves the named target with sub_10038eb3 (buffer at *-2032), clears then sets the g_100f9328 pending-action flag, and dispatches action code 4 through sub_1003a60a. (CiroScript 'sd', doc 11)"
+},
+"0x10030d50": {
+"name": "cmd_displaymap",
+"purpose": "On first entry (g_100f0e41 flag unset) zeroes healer/condition tracking globals g_100f0e60/64/70/74/5c and sets g_100f0e54 to 0xFFFFFFFF, then stamps g_100f0e41=10 to mark this slot initialized. (CiroScript 'displaymap', doc 11)"
+},
+"0x10030da0": {
+"name": "cmd_altnavdisplay",
+"purpose": "Twin of resetHealerStateA for the second slot: guarded by g_100f0e40, zeroes g_100f0e60/64/70/74/5c and sets g_100f0e54=0xFFFFFFFF, then marks g_100f0e40=10. (CiroScript 'altnavdisplay', doc 11)"
+},
+"0x10030df0": {
+"name": "cmd_hmm",
+"purpose": "CiroScript use handler dispatching action code 1: resolves target via sub_10038eb3, toggles g_100f9328, forwards to sub_1003a60a with mode 1. (CiroScript 'hmm', doc 11)"
+},
+"0x10030e32": {
+"name": "cmd_lmm",
+"purpose": "CiroScript use handler dispatching action code 14: resolves target via sub_10038eb3, sets g_100f9328, forwards to sub_1003a60a with mode 14. (CiroScript 'lmm', doc 11)"
+},
+"0x10030e74": {
+"name": "cmd_icicle",
+"purpose": "CiroScript use handler dispatching action code 3: resolves target via sub_10038eb3, sets g_100f9328, forwards to sub_1003a60a with mode 3. (CiroScript 'icicle', doc 11)"
+},
+"0x10030eb6": {
+"name": "cmd_stalagmite",
+"purpose": "CiroScript use handler dispatching action code 2: resolves target via sub_10038eb3, sets g_100f9328, forwards to sub_1003a60a with mode 2. (CiroScript 'stalagmite', doc 11)"
+},
+"0x10030ef8": {
+"name": "cmd_aimtype",
+"purpose": "Like the other use handlers but dispatches the action code read from the configurable global g_100f94cb through sub_1003a60a after resolving the target with sub_10038eb3. (CiroScript 'aimtype', doc 11)"
+},
+"0x10030f3e": {
+"name": "cmd_explo",
+"purpose": "CiroScript use handler dispatching action code 5: resolves target via sub_10038eb3, sets g_100f9328, forwards to sub_1003a60a with mode 5. (CiroScript 'explo', doc 11)"
+},
+"0x10030f80": {
+"name": "cmd_autoaim",
+"purpose": "Self-targeted use variant: instead of sub_10038eb3 it gets the local player/target via sub_100235e8(1) and sub_1002355e, then dispatches the g_100f94cb action code via sub_1003a60a. (CiroScript 'autoaim', doc 11)"
+},
+"0x10030fb8": {
+"name": "cmd_follow",
+"purpose": "Resolves a tile/target item (id 200) via sub_10038eb3, records its id in g_100432ba, allocates a sequence id from g_63da40 into g_100432be, sets g_63fe60=item/g_63fe64=0, then emits the use-with packet via sub_1002ade7 with send-tag '\\t'. (CiroScript 'follow', doc 11)"
+},
+"0x10031025": {
+"name": "cmd_attack",
+"purpose": "Resolves the source item (id 200) via sub_10038eb3, stores its id in g_100432af/g_1008b89f, allocates a sequence id from g_63da40 into g_100432b3, sets g_63fe64=item/g_63fe60=0 to begin a use-with-target interaction, then flushes via sub_1002ade7 tag '\\t'. (CiroScript 'attack', doc 11)"
+},
+"0x10031098": {
+"name": "cmd_whitebox",
+"purpose": "Resolves the item/creature record at the script argument (id 200) via sub_10038eb3, dereferences it, caches the pointer in g_100f9355 and returns it. (CiroScript 'whitebox', doc 11)"
+},
+"0x100310c8": {
+"name": "cmd_ignoretarget",
+"purpose": "Resolves target (id 200), sets byte +139 on its record via sub_10023861 to flag it, and if g_63fe64 matches the pending source id clears the use-with state (g_63fe64/60/g_100432af/g_1008b89f=0), bumps g_63da40 into g_100432b3, and emits the use-with completion packet via sub_1002ade7 tag '\\t'. (CiroScript 'ignoretarget', doc 11)"
+},
+"0x10031145": {
+"name": "cmd_stopattack",
+"purpose": "Aborts a pending use-with interaction: clears g_100432af/g_1008b89f, allocates a fresh sequence id from g_63da40 into g_100432b3, and if either g_63fe64 or g_63fe60 was set zeroes them and sends the cancel packet via sub_1002ade7 tag '\\t'. (CiroScript 'stopattack', doc 11)"
+},
+"0x100311a8": {
+"name": "cmd_setattackmode",
+"purpose": "Parses the fight/chase-mode script args: maps 'offensive'/'balanced'/'defensive' to 1/2/3 in g_799cec and 'stand'/'chase' to 0/1 in g_799ce8, and if changed builds the 0xA0 set-mode packet (type 4, modes, secure byte from 0x799ce4) and sends it via sub_1002ade7. (CiroScript 'setattackmode', doc 11)"
+},
+"0x100312b8": {
+"name": "cmd_autoheal",
+"purpose": "Auto-healer tick: if the player level (g_1005f7ed->field_88) is below 95 picks between two configured heal spells \u2014 the higher heal (g_100fa4f1) when HP>=g_100f9499 and mana>=g_100f9495, else the mana/light heal (g_100fa531) by threshold g_100fa575 \u2014 casting the chosen one via sub_10039413, otherwise falling back to sub_10024f39. (CiroScript 'autoheal', doc 11)"
+},
+"0x1002e591": {
+"name": "cmd_hppc",
+"purpose": "HUD variable formatter: reads unsigned field at offset 0x88 of the game-state record (ebx) and writes it as a decimal string into the output buffer via wsprintfA(buf, \"%d\"). (CiroScript 'hppc', doc 11)"
+},
+"0x1002e5ae": {
+"name": "cmd_speed",
+"purpose": "HUD variable formatter: reads unsigned field at offset 0x8c of the game-state record (ebx) and formats it as a decimal string via wsprintfA(buf, \"%d\"). (CiroScript 'speed', doc 11)"
+},
+"0x1002e5cb": {
+"name": "cmd_isparalyzed",
+"purpose": "HUD boolean flag: writes ASCII '0' (48) into the output word, overwriting with '1' (49) if field 0x8c of the game-state record is below 200 (a low-value threshold check, likely a low-stat warning flag). (CiroScript 'isparalyzed', doc 11)"
+},
+"0x1002e5eb": {
+"name": "cmd_color1",
+"purpose": "HUD variable formatter: reads unsigned field at offset 0x64 of the game-state record (ebx) and writes it as a decimal string via wsprintfA(buf, \"%d\"). (CiroScript 'color1', doc 11)"
+},
+"0x1002e605": {
+"name": "cmd_color2",
+"purpose": "HUD variable formatter: reads unsigned field at offset 0x68 of the game-state record (ebx) and writes it as a decimal string via wsprintfA(buf, \"%d\"). (CiroScript 'color2', doc 11)"
+},
+"0x1002e61f": {
+"name": "cmd_color3",
+"purpose": "HUD variable formatter: reads unsigned field at offset 0x6c of the game-state record (ebx) and writes it as a decimal string via wsprintfA(buf, \"%d\"). (CiroScript 'color3', doc 11)"
+},
+"0x1002e639": {
+"name": "cmd_color4",
+"purpose": "HUD variable formatter: reads unsigned field at offset 0x70 of the game-state record (ebx) and writes it as a decimal string via wsprintfA(buf, \"%d\"). (CiroScript 'color4', doc 11)"
+},
+"0x1002e653": {
+"name": "cmd_skull",
+"purpose": "HUD variable formatter: reads unsigned field at offset 0x94 of the game-state record (ebx) and writes it as a decimal string via wsprintfA(buf, \"%d\"). (CiroScript 'skull', doc 11)"
+},
+"0x1002e670": {
+"name": "cmd_party",
+"purpose": "HUD variable formatter: reads unsigned field at offset 0x98 of the game-state record (ebx) and writes it as a decimal string via wsprintfA(buf, \"%d\"). (CiroScript 'party', doc 11)"
+},
+"0x1002e68d": {
+"name": "cmd_warbanner",
+"purpose": "HUD variable formatter: reads unsigned field at offset 0xa0 of the game-state record (ebx) and writes it as a decimal string via wsprintfA(buf, \"%d\"). (CiroScript 'warbanner', doc 11)"
+},
+"0x1002e6aa": {
+"name": "cmd_ismonster",
+"purpose": "HUD boolean flag: writes ASCII '0' (48) into the output word, overwriting with '1' (49) if byte field at offset 3 of the record equals 64 (0x40) \u2014 a byte-type/state equality test. (CiroScript 'ismonster', doc 11)"
+},
+"0x1002e6c4": {
+"name": "cmd_isnpc",
+"purpose": "HUD boolean flag: writes '0', then writes '1' only if byte field 3 equals 64 AND helper sub_1000d287(record+1) returns true \u2014 a compound predicate combining a byte-type check with a secondary record validation. (CiroScript 'isnpc', doc 11)"
+},
+"0x1002e6ed": {
+"name": "cmd_isplayer",
+"purpose": "HUD boolean flag: writes ASCII '0' (48), overwriting with '1' (49) if byte field at offset 3 of the record is NOT equal to 64 (0x40) \u2014 the inverse of hudFlagField3Equals64. (CiroScript 'isplayer', doc 11)"
+},
+"0x1002e707": {
+"name": "cmd_isonscreen",
+"purpose": "HUD boolean flag: writes '0', overwriting with '1' if helper sub_1003c23e(record) returns nonzero \u2014 reflects a computed/lookup predicate on the record into a HUD flag character. (CiroScript 'isonscreen', doc 11)"
+},
+"0x1002e725": {
+"name": "cmd_isshootable",
+"purpose": "HUD boolean flag: writes '0', then '1' only if sub_1003c23e(record) succeeds AND sub_10011678(record[9], record[10], 0) returns true \u2014 likely a coordinate/position lookup (fields 9,10 as x/y) combined with a validity check. (CiroScript 'isshootable', doc 11)"
+},
+"0x1002e757": {
+"name": "cmd_canshoot",
+"purpose": "HUD boolean flag: writes '0', then resolves the record via sub_1003c23e/sub_10030225/sub_100399af and sets '1' if sub_1003c55d(coords[9], coords[10], v1, v2, 0) succeeds \u2014 a two-point position/path-reachability predicate rendered to a HUD flag. (CiroScript 'canshoot', doc 11)"
+},
+"0x1002e7b4": {
+"name": "cmd_isenemy",
+"purpose": "HUD boolean flag: writes '0', overwriting with '1' if helper sub_1003a494(record+4) returns nonzero \u2014 reflects a predicate computed on the field at record offset 4. (CiroScript 'isenemy', doc 11)"
+},
+"0x1002e7d5": {
+"name": "cmd_isonnavi",
+"purpose": "HUD boolean flag: writes '0', overwriting with '1' if helper sub_1003b0f0(*record) returns nonzero \u2014 dereferences the first pointer of the record and reflects the predicate result into a HUD flag character. (CiroScript 'isonnavi', doc 11)"
+},
+"0x1002e7f4": {
+"name": "cmd_isleader",
+"purpose": "CiroScript variable getter that calls predicate sub_100303be(self+4) and writes the ASCII digit '0' (48) or '1' (49) into the output buffer *v1 depending on the boolean result. (CiroScript 'isleader', doc 11)"
+},
+"0x1002e815": {
+"name": "cmd_isfriend",
+"purpose": "CiroScript variable getter that calls predicate sub_1003a320(self+4) and writes ASCII '0' or '1' into the output buffer based on the returned boolean flag. (CiroScript 'isfriend', doc 11)"
+},
+"0x1002e836": {
+"name": "cmd_issubenemy",
+"purpose": "CiroScript variable getter that calls predicate sub_1003a550(self+4) and writes ASCII '0'/'1' into the output buffer according to the boolean result. (CiroScript 'issubenemy', doc 11)"
+},
+"0x1002e857": {
+"name": "cmd_issubfriend",
+"purpose": "CiroScript variable getter that calls predicate sub_1003a3da(self+4) and writes ASCII '0'/'1' into the output buffer according to the boolean result. (CiroScript 'issubfriend', doc 11)"
+},
+"0x1002e878": {
+"name": "cmd_haslookinfo",
+"purpose": "Fetches the local player record via sub_10023861 and writes ASCII '1' if either byte at offset 78 or 80 of the player struct is nonzero, else '0'. (CiroScript 'haslookinfo', doc 11)"
+},
+"0x1002e89f": {
+"name": "cmd_guild",
+"purpose": "Fetches the local player record via sub_10023861 and lstrcpy's the string at player+32 (name field) into the script output buffer. (CiroScript 'guild', doc 11)"
+},
+"0x1002e8b9": {
+"name": "cmd_voc",
+"purpose": "Fetches the local player record via sub_10023861, uses its field_4c as an index into the pointer table at 0x10058100, and stores that pointer into *v1. (CiroScript 'voc', doc 11)"
+},
+"0x1002e8d7": {
+"name": "cmd_vocation",
+"purpose": "Fetches the local player record via sub_10023861 and lstrcpy's the string from g_100438fc[field_4c] (vocation-name lookup array indexed by the player's vocation/class byte) into the output buffer. (CiroScript 'vocation', doc 11)"
+},
+"0x1002e8f8": {
+"name": "cmd_level",
+"purpose": "Fetches the local player record via sub_10023861 and converts the 32-bit value at player+72 (field_48) to a string via sub_10040940 into the output buffer. (CiroScript 'level', doc 11)"
+},
+"0x1002e911": {
+"name": "cmd_isknight",
+"purpose": "Writes ASCII '1' if the local player's vocation byte (player+76) equals 1 or 5 (sorcerer/master-sorcerer), else '0'. (CiroScript 'isknight', doc 11)"
+},
+"0x1002e938": {
+"name": "cmd_ispaladin",
+"purpose": "Writes ASCII '1' if the local player's vocation byte (player+76) equals 2 or 6 (druid/elder-druid), else '0'. (CiroScript 'ispaladin', doc 11)"
+},
+"0x1002e95f": {
+"name": "cmd_issorcerer",
+"purpose": "Writes ASCII '1' if the local player's vocation byte (player+76) equals 3 or 7 (paladin/royal-paladin), else '0'. (CiroScript 'issorcerer', doc 11)"
+},
+"0x1002e986": {
+"name": "cmd_isdruid",
+"purpose": "Writes ASCII '1' if the local player's vocation byte (player+76) equals 4 or 8 (knight/elite-knight), else '0'. (CiroScript 'isdruid', doc 11)"
+},
+"0x1002e9ad": {
+"name": "cmd_ismage",
+"purpose": "Writes ASCII '1' if the local player's vocation byte (player+76) is 3, 4, 7 or 8 (paladin or knight groups, i.e. a melee/ranged non-caster), else '0'. (CiroScript 'ismage', doc 11)"
+},
+"0x1002e9df": {
+"name": "cmd_maxhp",
+"purpose": "Reads the 16-bit value at local player+82 and converts it to a decimal string via sub_10040940 into the output buffer (likely a stat/coordinate word). (CiroScript 'maxhp', doc 11)"
+},
+"0x1002e9fa": {
+"name": "cmd_hp",
+"purpose": "Reads the 16-bit value at local player+84 and converts it to a decimal string via sub_10040940 into the output buffer. (CiroScript 'hp', doc 11)"
+},
+"0x1002ea15": {
+"name": "cmd_maxmp",
+"purpose": "Reads a health/stat word: if extended-mode flag g_1005f551 is set and creature lookup sub_1003b0f0(*v2) succeeds, uses creature->field_64, else falls back to local player+86; converts to string via sub_10040940. (CiroScript 'maxmp', doc 11)"
+},
+"0x1002ea4a": {
+"name": "cmd_mp",
+"purpose": "Reads a stat word: with flag g_1005f551 set and creature lookup sub_1003b0f0(*v2) OK uses creature->field_62, else computes local player word[43]-word[44] (a delta at offsets 86/88); converts result to string via sub_10040940. (CiroScript 'mp', doc 11)"
+},
+"0x1002e24a": {
+"name": "cmd_self",
+"purpose": "Tiny stub that saves the incoming ebx register value into a local ([bp-0x4]); a truncated/thunk callback with no visible side effect in the decompilation. (CiroScript 'self', doc 11)"
+},
+"0x1002e255": {
+"name": "cmd_followed",
+"purpose": "If the pointer/handle at global *0x63fe60 is non-null, resolves it through sub_1003997e (an object/slot lookup helper) into a struct_0*; likely fetches a live creature/object record for a HUD field. (CiroScript 'followed', doc 11)"
+},
+"0x1002e27c": {
+"name": "cmd_attacked",
+"purpose": "Sibling of sub_1002e255: if global *0x63fe64 is non-null, resolves it via sub_1003997e into a struct_0*, fetching a second live object/creature record for display. (CiroScript 'attacked', doc 11)"
+},
+"0x1002e2a2": {
+"name": "cmd_pk",
+"purpose": "Calls sub_100399af passing &g_1005f56d and ebx, registering/inserting a handle into the object table anchored at g_1005f56d. (CiroScript 'pk', doc 11)"
+},
+"0x1002e2b4": {
+"name": "cmd_pattacker",
+"purpose": "Passes global g_1005f601 (plus ebx) to sub_1003997e, the object/slot resolver, to look up the record referenced by g_1005f601. (CiroScript 'pattacker', doc 11)"
+},
+"0x1002e2c5": {
+"name": "cmd_mattacker",
+"purpose": "Passes global g_1005f5fd (plus ebx) to the sub_1003997e object/slot resolver to look up the record referenced by g_1005f5fd. (CiroScript 'mattacker', doc 11)"
+},
+"0x1002e2d6": {
+"name": "cmd_attacker",
+"purpose": "Passes global g_1005f605 (plus ebx) to the sub_1003997e object/slot resolver to look up the record referenced by g_1005f605. (CiroScript 'attacker', doc 11)"
+},
+"0x1002e353": {
+"name": "cmd_coretarget",
+"purpose": "Saves ebx to a local then tail-calls sub_1002355e; a thin trampoline/dispatch wrapper into that handler. (CiroScript 'coretarget', doc 11)"
+},
+"0x1002e460": {
+"name": "cmd_name",
+"purpose": "Copies the null-terminated string at offset +4 of the ebx record into the output buffer v1 via lstrcpy; a text HUD field formatter (e.g. a name string). (CiroScript 'name', doc 11)"
+},
+"0x1002e473": {
+"name": "cmd_id",
+"purpose": "Dereferences the ebx pointer to an int and formats it as decimal into the output buffer via wsprintfA(v2, \"%d\"); a numeric HUD field renderer. (CiroScript 'id', doc 11)"
+},
+"0x1002e48c": {
+"name": "cmd_posx",
+"purpose": "Reads field_24 (offset +0x24) of the ebx record and formats it decimal into the output buffer via wsprintfA(\"%d\"); a numeric HUD status-bar field. (CiroScript 'posx', doc 11)"
+},
+"0x1002e4a6": {
+"name": "cmd_distance",
+"purpose": "Computes the Chebyshev distance max(\\|g_1005f854 - x\\|, \\|g_1005f858 - y\\|) between the record coords at idx[9]/idx[10] and the global reference position (g_1005f854/g_1005f858) and formats it decimal via wsprintfA; renders a distance HUD field. (CiroScript 'distance', doc 11)"
+},
+"0x1002e4df": {
+"name": "cmd_distx",
+"purpose": "Formats \\|g_1005f854 - record.field_24\\| (absolute X-axis delta to the global reference X) as decimal via wsprintfA(\"%d\"); an axis-distance HUD field. (CiroScript 'distx', doc 11)"
+},
+"0x1002e504": {
+"name": "cmd_disty",
+"purpose": "Formats \\|g_1005f858 - record.field_28\\| (absolute Y-axis delta to the global reference Y) as decimal via wsprintfA(\"%d\"); an axis-distance HUD field. (CiroScript 'disty', doc 11)"
+},
+"0x1002e529": {
+"name": "cmd_posy",
+"purpose": "Reads field_28 (offset +0x28, the record's Y coordinate) and formats it decimal into the output buffer via wsprintfA(\"%d\"); a numeric HUD field. (CiroScript 'posy', doc 11)"
+},
+"0x1002e543": {
+"name": "cmd_posz",
+"purpose": "Reads field_2c (offset +0x2c, likely the record's Z/floor coordinate) and formats it decimal via wsprintfA(\"%d\"); a numeric HUD field. (CiroScript 'posz', doc 11)"
+},
+"0x1002e55d": {
+"name": "cmd_dir",
+"purpose": "Reads field_50 (offset +0x50) of the ebx record and formats it decimal via wsprintfA(\"%d\"); a numeric HUD status field. (CiroScript 'dir', doc 11)"
+},
+"0x1002e577": {
+"name": "cmd_outfit",
+"purpose": "Reads field_60 (offset +0x60) of the ebx record and formats it decimal via wsprintfA(\"%d\"); a numeric HUD status field. (CiroScript 'outfit', doc 11)"
+},
+"0x10006bce": {
+"name": "dlgProc_HudCreatureList",
+"purpose": "Dialog proc for a scrollable list container (child ctrl 1901): on WM_INITDIALOG sets its font via SendDlgItemMessageA(...,WM_SETFONT), registers a timer/subclass via sub_1002ae81(&g_10072fd4,16800), stashes its HWND in g_10072f70; on WM_SIZE resizes child 1901 to fill the client area; falls through to the shared default proc sub_10002c6e."
+},
+"0x10006d3b": {
+"name": "dlgProc_Shortkeys",
+"purpose": "Dialog proc for the ElfBot 'shortkeys' configuration page: on WM_INITDIALOG builds a scrolling list of up to 128 rows (546-byte stride table at g_10106b02) each with a BUTTON checkbox (id 4000+i), a trigger EDIT (id 5000+i) and a command EDIT (id 6000+i), attaching tooltip help via sub_1000307e; handles WM_COMMAND to toggle the active flag g_10106b23, sync via sub_10006cd0, and open the shortkey wizard sub_1001e1d9; WM_SIZE relays out rows and WM_VSCROLL drives the g_1005f528 scroll offset via SetScrollInfo."
+},
+"0x10007360": {
+"name": "dlgProc_Hotkeys",
+"purpose": "Dialog proc for the ElfBot 'hotkeys' configuration page: on WM_INITDIALOG builds up to 96 rows (0x202-byte stride table at g_100faa3c) each with a checkbox (4000+i), a key-capture EDIT (5000+i, decoding scancodes against the 'lmouse' name table up to g_100445f0 or via sub_10040940) and a command EDIT (6000+i); WM_COMMAND toggles active flag g_100faa3d and opens the hotkey wizard / persistent-list editor (sub_100083b6) and syncs via sub_10006c65; WM_SIZE/WM_VSCROLL handle scrolling like the shortkeys page."
+},
+"0x10007b55": {
+"name": "dlgProc_HudOnScreenInfo",
+"purpose": "Dialog proc for the On-Screen / Player-Information HUD config page: on WM_INITDIALOG stores its HWND in g_10072fc4 and attaches long tooltip help strings (via sub_1000307e) to each checkbox describing HUD features (guild/vocation/level/HP display, auto-look, mana estimation, ping/exp/damage overlay, PZ-lock and magic-wall timers, heal/damage floating numbers, exiva radar); hides on WM_CLOSE, else defers to sub_10002c6e."
+},
+"0x10007ca5": {
+"name": "dlgProc_AutoAimCombo",
+"purpose": "Dialog proc for the AutoAim/targeting config page: on WM_INITDIALOG stores HWND in g_10072fbc, populates the action combo 1012 (No Action/Attack/Follow), the reaction-delay combo 1042 (200-2000ms via sub_10040940 + ' ms'), the SD-rune combo 1006 from the string table g_10043544..g_100435c8, and a 1-10 combo 1031, then attaches tooltip help to each targeting option (least-HP%, lowest-HP, combo leader sync, least-MP mage, ignore-PZ, trajectory check, closed-backpack actions, aim box, leader names, ignore-skulled); hides on WM_CLOSE."
+},
+"0x10007ec4": {
+"name": "dlgProc_GraphicsTweaks",
+"purpose": "Dialog proc for the client-tweaks config page (FPS reducer, reuse-object, world-view stretch, names-through-floors): stores HWND in g_10072f88, attaches tooltip help on WM_INITDIALOG and checks 1013 if g_1004476a set; on WM_COMMAND writes checkbox 1002 into g_100ee8bb and calls sub_10039c81, and persists checkbox 1013 as 'LoadLastSkin' into elfbot.ini (path built from g_10042f83) via WritePrivateProfileStringA."
+},
+"0x1000802f": {
+"name": "dlgProc_TargetingEditor",
+"purpose": "Dialog proc (HWND saved to g_10072f98) for adding/editing an entry into the cavebot waypoint listbox owned by g_10072f94: on WM_COMMAND id 1003 (OK) reads the current selection (LB msg 392) from the list, copies the selected 0x30-byte record (base g_101e6eb4) into EDIT 1002, and if g_100f0e44 set recomputes/reinserts the entry via sub_100160d6 before DestroyWindow; closes on WM_CLOSE."
+},
+"0x100083b6": {
+"name": "dlgProc_ScriptEditor",
+"purpose": "Multi-mode script/list editor dialog keyed on g_10072fb4 (0=main cmd list g_101f2ea8, 1=persistent commands g_1013f32c, 2=Cavebot script, 3=Targeting script, 4=Icons script), each mode setting its own HWND global and loading text via sub_100188f9/sub_10018d8a/sub_100193a1; on WM_COMMAND 1003 loads/saves the script (0x200000-byte HeapAlloc buffer parsed by sub_1001686c, or sub_10008152/sub_10008284), 1004 copies the edit buffer to the clipboard (GlobalAlloc/SetClipboardData CF_TEXT) and 1005 pastes from it."
+},
+"0x100086b3": {
+"name": "dlgProc_Skin",
+"purpose": "Dialog proc for the skin/.msstyles selector: on WM_INITDIALOG reads GlobalSettings/LoadLastSkin and LastSkin from elfbot.ini (path from g_10042d7b), lists Skins\\*.msstyles into listbox 1001 via DlgDirListA and preselects the saved skin; on OK (1002) persists LastSkin, escapes backslashes into a path, copies it to g_100f9368 and posts WM_COMMAND 0x53b to main window g_1005f61a to apply the skin; restores focus via sub_10039b62/sub_10002c87."
+},
+"0x100092b0": {
+"name": "sub_100092b0",
+"purpose": "Initializes the bot's audio subsystem: opens the waveOut/DirectSound device via sub_1000904c(g_1005f626,2,44100,16) and, on success, loads each alert WAV (elfng, playeronscreen, gmdetected, playerattacking, defaultmessage, privatemessage, monster, disconnected, loot) into its own buffer global (g_1005265c..g_1005267c) via sub_10008e41; on failure sets the g_10287f3c 'sound disabled' flag."
+},
+"0x1002de19": {
+"name": "cmd_cutstr",
+"purpose": "Trivial HUD variable-resolver stub: zero-terminates the output string buffer (*v2=0) and, if a follow-up condition is set, tail-calls the next resolver sub_1002de28. (CiroScript 'cutstr', doc 11)"
+},
+"0x1002deab": {
+"name": "cmd_creature",
+"purpose": "HUD variable resolver that decodes its arg via sub_10030225, fetches an unsigned counter value from sub_100399af (indexed off the arg-4264 table), stores it, and if non-zero formats it into the output buffer with wsprintfA(buf,\"%d\"). (CiroScript 'creature', doc 11)"
+},
+"0x1002deeb": {
+"name": "cmd_mostexposed",
+"purpose": "HUD variable resolver: decodes the arg with sub_10030225, reads a numeric stat via sub_100380dd(arg), and writes it as decimal into the output buffer with wsprintfA(buf,\"%d\"). (CiroScript 'mostexposed', doc 11)"
+},
+"0x1002df1f": {
+"name": "cmd_mostexposedcount",
+"purpose": "HUD variable resolver that decodes the arg, calls stat getter sub_100380dd, defaults the output char to '0' (48), and if a valid pointer result is returned formats it via sub_10040940 into the display buffer. (CiroScript 'mostexposedcount', doc 11)"
+},
+"0x1002df55": {
+"name": "cmd_mostshot",
+"purpose": "HUD variable resolver: decodes the arg with sub_10030225, reads a numeric value via sub_10037c72(arg), and writes it as decimal into the output buffer with wsprintfA(buf,\"%d\"). (CiroScript 'mostshot', doc 11)"
+},
+"0x1002df89": {
+"name": "cmd_mostshotcount",
+"purpose": "HUD variable resolver that decodes the arg, calls getter sub_10037c72, defaults the output char to '0' (48), and if a valid pointer is returned formats it via sub_10040940 into the display buffer. (CiroScript 'mostshotcount', doc 11)"
+},
+"0x1002dfbf": {
+"name": "cmd_ctrl",
+"purpose": "HUD boolean-flag resolver: writes '0' (48) into the output buffer, or '1' (49) if global flag g_100f9359 is set. (CiroScript 'ctrl', doc 11)"
+},
+"0x1002dfda": {
+"name": "cmd_shift",
+"purpose": "HUD boolean-flag resolver: writes '0' (48) into the output buffer, or '1' (49) if global flag g_100f935d is set. (CiroScript 'shift', doc 11)"
+},
+"0x1002dff5": {
+"name": "cmd_alt",
+"purpose": "HUD boolean-flag resolver: writes '0' (48) into the output buffer, or '1' (49) if global flag g_100f9361 is set. (CiroScript 'alt', doc 11)"
+},
+"0x1002e010": {
+"name": "cmd_key",
+"purpose": "HUD resolver that reports a hotkey's pressed state: maps its arg to a virtual-key via sub_100300ce, calls GetAsyncKeyState, and writes '1' (49) if pressed else '0' (48) into the output buffer. (CiroScript 'key', doc 11)"
+},
+"0x1002e03b": {
+"name": "cmd_skill",
+"purpose": "HUD resolver that decodes the arg, resolves a creature/object record via sub_1002c0cb, defaults the output to '0' (48), and if the record pointer is valid dereferences its first dword and formats it as decimal via wsprintfA(buf,\"%d\"). (CiroScript 'skill', doc 11)"
+},
+"0x1002e07d": {
+"name": "cmd_skillpc",
+"purpose": "HUD resolver: resolves a creature record via sub_1002c0cb, then reads the dword at record+28 (special-casing address 0x63fe84 to read 0x63fe7c instead) and writes it as decimal, defaulting to '0' when no record. (CiroScript 'skillpc', doc 11)"
+},
+"0x1002e0cd": {
+"name": "cmd_skilltime",
+"purpose": "HUD resolver computing an estimated-time-remaining value: for a target record (sub_1002c0cb) in state 2 (g_1005f809[idx]), interpolates a percentage progress from tables g_1005f801/g_1005f811/g_1005f831, compares elapsed GetTickCount against the projected duration, and writes remaining seconds via wsprintfA(buf,\"%d\") or '?' (63) if unavailable. (CiroScript 'skilltime', doc 11)"
+},
+"0x1002e175": {
+"name": "cmd_lastmsg",
+"purpose": "Near-empty HUD resolver stub that just stores its arg into a local (v0=v2) and returns; produces no output on its own. (CiroScript 'lastmsg', doc 11)"
+},
+"0x1002e180": {
+"name": "cmd_lastnavmsg",
+"purpose": "Near-empty HUD resolver stub that just stores its arg into a local (v0=v2) and returns; produces no output on its own. (CiroScript 'lastnavmsg', doc 11)"
+},
+"0x1002e18b": {
+"name": "cmd_curmsg",
+"purpose": "HUD resolver that returns a per-thread creature/target id: if GetCurrentThreadId matches the main-thread id at g_100f0e10 it uses g_100f49e5, otherwise indexes tables g_1008910b/g_10089c8b by g_10084c07 and computes id*316+g_100f49ed, then formats the result with wsprintfA(buf,\"%d\") when the buffer is empty. (CiroScript 'curmsg', doc 11)"
+},
+"0x1002e1fd": {
+"name": "cmd_target",
+"purpose": "HUD resolver that stores its arg and, if global object handle g_1008b89b is non-zero, resolves it to a 0x94-byte record struct via sub_1003997e. (CiroScript 'target', doc 11)"
+},
+"0x1002e226": {
+"name": "cmd_lastdmger",
+"purpose": "HUD resolver that stores its arg and, if global object handle g_1005f5ed is non-zero, resolves it to a 0x94-byte record struct via sub_1003997e. (CiroScript 'lastdmger', doc 11)"
+},
+"0x1001ef0c": {
+"name": "dlgProc_LinksProxy",
+"purpose": "DialogProc for the NavNet/proxy 'Run Proxy' config window: on WM_INITDIALOG (272) it populates the IP/port/account edit fields from g_1013f280/g_1013f2a0/g_1013f2e0 and fills combo boxes 1001/1015/1019/0x3ff with heal-spell ('exura','exura gran'...) and rune ('Light','Strong'...UH Rune) options plus per-item tooltips via sub_1000307e; on WM_COMMAND (273) it toggles the proxy worker thread sub_100209d5 via CreateThread and g_102898cd for button 1007, or on 1008 reads the fields back into globals and sets the g_100f0d37 apply flag."
+},
+"0x1002ad6b": {
+"name": "sub_1002ad6b",
+"purpose": "Empty 2-byte stub function (just returns); likely a placeholder or optimized-away no-op handler."
+},
+"0x1002c1b6": {
+"name": "registerCommand",
+"purpose": "Inserts a string key into one of three open-addressed hash tables (g_10292304/g_102b2404 mask 0x3fff, g_102d2504 mask 0x1fff) using a hash of idx=idx*5+char over the string; stores the key pointer and value a1 into the 8-byte slot, and on collision pops a MessageBoxA showing the colliding string."
+},
+"0x1002cbca": {
+"name": "cmd_mppc",
+"purpose": "CiroScript $hp% variable getter: computes player HP percentage as *0x63fe78*100 / *0x63fe74 (current/max HP), guarding divide-by-zero with 100, and formats it into the substitution buffer via sub_10040940. (CiroScript 'mppc', doc 11)"
+},
+"0x1002cc38": {
+"name": "cmd_cap",
+"purpose": "CiroScript variable getter that reads player capacity from *0x63fe68, divides by 100, and formats the result into the substitution buffer via sub_10040940. (CiroScript 'cap', doc 11)"
+},
+"0x1002cc56": {
+"name": "cmd_exp",
+"purpose": "CiroScript variable getter reading current mana from *0x63fe8c and formatting it into the substitution buffer via sub_10040940. (CiroScript 'exp', doc 11)"
+},
+"0x1002cc7e": {
+"name": "cmd_mlevel",
+"purpose": "CiroScript variable getter reading max mana from *0x63fe84 and formatting it into the substitution buffer via sub_10040940. (CiroScript 'mlevel', doc 11)"
+},
+"0x1002ccce": {
+"name": "cmd_soul",
+"purpose": "CiroScript variable getter reading current HP from *0x63fe70 and formatting it into the substitution buffer via sub_10040940. (CiroScript 'soul', doc 11)"
+},
+"0x1002cce2": {
+"name": "cmd_stamina",
+"purpose": "CiroScript variable getter reading max HP from *0x63fe6c and formatting it into the substitution buffer via sub_10040940. (CiroScript 'stamina', doc 11)"
+},
+"0x1002ccf6": {
+"name": "cmd_count",
+"purpose": "CiroScript variable getter reading the value of global g_100f0e7c (a bot-maintained counter/state value) and formatting it into the substitution buffer via sub_10040940. (CiroScript 'count', doc 11)"
+},
+"0x1002cd09": {
+"name": "cmd_screenleft",
+"purpose": "CiroScript variable getter that, when the active target object g_10080b84 exists and game state *0x64a9c0==31 (in-game), reads target field_14 (offset 0x14) and formats it into the substitution buffer via sub_10040940. (CiroScript 'screenleft', doc 11)"
+},
+"0x1002cd2e": {
+"name": "cmd_screenright",
+"purpose": "CiroScript variable getter that, when target g_10080b84 exists and state *0x64a9c0==31, sums target fields at offset 0x14 and 0x1c (e.g. a coordinate pair or base+offset) and formats it via sub_10040940. (CiroScript 'screenright', doc 11)"
+},
+"0x1002cd56": {
+"name": "cmd_screentop",
+"purpose": "CiroScript variable getter that, when target g_10080b84 exists and state *0x64a9c0==31, reads target field at offset 0x18 and formats it into the substitution buffer via sub_10040940. (CiroScript 'screentop', doc 11)"
+},
+"0x1002cd7b": {
+"name": "cmd_screenbottom",
+"purpose": "CiroScript variable getter that, when target g_10080b84 exists and state *0x64a9c0==31, sums target fields at offset 0x18 and 0x20 and formats the result via sub_10040940. (CiroScript 'screenbottom', doc 11)"
+},
+"0x1002cdbe": {
+"name": "cmd_time",
+"purpose": "CiroScript variable getter returning GetTickCount()/1000 (system uptime in seconds) formatted into the substitution buffer via sub_10040940. (CiroScript 'time', doc 11)"
+},
+"0x1002cdda": {
+"name": "cmd_timems",
+"purpose": "CiroScript variable getter returning the raw GetTickCount() millisecond tick value formatted into the substitution buffer via sub_10040940. (CiroScript 'timems', doc 11)"
+},
+"0x1002cded": {
+"name": "cmd_deltatime",
+"purpose": "CiroScript variable getter returning session elapsed time in seconds ((GetTickCount()-g_1008b7cb)/1000, where g_1008b7cb is the session start tick) formatted via sub_10040940. (CiroScript 'deltatime', doc 11)"
+},
+"0x1002ce0f": {
+"name": "cmd_deltatimems",
+"purpose": "CiroScript variable getter returning session elapsed time in milliseconds (GetTickCount()-g_1008b7cb, the session start tick) formatted via sub_10040940. (CiroScript 'deltatimems', doc 11)"
+},
+"0x10001a96": {
+"name": "hook_captureRenderCtx",
+"purpose": "Trampoline installed over the client's network parse routine (original at *0x5ab5d4, saved in g_1005d88f): stashes the first arg into g_1005db05 then calls the original 4-arg parser passing a local scratch buffer, so the bot can observe every parsed packet."
+},
+"0x10001ca8": {
+"name": "hook_incomingPacketParser",
+"purpose": "Server-packet snooper keyed on the client-state opcode returned by g_1005d897 (=client protocol state at *0x636fe0): dispatches on opcodes 10/172/178/210/211/212/0xDD to maintain three fixed record tables (150x40 g_1005a2a3 creature list, 20x69 g_1005cf17 and g_1005c9b3 channel/message tables) via sub_1002ae6f memcpy, then forwards the raw packet slice (g_1005db09 bytes) to all active NavNet proxy client sockets in g_1005da85/g_1005dac5."
+},
+"0x10002041": {
+"name": "installClientHooks_proxyServer",
+"purpose": "One-time-inits the client hooks (VirtualProtects 0x5ab000, patches the parse-packet pointer at 0x5ab5d4 to sub_10001a96, patches call sites 0x4f30c0/0x45acd6, WSAStartup), then binds a TCP socket on port g_1005a296, listens, and accept-loops spawning sub_10002235 worker threads per NavNet proxy client until g_1005a291 signals shutdown (WSACleanup)."
+},
+"0x10002235": {
+"name": "proxyClientThread",
+"purpose": "Per-connection NavNet proxy worker: builds a 40-byte '&'-filled greeting, sends the g_1004202c banner if g_1004203a set, then recv-loops handling sub-opcode v3 (1=echo greeting, 10=sub_100023c9 handshake + optional sub_10039bbb when not in-game, 20=disconnect via sub_1000239b, else forward buffer to client via sub_1002ade7) and ExitThreads on socket close."
+},
+"0x100029a4": {
+"name": "hook_fullLightDetour",
+"purpose": "Full-light / ambient-light hack: depending on g_1004476b mode and the client light level at *0x64f600==7, patches the three client light routines at 0x4f46ba/0x4f47bf/0x4f4840 (writing g_1004477b nop-patch or g_10044787 restore bytes) and computes a forced brightness g_1004476f (clamped to 0..100/7/4) written into the light struct field_2a88."
+},
+"0x10002bd6": {
+"name": "hook_fullLight_trampoline",
+"purpose": "Detour stub jumped to from the patched client light code at 0x4f4869; tail-calls sub_100029a4 (applyLightHackLevel) to recompute and apply the light-level override."
+},
+"0x10002bdd": {
+"name": "installLightHook",
+"purpose": "Caches GetCurrentProcess() in g_1005f612 and WriteProcessMemory-patches 7 bytes at client address 0x4f4869 to redirect into sub_10002bd6, wiring the light-level detour into the client."
+},
+"0x10002c1f": {
+"name": "DllEntryPoint",
+"purpose": "DLL entry: stores the module handle in g_1005f60a, returns early unless reason==1 (DLL_PROCESS_ATTACH), caches GetCurrentProcess() in g_1005f612, then spawns the main bot init thread sub_10002d08 (arg &g_1005f880, tid into g_1005f884)."
+},
+"0x10002c87": {
+"name": "postBotMessage",
+"purpose": "Sends WM_COMMAND (273) with wParam 0x53a to the main bot dialog HWND g_1005f61a via SendMessageA, packing g_1005f626 and arg a3 into a local struct passed as lParam to trigger a dialog control action."
+},
+"0x10002cbe": {
+"name": "EcInit",
+"purpose": "Exported EcInit entry: records the parent window in g_1005f61a and flag in g_1004478d, Sleep(1000), registers all bot dialog window classes via sub_10002d46, then posts a WM_COMMAND to bring up the main dialog proc sub_100086b3 through sub_10002c87."
+},
+"0x10002d46": {
+"name": "registerDialogs",
+"purpose": "InitCommonControls then registers ~23 bot dialog window classes (RCDATA templates 'TBOTDLG7'..'TBOTDLGW') via repeated sub_10002d16 calls, each binding a dialog proc (sub_10006bce, sub_1001eb33, main sub_100086b3, etc.); finally derives the DLL's directory path by trimming the filename off GetModuleFileNameA into g_10042d7b."
+},
+"0x1002d805": {
+"name": "cmd_drunk",
+"purpose": "CiroScript variable getter that returns boolean state of global flag g_1005f7df (via _INSERT bit build) and stores the 0/1 result into the script result slot through sub_10040940. (CiroScript 'drunk', doc 11)"
+},
+"0x1002d81e": {
+"name": "cmd_hasted",
+"purpose": "CiroScript variable getter that returns boolean state of global flag g_1005f7dc and writes the 0/1 result to the script result slot via sub_10040940; sibling of the g_1005f7df/dd/e0 getters. (CiroScript 'hasted', doc 11)"
+},
+"0x1002d837": {
+"name": "cmd_paralyzed",
+"purpose": "CiroScript variable getter that returns boolean state of global flag g_1005f7dd and stores the 0/1 result into the script result slot via sub_10040940. (CiroScript 'paralyzed', doc 11)"
+},
+"0x1002d850": {
+"name": "cmd_inpz",
+"purpose": "CiroScript variable getter that returns boolean state of global flag g_1005f7e0 and stores the 0/1 result into the script result slot via sub_10040940. (CiroScript 'inpz', doc 11)"
+},
+"0x1002d869": {
+"name": "cmd_navion",
+"purpose": "CiroScript variable getter that returns boolean state of unsigned global g_1005f551 and stores the 0/1 result into the script result slot via sub_10040940. (CiroScript 'navion', doc 11)"
+},
+"0x1002d882": {
+"name": "cmd_itemcount",
+"purpose": "CiroScript function handler: reads its argument buffer via sub_10030225; if the first char is an ASCII digit ('0'-'9', 48-57) it parses/dispatches via sub_10040900 + sub_1003004d, otherwise falls back to sub_1002fff4, then stores the result via sub_10040940. (CiroScript 'itemcount', doc 11)"
+},
+"0x1002d8d5": {
+"name": "cmd_winitemcount",
+"purpose": "CiroScript function handler identical in structure to sub_1002d882 (digit-first-char branch to sub_10040900/sub_1003004d else sub_1002fff4), differing only in the fallback/dispatch target; parses a numeric-or-named argument and stores the result via sub_10040940. (CiroScript 'winitemcount', doc 11)"
+},
+"0x1002d92b": {
+"name": "cmd_fileisline",
+"purpose": "CiroScript predicate: defaults its result char to '0' (48), reads two args via sub_10030225, and if the second arg is present compares them with sub_100254f8, setting the result to '1' (49) on match. (CiroScript 'fileisline', doc 11)"
+},
+"0x1002d984": {
+"name": "cmd_rand",
+"purpose": "CiroScript function: parses up to two numeric args via sub_100300ce, orders them (min/max), computes their absolute difference, adjusts it by sub_10040a30, and stores the numeric result via sub_10040940 (default '0'). (CiroScript 'rand', doc 11)"
+},
+"0x1002d9db": {
+"name": "cmd_fileline",
+"purpose": "CiroScript function: zeroes its result, and if an argument is supplied reads it via sub_10030225, parses it as an integer with sub_100300ce, and writes the integer into the result slot via sub_10025646. (CiroScript 'fileline', doc 11)"
+},
+"0x1002da13": {
+"name": "cmd_token",
+"purpose": "CiroScript function that splits an argument string into the Nth space-delimited token (N from sub_100300ce, respecting single/double-quoted spans) and lstrcpy's that token into the result buffer. (CiroScript 'token', doc 11)"
+},
+"0x1002dae0": {
+"name": "cmd_filerandomline",
+"purpose": "CiroScript function: reads its argument via sub_10030225 and writes constant -1 into the result buffer via sub_10025646 (likely a not-found / sentinel formatter). (CiroScript 'filerandomline', doc 11)"
+},
+"0x1002daff": {
+"name": "cmd_connected",
+"purpose": "CiroScript predicate that reads the client game-state dword at 0x64a9c0 and stores 1 if it equals 31 else 0 via sub_10040940 (tests a specific client status/connection state value). (CiroScript 'connected', doc 11)"
+},
+"0x1002db22": {
+"name": "cmd_pkname",
+"purpose": "CiroScript string getter that lstrcpy's the global string buffer at &g_1005f56d into the script result buffer. (CiroScript 'pkname', doc 11)"
+},
+"0x1002db34": {
+"name": "cmd_ping",
+"purpose": "CiroScript variable getter that stores the value of global g_1008b71f into the script result slot via sub_10040940. (CiroScript 'ping', doc 11)"
+},
+"0x1002db47": {
+"name": "cmd_fps",
+"purpose": "CiroScript numeric function performing a floating-point compare (via helper at 0x5384848 / FPU compare, NaN-guarded) whose boolean/int outcome v2 is stored into the result slot via sub_10040940. (CiroScript 'fps', doc 11)"
+},
+"0x1002db6e": {
+"name": "cmd_enemycount",
+"purpose": "CiroScript function iterating the creature list (37-dword stride records from 0x63fef8 to 0x64a308), counting entries whose slot[36] is set and whose type field slot[11] equals g_1005f85c and that pass filter sub_1003a494; stores the count via sub_10040940. (CiroScript 'enemycount', doc 11)"
+},
+"0x1002dbc8": {
+"name": "cmd_friendcount",
+"purpose": "CiroScript function identical to sub_1002db6e (creature-list scan, slot[36] active, slot[11]==g_1005f85c) but using filter sub_1003a320 instead of sub_1003a494; stores the matching-creature count via sub_10040940. (CiroScript 'friendcount', doc 11)"
+},
+"0x1002ce28": {
+"name": "cmd_return",
+"purpose": "HUD variable formatter that lstrcpy's the static string buffer at g_100f0e80 into the output buffer, emitting a fixed configured text token. (CiroScript 'return', doc 11)"
+},
+"0x1002ce3a": {
+"name": "cmd_exptnl",
+"purpose": "Computes elapsed ticks by calling the current-time getter sub_1002bed7 and subtracting the session start timestamp at *0x63fe8c, then renders the difference into the output buffer via the int-to-string writer sub_10040940. (CiroScript 'exptnl', doc 11)"
+},
+"0x1002ce5e": {
+"name": "cmd_exph",
+"purpose": "Renders the configured rate/limit value g_1005e190 into the output buffer via the int-to-string writer sub_10040940. (CiroScript 'exph', doc 11)"
+},
+"0x1002ce71": {
+"name": "cmd_expgained",
+"purpose": "Computes clamped remaining time as max(0, now(*0x63fe8c) - deadline at g_1008b7c7) and writes it to the output via sub_10040940. (CiroScript 'expgained', doc 11)"
+},
+"0x1002ce98": {
+"name": "cmd_timetnl",
+"purpose": "If rate divisor g_1005e190 is nonzero, computes an hourly-projected count as (elapsed*3600)/g_1005e190 from now()-startTime and writes it via sub_10040940; otherwise emits the literal \"Inf\". (CiroScript 'timetnl', doc 11)"
+},
+"0x1002cef8": {
+"name": "cmd_exptolevel",
+"purpose": "Calls counter getter sub_100300ce and, if it exceeds threshold *0x63fe88, computes elapsed = now(sub_1002bed7) - startTime(*0x63fe8c), else 0, then writes the result via sub_10040940. (CiroScript 'exptolevel', doc 11)"
+},
+"0x1002cf2c": {
+"name": "cmd_timetolevel",
+"purpose": "Like the hourly-rate formatter but gated on counter sub_100300ce exceeding *0x63fe88: computes (elapsed*3600)/g_1005e190 and writes it via sub_10040940, or emits \"Inf\" when g_1005e190 is zero. (CiroScript 'timetolevel', doc 11)"
+},
+"0x1002cf9c": {
+"name": "cmd_screencount",
+"purpose": "Iterates the creature/battle-list table (0x63fef8..0x64a308, 44-byte stride) and counts alive entries whose owner field matches g_1005f85c and whose name (case-insensitively via lstrcmpi) matches the argument, writing the count via sub_10040940. (CiroScript 'screencount', doc 11)"
+},
+"0x1002d010": {
+"name": "cmd_mcount",
+"purpose": "Allocates/reuses a 0x200-stride slot in the g_100f49d1 arena tagged 'm', builds a bracketed name key, then scans the creature table (0x63fef8..0x64a308) for entries owned by g_1005f85c with type byte 64 (monster), formatting each id with wsprintfA and counting matches via sub_10040900; writes total via sub_10040940. (CiroScript 'mcount', doc 11)"
+},
+"0x1002d122": {
+"name": "cmd_pcount",
+"purpose": "Same as sub_1002d010 but tags the arena slot 'p' and counts creature-table entries owned by g_1005f85c whose type byte is NOT 64 (players), evaluating each via sub_10040900 and writing the count via sub_10040940. (CiroScript 'pcount', doc 11)"
+},
+"0x1002d234": {
+"name": "cmd_monstersaround",
+"purpose": "Reads a range radius via sub_100300ce and counts alive monsters (field_3==64) in the creature table owned by g_1005f85c whose \\|dx\\| and \\|dy\\| from self position (g_1005f854/g_1005f858) are within range, writing the count via sub_10040940. (CiroScript 'monstersaround', doc 11)"
+},
+"0x1002d2c0": {
+"name": "cmd_playersaround",
+"purpose": "Reads a range radius via sub_100300ce and counts alive players (field_3<64, excluding self at g_1005f7ed) owned by g_1005f85c within \\|dx\\|,\\|dy\\| range of self position (g_1005f854/g_1005f858), writing the count via sub_10040940. (CiroScript 'playersaround', doc 11)"
+},
+"0x1002d45d": {
+"name": "cmd_sbtime",
+"purpose": "Renders latency/timer value g_100f49fd converted from milliseconds to seconds (divide by 1000) into the output via sub_10040940. (CiroScript 'sbtime', doc 11)"
+},
+"0x1002d479": {
+"name": "cmd_sstime",
+"purpose": "Renders latency/timer value g_100f4a01 converted from milliseconds to seconds (divide by 1000) into the output via sub_10040940. (CiroScript 'sstime', doc 11)"
+},
+"0x1002d495": {
+"name": "cmd_exectime",
+"purpose": "Renders the integer global g_100580f0 directly into the output buffer via sub_10040940. (CiroScript 'exectime', doc 11)"
+},
+"0x1002d4a8": {
+"name": "cmd_synctime",
+"purpose": "Renders byte global g_100f933a scaled by 100 (percentage form) into the output via sub_10040940. (CiroScript 'synctime', doc 11)"
+},
+"0x1002d4c0": {
+"name": "cmd_fired",
+"purpose": "Renders the integer global g_100f9328 directly into the output buffer via sub_10040940. (CiroScript 'fired', doc 11)"
+},
+"0x1002d4d3": {
+"name": "cmd_formattime",
+"purpose": "If the parsed argument (via sub_10030225) is a digit, delegates formatting through sub_10040900/sub_1002bf38; otherwise emits a time placeholder mask, \"99h99m99s\" or \"99:99:99\" depending on format flag g_1013f325. (CiroScript 'formattime', doc 11)"
+},
+"0x1001d5fd": {
+"name": "dlgProc_CommandParamPicker",
+"purpose": "Dialog proc for the CiroScript command-parameter value picker: on WM_INITDIALOG it reads the parameter-type nibble in g_100f0d34 (low nibble = 1 creature-group / 2 number / 3 text) and populates combo 1004 accordingly - listing predefined creature groups (anyenemy/anyfriend/enemy/friend/self/subenemy/subfriend/target/creature name) for type 1, or number sub-types (hp percentage, hp absolute, mp absolute, item id, distance, amount, index, x/y/z coords) decoded from the high nibble for type 2 - and writes help text via sub_1001cf36."
+},
+"0x1001df05": {
+"name": "dlgProc_CommandPicker",
+"purpose": "Dialog proc for the CiroScript command browser: WM_INITDIALOG fills category listbox 1003 with Attack/Miscellaneous/Movement/Inventory/Restoration/Cavebot/Settings; on category selection it walks the 1064-byte-stride command table at g_1005e194 to populate command combo 1004, shows the selected command's description (v6+8) in 1006, and on OK (1007) copies the chosen command string into g_100f091c and invokes sub_1001cecf."
+},
+"0x1001e1d9": {
+"name": "dlgProc_HotkeyActionPicker",
+"purpose": "Dialog proc for a command-insert prompt: WM_INITDIALOG checks radio 1003 (g_100f0d24=1) and toggles edit 1006 enabled state by radio choice (1003 disables, 1004 enables); on OK (1007) either clears g_100ee91c or seeds it with 'anc ' (magic 0x6f6e6163='canc'... actually 'canc'/1869903201) plus text read from edit 1006, then opens the command category dialog sub_1001df05 via sub_1001f57d(0,9001,...)."
+},
+"0x1001e313": {
+"name": "dlgProc_FriendsEnemies",
+"purpose": "Dialog proc for the friend/enemy configuration tab: WM_INITDIALOG attaches tooltip help (via sub_1000307e) to the enemy(1003)/friend(1002)/subenemy(1011)/subfriend(1008) name-list edit boxes plus the E/F color-marker (1006/1007) and party auto-invite keyword (1014) fields; WM_CLOSE hides the window (SW_HIDE) and stores its HWND in g_10072fb8."
+},
+"0x1001e3e5": {
+"name": "dlgProc_Healer",
+"purpose": "Dialog proc for the Healer/Restoration settings tab: WM_INITDIALOG populates the spell-strength combos 1003/1032 (Light/Strong/Great/Ultimate/Spirit) and potion combos 1026/0x400 (Light/Strong/Great/Ultimate/Spirit Potion, UH Rune), attaches tooltips for Spell Hi/Lo, mana thresholds, UH rune and potion HP triggers plus healing pre/post delays, and fills delay combos 1034/1014 with '0 ms'..'3000 ms' via sub_10040940; stores HWND in g_10072f80 and hides on WM_CLOSE."
+},
+"0x1001e7c3": {
+"name": "dlgProc_NavNet",
+"purpose": "Dialog proc for the NavNet client tab: WM_INITDIALOG loads server IP/name/password/color fields (g_100fa97c/g_100fa9bc/g_100fa9fc/g_10134d61) and Connect/Disconnect label from g_1005f537; the 1009 field opens ChooseColorA (parsing the hex color string at g_10134d61 into g_100f0d50) to pick a custom name color; button 1007 toggles connection via sub_10007a08; checkboxes 1011/1013/1014 store flags g_10134d81/g_1014f414/g_101d5e28."
+},
+"0x1001eb33": {
+"name": "dlgProc_LinksNavNet",
+"purpose": "Dialog proc for the ElfBot Links (client-sharing) server tab: WM_INITDIALOG loads IP/port/account/connect fields (g_10134d83/dc3/de3/e03/e43) and Run/Stop label from g_1005f536; button 1007 starts (sub_100010bf) or stops (sub_10001222) the link server; checkbox 1003 toggles remote control (sub_10001160); button 1008 patches the Tibia client via WriteProcessMemory (g_1005f612) at 0x4f3649/0x4f371e/0x4f358a/0x4f3102/0x549f80 for multi-client login, blocking if the client is in-game (*0x64a9c0==31)."
+},
+"0x1002d536": {
+"name": "cmd_formatnum",
+"purpose": "Evaluates a single script argument expression via sub_100300ce and passes the result to dispatcher sub_1002bfd7; a thin two-call CiroScript statement/condition evaluator wrapper. (CiroScript 'formatnum', doc 11)"
+},
+"0x1002d550": {
+"name": "cmd_ringslot",
+"purpose": "Computes a value from context register via sub_1002c077 and writes the result into the caller-provided out slot v1 via sub_10040940; one instance of a family of identical CiroScript accessor thunks. (CiroScript 'ringslot', doc 11)"
+},
+"0x1002d570": {
+"name": "cmd_beltslot",
+"purpose": "Duplicate of the sub_1002c077 -> sub_10040940 accessor thunk pattern (computes a value and stores it into the out slot v1); one of a repeated block of near-identical CiroScript getter dispatchers. (CiroScript 'beltslot', doc 11)"
+},
+"0x1002d590": {
+"name": "cmd_backslot",
+"purpose": "Identical sub_1002c077 -> sub_10040940 CiroScript getter thunk that evaluates a source value and stores it into the caller out slot v1. (CiroScript 'backslot', doc 11)"
+},
+"0x1002d5b0": {
+"name": "cmd_rhandslot",
+"purpose": "Identical sub_1002c077 -> sub_10040940 CiroScript getter thunk that evaluates a source value and stores it into the caller out slot v1. (CiroScript 'rhandslot', doc 11)"
+},
+"0x1002d5d0": {
+"name": "cmd_lhandslot",
+"purpose": "Identical sub_1002c077 -> sub_10040940 CiroScript getter thunk that evaluates a source value and stores it into the caller out slot v1. (CiroScript 'lhandslot', doc 11)"
+},
+"0x1002d5f0": {
+"name": "cmd_amuletslot",
+"purpose": "Identical sub_1002c077 -> sub_10040940 CiroScript getter thunk that evaluates a source value and stores it into the caller out slot v1. (CiroScript 'amuletslot', doc 11)"
+},
+"0x1002d610": {
+"name": "cmd_bootsslot",
+"purpose": "Identical sub_1002c077 -> sub_10040940 CiroScript getter thunk that evaluates a source value and stores it into the caller out slot v1. (CiroScript 'bootsslot', doc 11)"
+},
+"0x1002d630": {
+"name": "cmd_headslot",
+"purpose": "Identical sub_1002c077 -> sub_10040940 CiroScript getter thunk that evaluates a source value and stores it into the caller out slot v1. (CiroScript 'headslot', doc 11)"
+},
+"0x1002d650": {
+"name": "cmd_chestslot",
+"purpose": "Identical sub_1002c077 -> sub_10040940 CiroScript getter thunk that evaluates a source value and stores it into the caller out slot v1. (CiroScript 'chestslot', doc 11)"
+},
+"0x1002d670": {
+"name": "cmd_legsslot",
+"purpose": "Identical sub_1002c077 -> sub_10040940 CiroScript getter thunk that evaluates a source value and stores it into the caller out slot v1. (CiroScript 'legsslot', doc 11)"
+},
+"0x1002d690": {
+"name": "cmd_topitem",
+"purpose": "CiroScript 3-argument function: seeds out string v6 with '0', and only if all three args (v1/v2/v3) are present evaluates each via sub_100300ce, calls builtin sub_1003a065 with the three values, and stores the result via sub_10040940. (CiroScript 'topitem', doc 11)"
+},
+"0x1002d6f3": {
+"name": "cmd_istileitem",
+"purpose": "CiroScript membership test: evaluates 3 args via sub_100300ce, calls sub_1003a0f8 to get a length-prefixed array (v10[0]=count, elements at v10[1..]), then scans stride-2 entries comparing each against a fourth evaluated value (sub_100300ce(v1)); writes '1' into out v7 on match, '0' otherwise. (CiroScript 'istileitem', doc 11)"
+},
+"0x1002d77f": {
+"name": "cmd_poisoned",
+"purpose": "CiroScript boolean getter: if global flag g_1005f7de is set builds a truthy value via _INSERT and stores it into the caller out slot v1 via sub_10040940. (CiroScript 'poisoned', doc 11)"
+},
+"0x1002d798": {
+"name": "cmd_poisondmg",
+"purpose": "CiroScript getter: seeds out string v1 with '0' and, if global flag g_1005f7de is set, stores the integer global g_1005f7e1 into it via sub_10040940 (flag-gated int accessor). (CiroScript 'poisondmg', doc 11)"
+},
+"0x1002d7ba": {
+"name": "cmd_manashielded",
+"purpose": "CiroScript boolean getter: if global flag g_1005f7d9 is set builds a truthy value via _INSERT and stores it into the caller out slot v1 via sub_10040940. (CiroScript 'manashielded', doc 11)"
+},
+"0x1002d7d3": {
+"name": "cmd_battlesign",
+"purpose": "CiroScript boolean getter: if global flag g_1005f7da is set builds a truthy value via _INSERT and stores it into the caller out slot v1 via sub_10040940. (CiroScript 'battlesign', doc 11)"
+},
+"0x1002d7ec": {
+"name": "cmd_redbattlesign",
+"purpose": "CiroScript boolean getter: if global flag g_1005f7db is set builds a truthy value via _INSERT and stores it into the caller out slot v1 via sub_10040940. (CiroScript 'redbattlesign', doc 11)"
+},
+"0x1002dc22": {
+"name": "cmd_fishspots",
+"purpose": "CiroScript variable getter that calls helper sub_10037694 to compute a runtime value (no direct global) and pushes the result into the script result slot via sub_10040940. (CiroScript 'fishspots', doc 11)"
+},
+"0x1002dc3c": {
+"name": "cmd_waypointson",
+"purpose": "CiroScript variable getter that reads the byte global g_100f0e42 (a bot state/flag byte) and returns it into the script result slot via sub_10040940. (CiroScript 'waypointson', doc 11)"
+},
+"0x1002dc51": {
+"name": "cmd_targetingon",
+"purpose": "CiroScript variable getter that reads the byte global g_100f0d3b and pushes it into the script result slot via sub_10040940. (CiroScript 'targetingon', doc 11)"
+},
+"0x1002dc66": {
+"name": "cmd_autocomboon",
+"purpose": "CiroScript variable getter that reads the byte global g_100fa4ef and pushes it into the script result slot via sub_10040940. (CiroScript 'autocomboon', doc 11)"
+},
+"0x1002dc7b": {
+"name": "cmd_mshieldtime",
+"purpose": "CiroScript variable getter that reads unsigned global g_1008b8dc, multiplies it by 100 (percentage/scaling conversion) and returns the result via sub_10040940. (CiroScript 'mshieldtime', doc 11)"
+},
+"0x1002dc95": {
+"name": "cmd_hastetime",
+"purpose": "CiroScript variable getter that reads unsigned global g_1008b8ec, multiplies it by 100 and pushes the scaled value into the script result slot via sub_10040940. (CiroScript 'hastetime', doc 11)"
+},
+"0x1002dcaf": {
+"name": "cmd_strengthtime",
+"purpose": "CiroScript variable getter that reads unsigned global g_1008b8f0, multiplies it by 100 and returns the scaled value via sub_10040940. (CiroScript 'strengthtime', doc 11)"
+},
+"0x1002dcc9": {
+"name": "cmd_invistime",
+"purpose": "CiroScript variable getter that reads unsigned global g_1008b8e0, multiplies it by 100 and returns the scaled value via sub_10040940. (CiroScript 'invistime', doc 11)"
+},
+"0x1002dce3": {
+"name": "cmd_invisible",
+"purpose": "Writes ASCII '0' into the caller-supplied char buffer, then overwrites it with '1' when the g_1005f7ed struct pointer is non-null and its field_60 (offset 0x60) is zero, i.e. a boolean-as-char status flag (connected/ready state). (CiroScript 'invisible', doc 11)"
+},
+"0x1002dd05": {
+"name": "cmd_dmgs",
+"purpose": "CiroScript variable getter that reads int global g_1008b8d8 and pushes it into the script result slot via sub_10040940. (CiroScript 'dmgs', doc 11)"
+},
+"0x1002dd18": {
+"name": "cmd_lastdmg",
+"purpose": "CiroScript variable getter that reads int global g_1005f5f1 and returns it into the script result slot via sub_10040940. (CiroScript 'lastdmg', doc 11)"
+},
+"0x1002dd2b": {
+"name": "cmd_lastdmgtype",
+"purpose": "CiroScript variable getter that reads int global g_1005f5f9 and returns it into the script result slot via sub_10040940. (CiroScript 'lastdmgtype', doc 11)"
+},
+"0x1002dd3e": {
+"name": "cmd_idlerecvtime",
+"purpose": "CiroScript timer getter that computes GetTickCount() minus the stored timestamp g_1008b72b (elapsed-ms since some event) and returns the delta via sub_10040940. (CiroScript 'idlerecvtime', doc 11)"
+},
+"0x1002dd57": {
+"name": "cmd_standtime",
+"purpose": "CiroScript timer getter that computes GetTickCount() minus stored timestamp g_1005f86c and returns the elapsed-ms delta via sub_10040940. (CiroScript 'standtime', doc 11)"
+},
+"0x1002dd70": {
+"name": "cmd_lastdmgtime",
+"purpose": "CiroScript timer getter that returns GetTickCount() minus stored timestamp g_1005f5f5, or 0 when the timestamp is unset, via sub_10040940. (CiroScript 'lastdmgtime', doc 11)"
+},
+"0x1002dd94": {
+"name": "cmd_islooting",
+"purpose": "CiroScript variable getter that returns 1 when global g_100f0dcc is non-zero and 0 otherwise (boolean normalization) via sub_10040940. (CiroScript 'islooting', doc 11)"
+},
+"0x1002ddb2": {
+"name": "cmd_lastdmgername",
+"purpose": "CiroScript string getter that lstrcpy's the null-terminated string at global g_1005f5ad into the caller-supplied output buffer. (CiroScript 'lastdmgername', doc 11)"
+},
+"0x1002ddc6": {
+"name": "cmd_squaretime",
+"purpose": "CiroScript variable getter that reads int global g_1008b7c3 and pushes it into the script result slot via sub_10040940. (CiroScript 'squaretime', doc 11)"
+},
+"0x10003146": {
+"name": "dlgProc_AutoAim",
+"purpose": "Constructs and populates the AutoAim (auto-targeting) configuration window: uses CreateWindowExA/CreateFontA/SendDlgItemMessageA/SetWindowPos/ShowWindow to lay out the dialog and lstrcat-builds the aim-spell entry list into a large ~0x428-stride config table (1023-byte name buffer + uint + 31-byte field per record) allocated via GlobalAlloc/GetProcessHeap, registering aim modes like 'aimgfb', 'aimavalanche' and 'aimthunderstorm' (help text 'and still be able to hit enemies!!'); calls CreateDirectoryA to ensure the config folder exists and PostQuitMessage/MessageBoxA on teardown/errors."
+},
+"0x10019751": {
+"name": "dlgProc_Cavebot",
+"purpose": "Main ElfBot window DialogProc: on WM_INITDIALOG (272) stores hwnd in g_10072f94, runs sub_10015da3/sub_100160d6/sub_100162e3 init and shows the NeoBot advertisement text in control 1011; on WM_DROPFILES (563) it DragQueryFiles the path and, by case-folded extension magic, loads a .lua script via sub_10015b79 (0x63616c2e '.lua') or a .nav route via sub_100167eb (0x2e6e6176 '.nav'); on WM_COMMAND (273) it handles button 1048 (sets g_10072fb4=2, calls sub_1001f57d worker) and the eight waypoint buttons 1001-1008, appending a 48-byte waypoint record into the table at g_101e6ea8 (count g_10202f06) built from cursor coords g_10052768/g_1005276c/g_10052770 with the directional offset (id-1000) stored in field_2c."
+},
+"0x1001a715": {
+"name": "dlgProc_Targeting",
+"purpose": "Windows dialog procedure for the bot's monster/targeting-list editor: on WM_INITDIALOG (272) it caches the HWND in g_10072f8c and fills listboxes 0x404/1040/1057 via sub_100188bf; on WM_DROPFILES (563) it DragQueryFile's the dropped path, case-insensitively checks for an 'xml'-style extension (the 0x20202020 tolower test against 1952869477) then loads it via sub_10015843/sub_10015267; on WM_COMMAND (273) it dispatches control IDs (1071->sets g_10072fb4=3 and runs sub_1001f57d timer, 1050->appends the current target g_1005f854/858/85c into the 28-byte-stride table g_101dfea5[] and formats a '%d %d %d %s' line into listbox 1062, 1065->deletes the selected 28-byte record via sub_1002ae6f, 1029->edits the 320-byte (0x140) monster record at g_101d5e78 guarded by g_100f0d39 and handles the '<New Monster>' placeholder row)."
+},
+"0x1001b8be": {
+"name": "dlgProc_SkinEditor",
+"purpose": "DialogProc for the hotkey/icon-list editor window (stores hwnd in g_10072f90): on WM_INITDIALOG calls sub_1001b6df/sub_1001b815 to populate the list; on WM_CTLCOLOREDIT (307) paints controls 1069/0x400/1070/1036 red via SetTextColor/CreateSolidBrush using saved colors g_10289888..g_10289894; on WM_COMMAND (273) reads combo/edit selections into g_101d5e22..g_101d5e26 and handles per-entry buttons (rename 1029, delete 1038 with sub_1002ae6f array shift, clear 1075 via sub_1002ae81, move up/down 1026) over the 0x10d4-byte icon records at g_1014f420."
+},
+"0x1001d151": {
+"name": "dlgProc_CommandBuilder",
+"purpose": "DialogProc for the export/clipboard dialog (hwnd saved in g_10072fc8): on WM_INITDIALOG appends g_100f091c to the accumulated text buffer g_100ee91c (joined with ' \\| ' when g_100f0d24 is clear), loads it into edit control 1005 and checks checkbox 1006; on OK (1007) either re-dispatches via sub_1001f57d(9001, sub_1001df05) or copies g_100ee91c to the Windows clipboard through GlobalAlloc/GlobalLock/SetClipboardData(CF_TEXT), then DestroyWindow."
+},
+"0x1001d2e0": {
+"name": "dlgProc_CommandParamBuilder",
+"purpose": "DialogProc for a spell/item picker dialog that walks the g_1005e198 action-record list adding entries with field_420==7 into listbox 1004; on selection change enables the amount/name edit (1003) only for record subtypes 2 (item, needs amount) or 3 (needs name); on OK (1007) builds a formatted command string via wsprintfA(\"%s'%s' \") requiring the edit value (else MessageBoxA prompts), prepends it to g_100f091c and chains sub_1001f57d(9003, sub_1001d2e0) before DestroyWindow."
+},
+"0x100172b0": {
+"name": "parseTargetingRecord",
+"purpose": "Parses a single looter/target config directive from a script line, keying off the leading token via lstrcmpi against \"Name:\", \"Count:\", \"LootMonster:\", \"PlayAlarm:\", \"Setting:\", \"Hpmin:\", \"Hpmax:\": it indexes the per-monster record table at g_101d5e78 (0x140-byte stride, with 0x38-byte sub-records at +96), copies the name via lstrcpyn(...,32), maps count keywords (starting at \"Any\") to a byte, sets loot/alarm yes-no flags by testing (*node\\|32)==121 ('y'), and converts numeric fields (Setting clamped 1..4, Hpmin/Hpmax 0..100) via the atoi helper sub_10040900 with '-' sign handling."
 }
 }
