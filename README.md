@@ -52,6 +52,7 @@ scripts), `elfsettings/`, `lootitems.txt`, `outfits.txt`, `hotkeys.ini`,
 | [`docs/22-elfc-file-format.md`](docs/22-elfc-file-format.md) | `.elfc`/`.elft` format cracked (sparse-opcode) + `decode_elfc.py` |
 | [`docs/23-looting-engine.md`](docs/23-looting-engine.md) | Looter: corpse scan, container table, depot state machine |
 | [`docs/24-hotkeys-alarms.md`](docs/24-hotkeys-alarms.md) | Hotkey/label engine, alarms, DirectSound |
+| [`docs/25-cavebot-targeting-sync.md`](docs/25-cavebot-targeting-sync.md) | Cavebot ↔ targeting ↔ healer synchrony (the flag triad) |
 | [`docs/functions/index.md`](docs/functions/index.md) | Master index — every function (7125) decompiled + purpose |
 
 ## Method
