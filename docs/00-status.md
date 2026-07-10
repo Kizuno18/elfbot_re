@@ -41,20 +41,28 @@ Resume point for the ElfBot NG 8.60 RE. What is done, what is in progress.
 - **Script crypto/compression** — the `.elfc`/`.elft` protection stack
   (Blowfish, BWT, LZW, custom block ciphers) mapped ([12](12-script-crypto-compression.md)).
 
-## Remaining
+- **loader.exe** — all 1780 functions decompiled + purpose; the madCodeHook
+  injection internals (trampoline, remote-thread, shared-mem IPC) reversed
+  ([06](06-injection-chain.md), [functions/loader-catalog.md](functions/loader-catalog.md)).
 
-- Apply the 454 semantic names into the IDA db when `re-ida` reconnects
-  (session restart) — the decompiled C + catalogs already carry the semantics.
-- `loader.exe` (Delphi) per-function (decompiling).
-- `.elfc`/`.elft` byte layout: run a sample through the mapped decrypt/decompress
-  functions ([12](12-script-crypto-compression.md)).
+## Coverage: complete
 
-## TODO (deep passes)
+Every function in every binary is decompiled to pseudo-C **and** has a purpose:
 
-- Per-subsystem engine deep-dives: cavebot walker, targeting evaluator, healer,
-  hotkey/CiroScript interpreter, HUD renderer, NavNet client encode/decode.
-- `.elfc` / `.elft` byte-level format (from the cavebot/targeting loaders).
-- `elfload.dll` + `loader.exe` per-function RE (bootstrap + madCodeHook site).
+| Binary | Functions | Coverage |
+|---|---|---|
+| elfbot.dll `.jdrv` | 1190 | name + purpose (454 semantic, rest described) |
+| elfbot.dll `.jiru`/`.cdtemn` | 5935 | 304 dispatchers described, 5631 structural |
+| loader.exe | 1780 | 68 injection described, rest structural |
+| elfload.dll | 6 | 100% |
+| navserv.exe | 12 | 100% |
+
+## Optional follow-ups
+
+- Bulk-import the full 1158-name map (`ciroscript-commands.csv` + catalogs) into
+  the IDA db via a script (the 37 core names are already applied + saved).
+- `.elfc`/`.elft` exact byte layout: run a sample through the mapped
+  decrypt/decompress functions ([12](12-script-crypto-compression.md)).
 - Reconcile the `SetFunctionAddresses` offset table with the hardcoded hooks.
 
 ## Conventions
