@@ -1,0 +1,17 @@
+# scratch / local
+*.log
+scratch/
+tmp/
+
+# IDA working files (regenerable)
+*.i64
+*.idb
+*.til
+*.nam
+*.id0
+*.id1
+*.id2
+
+# python
+__pycache__/
+*.pyc
