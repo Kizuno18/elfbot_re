@@ -23,31 +23,33 @@ resources, each paired with a window procedure. Registration uses a shared
 descriptor and helper `sub_10002D16`. The resource `TBOTDLG*` names map to
 feature windows/tabs; the paired procs are the per-feature controllers:
 
-| Resource | WndProc | Feature (see subsystem docs) |
+Resolved in [10-feature-subsystems.md](10-feature-subsystems.md):
+
+| Resource | WndProc (named) | Feature |
 |---|---|---|
-| TBOTDLG7 | `sub_10003146` | main control window (14 KB master proc) |
-| TBOTDLGA | `sub_10006BCE` | *(mapped by dialog-feature workflow)* |
-| TBOTDLGB | `sub_1001EB33` | *(writes Tibia memory — combat/action)* |
-| TBOTDLGC | `sub_1001E7C3` | |
-| TBOTDLGD | `sub_10007360` | |
-| TBOTDLGE | `sub_1001E3E5` | |
-| TBOTDLGF | `sub_10007EC4` | |
-| TBOTDLGH | `sub_1001E313` | |
-| TBOTDLGI | `sub_10007CA5` | |
-| TBOTDLGJ | `sub_10007B55` | |
-| TBOTDLGK | `sub_1001E1D9` | |
-| TBOTDLGL | `sub_1001DF05` | |
-| TBOTDLGM | `sub_1001D5FD` | |
-| TBOTDLGN | `sub_1001D2E0` | |
-| TBOTDLGO | `sub_1001D151` | |
-| TBOTDLGP | `sub_10006D3B` | |
-| TBOTDLGQ | `sub_1001EF0C` | |
-| TBOTDLGR | `sub_1001A715` | |
-| TBOTDLGS | `sub_10019751` | |
-| TBOTDLGT | `sub_1000802F` | |
-| TBOTDLGU | `sub_100083B6` | |
-| TBOTDLGV | `sub_100086B3` | **skin selector** (confirmed) |
-| TBOTDLGW | `sub_1001B8BE` | (5 KB proc) |
+| TBOTDLG7 | `dlgProc_AutoAim` `0x10003146` | AutoAim / aimbot ("heart of the pvp-bot") |
+| TBOTDLGA | `dlgProc_HudCreatureList` `0x10006BCE` | HUD creature/battle list |
+| TBOTDLGB | `dlgProc_LinksNavNet` `0x1001EB33` | Links (local link server, patches client) |
+| TBOTDLGC | `dlgProc_NavNet` `0x1001E7C3` | NavNet client config (navserv:7175) |
+| TBOTDLGD | `dlgProc_Hotkeys` `0x10007360` | Hotkeys (96 × 514-byte table) |
+| TBOTDLGE | `dlgProc_Healer` `0x1001E3E5` | Healer (spells/potions) |
+| TBOTDLGF | `dlgProc_GraphicsTweaks` `0x10007EC4` | Graphics/display tweaks |
+| TBOTDLGH | `dlgProc_FriendsEnemies` `0x1001E313` | Friends/Enemies classification |
+| TBOTDLGI | `dlgProc_AutoAimCombo` `0x10007CA5` | AutoAim combo sync |
+| TBOTDLGJ | `dlgProc_HudOnScreenInfo` `0x10007B55` | On-screen info HUD |
+| TBOTDLGK | `dlgProc_HotkeyActionPicker` `0x1001E1D9` | Hotkey action picker |
+| TBOTDLGL | `dlgProc_CommandPicker` `0x1001DF05` | Command category picker (7 groups) |
+| TBOTDLGM | `dlgProc_CommandParamPicker` `0x1001D5FD` | Command parameter picker |
+| TBOTDLGN | `dlgProc_CommandParamBuilder` `0x1001D2E0` | Command/item composer |
+| TBOTDLGO | `dlgProc_CommandBuilder` `0x1001D151` | Command string builder |
+| TBOTDLGP | `dlgProc_Shortkeys` `0x10006D3B` | Shortkeys (text-triggered, 546-byte table) |
+| TBOTDLGQ | `dlgProc_LinksProxy` `0x1001EF0C` | Links proxy/link-server |
+| TBOTDLGR | `dlgProc_Targeting` `0x1001A715` | Targeting (128 × 320-byte monsters) |
+| TBOTDLGS | `dlgProc_Cavebot` `0x10019751` | Cavebot waypoints (NeoBot banner) |
+| TBOTDLGT | `dlgProc_TargetingEditor` `0x1000802F` | Targeting per-entry editor |
+| TBOTDLGU | `dlgProc_ScriptEditor` `0x100083B6` | Script editor (4 modes) |
+| TBOTDLGV | `dlgProc_Skin` `0x100086B3` | Skin selector (confirmed) |
+| TBOTDLGW | `dlgProc_SkinEditor` `0x1001B8BE` | Skin designer (128 × 4308-byte) |
 
 ## Message helper — `postBotMessage` `0x10002C87`
 
