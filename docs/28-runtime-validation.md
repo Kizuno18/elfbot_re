@@ -81,13 +81,44 @@ relies on that global being set during the normal `EcInit`/loader init, and the
 installer self-guards against re-running; both were reproduced to make the writes
 land.)
 
-## What was not exercised
+## 5. Runtime login path — driven to a live OTServ
+
+Later the VM gained an interactive desktop and an IP-patched client
+(`Tibia_ot.exe`, same 8.6 image: size `0x3fa000`, bytes at `0x549F60` /
+`0x45ACD6` identical to the genuine client) pointed at a real OTServ and routed
+through Proxifier. The login screen was driven end-to-end and the connect path
+was confirmed:
+
+- **Keyboard input reaches the client.** After typing into the account field, a
+  Frida `Memory.scanSync` for the unique string found it verbatim in the account
+  buffer at `0x2709460` — the custom Tibia login widget does receive the
+  keystrokes (the field just isn't legible in a downscaled screenshot).
+- **Login submits and the server answers.** Entering `1`/`1` + Enter produced the
+  client's *"Sorry — Invalid account name or password"* dialog. That is a
+  **server-side auth response**, not a socket/timeout error, which proves (a) the
+  VM reaches the OTServ (via Proxifier), (b) the client's connect/login path runs
+  live, (c) `1/1` is simply not a valid account on that particular server.
+
+So the in-game packet path is now blocked only on a **valid credential** for that
+server, not on client/VM connectivity. The classic account-manager `1/1` is
+rejected by this OTServ.
+
+### Instrumentation caveat (crash on connect)
+
+A first `connect`/`WSAConnect` interceptor that dereferenced the `sockaddr`
+field-by-field (`readU16`/per-byte) **crashed the client at the moment of
+connect** — the process died and its supervisor respawned it (visible PID churn
+`4720 → 4108 → 4340`), which had masked the login result. Replacing the hook with
+a defensive `readByteArray(16)` + `try/catch` reader removed the crash. Lesson: at
+the connect boundary, read the sockaddr with `readByteArray` (returns `null` on
+bad memory) rather than typed per-field reads.
+
+## What is still not exercised
 
 The **incoming-packet parser hook body** (shadow creature/channel tables, the
-proxy forward) only fires on real game packets, which needs the client connected
-and in-game. Headless at the login screen there is no server session
-(`[0x64A9C0]==0`), so that path was installed but not triggered. Connecting to an
-OTServ requires the client to render + interact (patch login host + RSA, account
-manager) which the no-desktop VM can't drive. Everything reachable without an
-in-game session — injection, unpack, DllMain, and the full hook installation —
-was confirmed live and matches the static RE exactly.
+proxy forward) only fires once the client is in-game (`[0x64A9C0]==31`) with real
+game packets flowing. The login path is proven up to server auth; the only
+remaining step is authenticating with a valid character on a reachable 8.6 OTServ
+with the account manager (or known credentials). Everything else — injection,
+unpack, DllMain, the full hook installation, and now the live login/connect path
+to a real server — was confirmed and matches the static RE exactly.
