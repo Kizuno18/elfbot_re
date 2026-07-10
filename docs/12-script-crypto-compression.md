@@ -1,10 +1,19 @@
-# elfbot.dll — script crypto & compression subsystem
+# elfbot.dll — crypto & compression subsystem
 
-A cluster of ~59 functions in `.jiru` implements the
-**protection pipeline for the compiled CiroScript files** (`.elfc` cavebot /
-`.elft` targeting). The `.elfc`/`.elft` on disk are binary because they are
-run through this compress-then-encrypt stack, which is why they don't grep as
-text. The bot decrypts+decompresses them on load (`loadcavebot` / `loadtargeting`).
+> **Correction:** the `.elfc`/`.elft` files are **not** run through this stack.
+> They are a sparse-write opcode stream, not ciphertext — see the cracked format
+> in [`22-elfc-file-format.md`](22-elfc-file-format.md), which supersedes the
+> "protection pipeline for compiled scripts" framing below. This cluster is a
+> self-contained crypto/compression library in `.jiru`; its live use is most
+> likely the network/proxy stream cipher (`encryptPacketBlocks` /
+> `decryptPacketBlocks`, [09](09-packet-proxy.md)) and/or the online script-store
+> DRM (`ciroscript.com`), **not** the on-disk `.elfc` load path. The function
+> inventory below stands; only the "what it protects" claim is corrected.
+
+A cluster of ~59 functions in `.jiru` implements a full compress-then-encrypt
+stack: BWT + LZW + RLE/zlib compression and a Blowfish + custom/white-box
+block-cipher bank. Present in the binary and reversed here; the exact data it is
+applied to at runtime is noted in the correction above.
 
 ## Compression stages
 
