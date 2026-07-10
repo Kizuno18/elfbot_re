@@ -82,9 +82,19 @@ config) so one bot build tracks multiple client patches. This is the classic
 2010-era Tibia bot architecture: injected DLL + configurable client offsets +
 a script VM driving cavebot/targeting.
 
-## TODO (IDA passes)
+### loader.exe key functions (decompiled)
 
-- `elfload.dll`: enumerate and document its handful of functions (bootstrap,
-  dialog proc, EcInit thunk).
-- `loader.exe`: map the Delphi form + the madCodeHook injection call site and
-  the client-detection / privilege code. Delphi RTTI aids naming.
+1780 functions (Delphi RTL/VCL + logic) decompiled; the injection-relevant ones:
+
+| Address | Name | What it does |
+|---|---|---|
+| `0x0041D274` | `_start` | main: init (`sub_405028`); if `findTibiaClient()` fails → MessageBox **"Please run Tibia first!"** / "Elfbot NG"; else run `sub_403920` (inject + main loop) |
+| `0x0041CF9C` | `findTibiaClient` | `FindWindowA("TibiaClient")` + `GetWindowThreadProcessId` + `OpenProcess`; also reads LDT/GDT/`fs` (anti-debug) — returns whether Tibia is up and opens its process |
+| `0x0041C6B8` | `enableDebugPrivilege` | `OpenProcessToken` + `LookupPrivilegeValueA(SeDebugPrivilege)` + `AdjustTokenPrivileges`; `GetTokenInformation` for the UAC/elevation check behind the "run as Administrator" warning |
+| `0x004143B0` | (madCodeHook inject) | large `LoadLibraryA`-driven routine — the madCodeHook cross-process DLL injection of `elfload.dll` |
+| `0x0041AB98`, `0x0041C00C`, `0x0041A334` | remote writers | `WriteProcessMemory` into the Tibia process (bootstrap/parameter passing) |
+
+The full per-function catalog is in
+[functions/decompiled/loader/](functions/decompiled/loader-index.md) (1780
+functions, pseudo-C). Delphi decompiles less cleanly than the MSVC binaries, so
+names are assigned from the WinAPI/string anchors above.
