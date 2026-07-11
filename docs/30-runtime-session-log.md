@@ -85,12 +85,45 @@ by cross-session message:
 2. The UI geometry status (per-control `text` present; groupbox captions listed).
 3. The runtime login finding + a request for valid server credentials.
 
+## Re-point plan (ready to run when infra is stable)
+
+A valid 8.6 test target became available: **`sv.bigot.com.br` → `179.124.178.79`
+port `7171`** (proto 860). Resolved live from the VM via a Frida `getaddrinfo`
+call (VM DNS reaches it). Credentials for it are held **in the session only — not
+stored here (secret)**.
+
+`Tibia_ot.exe` is currently patched at a raw **IP** (a scan of its readable memory
+found no `sv.bigot` / `.com.br` hostname string), so it does not point at the test
+server. Rather than locate and overwrite the client's login-server config, the
+clean redirect is a **Frida `connect`/`WSAConnect` interceptor** that rewrites the
+`sockaddr_in` whenever the client dials port 7171/7172:
+
+```js
+// port 7171/7172 -> 179.124.178.79:7171 (safe byte writes into the sockaddr)
+if (port === 7171 || port === 7172) {
+  sa.add(2).writeU8((7171>>8)&0xff); sa.add(3).writeU8(7171&0xff);
+  sa.add(4).writeU8(179); sa.add(5).writeU8(124); sa.add(6).writeU8(178); sa.add(7).writeU8(79);
+}
+```
+
+This works because the OTServ RSA is already patched into `Tibia_ot` (it reached
+the previous OTServ), and `sv.bigot.com.br` uses the standard OTServ key. Steps:
+install the redirect hook → type `bigleo` + password + Enter → server auth → enter
+game (in-world, `[0x64A9C0]==31`) → capture the parser hook `0x45ACD6` firing +
+the shadow tables populating.
+
+**Current blocker (this session):** `re-winctl` (the UI typing/screenshot MCP) is
+disconnected, and `Tibia_ot.exe` **respawns roughly every minute** (PID churn
+`4720→4108→4340→…→2404→3920`) which drops the Frida session with the persistent
+hook. A blind Frida-only login (drive keystrokes via `PostMessageA WM_CHAR`) is
+possible in principle but not reliable while the process keeps respawning and no
+screenshot is available to confirm dialog state. Resume when `re-winctl` returns
+and the client is stable.
+
 ## Pending
 
 - **Wizard popups** `TBOTDLGK/L/M/N/O/T/U` (command pickers / builders / targeting
   & script editors) — not in the geometry JSON; need a **live capture** with each
   dialog open. Doable offline on the independent genuine `Tibia.exe`.
-- **In-game packet test** — needs a valid character on a reachable 8.6 OTServ.
-  Options: valid creds from the parallel session, or create an account on the
-  server via the client's "Create Account" flow (both were in progress when infra
-  dropped).
+- **In-game packet test** — the target + method above are ready; blocked only on
+  a stable client + `re-winctl` for the login keystrokes.
