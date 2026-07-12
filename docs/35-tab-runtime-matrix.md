@@ -38,9 +38,24 @@ is the pending live-capture noted in [docs/29](29-ui-layout-geometry.md).
 ## Runtime tests: harness + method
 
 Each RT reuses the [docs/33](33-runtime-ingame-validation.md) setup: inject
-`elfbot.dll` into the in-game client, install the client hooks, then exercise the
-tab's feature and confirm the documented global/packet/render effect via Frida
-(memory read, `send`/`recv` hook, or the draw path). Status is ⏳ where a stable
-in-game session with real activity is still needed — the shared RE VM's clients are
-short-lived, so runtime tests are taken opportunistically when a client is up and
-the re-* MCP tunnel is healthy (retried patiently across its intermittent 502s).
+`elfbot.dll` into the in-game client, install the client hooks, boot the tick loop,
+then exercise the tab's feature and confirm the documented global/packet/render
+effect via Frida (memory read, `send`/`recv` hook, or the draw path).
+
+### Foundation — confirmed live in-game (docs/33)
+
+- ✅ **Reproducible stack** — TFS 0.4 8.60 + RSA/hosts-patched client + scripted
+  session-1 login → char in the world (`inGame==31`, `7172` connection).
+- ✅ **Injection + client hooks** — `elfbot.dll` maps (rebase by `module.base` — it
+  relocates), hooks patch `0x45ACD6`/`0x4F30C0`/`0x5AB5D4` to the relocated handlers.
+- ✅ **Engine running** — `botMainTickLoop` booted; the bot's **player-state shadow
+  equals the live client** (HP/mana/pos), proving the tick loop reads the game.
+
+Because the shared tick loop drives every subsystem, the ✅ foundation means each
+tab's engine *runs*; what each per-tab RT still needs is the **scenario** (a creature
+to target/attack, a corpse to loot, a route to walk, chat to parse). Those are ⏳:
+the packet-fed shadow creature/battle-list stayed empty (temple spawn, no creatures
+on screen), and the `0x45ACD6` parser hook is a specific-opcode dispatch that
+movement packets don't hit. Scenario-driven tab tests are the remaining capture,
+taken opportunistically when a client is up and the re-* MCP tunnel is healthy
+(retried patiently across its intermittent 502s).
