@@ -124,6 +124,30 @@ This is the definitive in-game runtime proof: **the ElfBot engine is live in the
 game world and mirroring the real player state**, exactly as [docs/13](13-engine-tick-loop.md)/[docs/21](21-player-state.md)
 describe.
 
+### Multiple tab engines ticking live
+
+Hooking each subsystem's tick entry (rebased) and counting invocations over a
+sampling window shows the tick loop driving them at the cadences
+[docs/13](13-engine-tick-loop.md) predicts (per-tick ~10 ms for playerStats/script,
+~100 ms for the rest):
+
+| Tab / subsystem | Tick fn (rebased) | Ticks (climbing) | Live |
+|---|---|---|---|
+| Snapshot (player state) | `0x10024FAE` | 149→300→…→1062 | ✅ per-tick |
+| Cavebot / CiroScript | `0x1002BC68` | 149→299→…→1061 | ✅ per-tick |
+| Healing (mana/heal) | `0x1002492D` | 25→50→…→176 | ✅ ~10/s |
+| Healing (attack cast) | `0x100235E8` | 25→…→176 | ✅ ~10/s |
+| Targeting (attack scan) | `0x10023893` | 22→…→163 | ✅ ~10/s |
+| Creature Spy (battle scan) | `0x10023A8F` | 25→…→176 | ✅ ~10/s |
+| HUD (exp window) | `0x10023E42` | 25→…→176 | ✅ ~10/s |
+| Icons/HUD render | `0x1003E7AA` | 0 | ⏳ client-draw-hook driven, no icons defined |
+| NavNet (pos broadcast) | `0x1003FFDF` | 0 | ⏳ correctly idle — NavNet not connected |
+
+So the **Healing, Targeting, Cavebot, Creature Spy and HUD engines are all running
+live in-game**, dispatched by `botMainTickLoop` on their documented schedules; the
+two at zero are correctly inactive (no icons defined; NavNet feature off). This is
+the runtime confirmation of the tick-order model plus those tabs' engines.
+
 ### Still open
 
 - The **incoming-packet parser hook** (`0x45ACD6` → relocated handler) does not fire

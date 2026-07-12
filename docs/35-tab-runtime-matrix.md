@@ -10,15 +10,15 @@ live / 🟡 partially observed / ⏳ pending a stable in-game session.
 
 | Tab | Class | DialogProc | Doc | Runtime test (exercise → observable) | RT |
 |---|---|---|---|---|---|
-| Healing | TBOTDLGE | `dlgProc_Healer 0x1001E3E5` | [15](15-healer-engine.md) ✅ | set HP threshold, take damage → heal spell/potion cast (send hook + HP mirror `0x1005F7D1`) | ⏳ |
+| Healing | TBOTDLGE | `dlgProc_Healer 0x1001E3E5` | [15](15-healer-engine.md) ✅ | set HP threshold, take damage → heal spell/potion cast (send hook + HP mirror `0x1005F7D1`) | 🟡 engine ticks live (`0x1002492D`); cast pending low-HP scenario |
 | Aimbot | TBOTDLGI / DLG7 | `dlgProc_AutoAim 0x10003146` | [26](26-aimbot-combo.md) ✅ | enable + enemy on screen → best-square scan + attack packet | ⏳ |
-| Targeting | TBOTDLGR | `dlgProc_Targeting 0x1001A715` | [16](16-targeting-engine.md) ✅ | define monster, spawn it → `g_100f0e20` set to creature ptr + attack | ⏳ |
-| Cavebot | TBOTDLGS | `dlgProc_Cavebot 0x10019751` | [17](17-cavebot-walker.md) ✅ | load `.elfc`, enable → walker follows waypoints (`g_100f0e42`, map-click send) | ⏳ |
+| Targeting | TBOTDLGR | `dlgProc_Targeting 0x1001A715` | [16](16-targeting-engine.md) ✅ | define monster, spawn it → `g_100f0e20` set to creature ptr + attack | 🟡 scan ticks live (`0x10023893`); attack pending a creature on screen |
+| Cavebot | TBOTDLGS | `dlgProc_Cavebot 0x10019751` | [17](17-cavebot-walker.md) ✅ | load `.elfc`, enable → walker follows waypoints (`g_100f0e42`, map-click send) | 🟡 script tick runs per-tick live (`0x1002BC68`); walk pending waypoints |
 | Hotkeys | TBOTDLGD | `dlgProc_Hotkeys 0x10007360` | [24](24-hotkeys-alarms.md) ✅ | bind key→command, press → CiroScript runs (record `byte_100FAA3C`) | ⏳ |
 | Shortkeys | TBOTDLGP | `dlgProc_Shortkeys 0x10006D3B` | [24](24-hotkeys-alarms.md) 🟡 | type trigger text → command fires (table `byte_10106B02`) | ⏳ |
 | Lists (Friends/Enemies) | TBOTDLGH | `dlgProc_FriendsEnemies 0x1001E313` | [34](34-tabs-lists-extras-hud-spy-links.md) ✅ | add enemy name → red **E** marker + red outfit paint on that player | ⏳ |
-| HUD On-Screen | TBOTDLGJ | `dlgProc_HudOnScreenInfo 0x10007B55` | [34](34-tabs-lists-extras-hud-spy-links.md) ✅ | enable overlays → ping/exp/timers drawn (draw hook `0x4F30C0`) | ⏳ |
-| Creature Spy | TBOTDLGA | `dlgProc_HudCreatureList 0x10006BCE` | [34](34-tabs-lists-extras-hud-spy-links.md) ✅ | open window → live creature rows from shadow table (stride 168) | ⏳ |
+| HUD On-Screen | TBOTDLGJ | `dlgProc_HudOnScreenInfo 0x10007B55` | [34](34-tabs-lists-extras-hud-spy-links.md) ✅ | enable overlays → ping/exp/timers drawn (draw hook `0x4F30C0`) | 🟡 exp-window tick runs live (`0x10023E42`); on-screen draw pending client render |
+| Creature Spy | TBOTDLGA | `dlgProc_HudCreatureList 0x10006BCE` | [34](34-tabs-lists-extras-hud-spy-links.md) ✅ | open window → live creature rows from shadow table (stride 168) | 🟡 battle scan ticks live (`0x10023A8F`); rows pending creatures on screen |
 | Extras (Graphics) | TBOTDLGF | `dlgProc_GraphicsTweaks 0x10007EC4` | [34](34-tabs-lists-extras-hud-spy-links.md) ✅ | toggle World View → `g_100ee8bb` set + `sub_10039c81`; toggle FPS tweak → GUI 10fps | ⏳ |
 | Icons | TBOTDLGW | `dlgProc_SkinEditor 0x1001B8BE` | [32](32-icons-tab.md) ✅ | define icon → `drawCustomHudElements` renders; click → `hitTestHudButtons` → command | ⏳ |
 | NavNet | TBOTDLGC | `dlgProc_NavNet 0x1001E7C3` | [18](18-navnet-codec.md) ✅ | connect navserv:7175 → position broadcast (`sendNavPositionUpdate 0x1003FFDF`) | ⏳ |
