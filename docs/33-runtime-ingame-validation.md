@@ -148,6 +148,34 @@ live in-game**, dispatched by `botMainTickLoop` on their documented schedules; t
 two at zero are correctly inactive (no icons defined; NavNet feature off). This is
 the runtime confirmation of the tick-order model plus those tabs' engines.
 
+### Icons tab — behavioural runtime test (PASS)
+
+Defined a full icon record at runtime (write to the `g_1014f420` table per the
+[docs/32](32-icons-tab.md) layout: name `"TestIcon"`, `+0x44` enabled=1, command
+`+0x20`, and an inactive `+4076` / active `+4176` state block with `offX=offY=80`),
+then called the renderer `drawCustomHudElements 0x1003E7AA` directly (the client's
+draw loop doesn't fire headlessly). Result: it iterated my icon and called the inner
+draw `sub_1003E5F2` **at (80, 80) — exactly the offsets I set** (8 element draws over
+6 calls). Toggling the active-state array `g_1008a90b[0]` switched it to the active
+block. So the Icons record model + render pipeline are confirmed live: a
+runtime-defined icon renders at its specified position with active/inactive
+selection.
+
+### NavNet tab — runtime test (partial)
+
+The NavNet client is fully identified — `navNetClientThreadLoop 0x1003FA8F`
+(socket/connect to `g_1013F31C`, login), `sendNavPositionUpdate 0x1003FFDF` (11-byte
+position packet over `WSOCK32` `send` on socket `g_1005F539`), config globals
+`g_100FA97C/9BC/9FC` — and the wire protocol is in [docs/04](04-navnet-server.md). A
+test harness (a listener on `7175`, config globals set, a connect-redirect, and
+`send` hooks on `WSOCK32`+`ws2_32`) was set up and the encoder/thread invoked
+directly, but no packet was emitted from the isolated call: the connect returned
+`-1` and `sendNavPositionUpdate` bailed before `send` (it gates on the full nav
+connect/handshake state, not just a socket handle). NavNet's RE is complete; a green
+runtime capture needs the connection driven through the dialog's Connect path
+(`toggleNavProxyConnection 0x10007A08`) with a live `navserv` rather than a
+hand-poked socket — the follow-up.
+
 ### Still open
 
 - The **incoming-packet parser hook** (`0x45ACD6` → relocated handler) does not fire

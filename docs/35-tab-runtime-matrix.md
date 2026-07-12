@@ -20,8 +20,8 @@ live / 🟡 partially observed / ⏳ pending a stable in-game session.
 | HUD On-Screen | TBOTDLGJ | `dlgProc_HudOnScreenInfo 0x10007B55` | [34](34-tabs-lists-extras-hud-spy-links.md) ✅ | enable overlays → ping/exp/timers drawn (draw hook `0x4F30C0`) | 🟡 exp-window tick runs live (`0x10023E42`); on-screen draw pending client render |
 | Creature Spy | TBOTDLGA | `dlgProc_HudCreatureList 0x10006BCE` | [34](34-tabs-lists-extras-hud-spy-links.md) ✅ | open window → live creature rows from shadow table (stride 168) | 🟡 battle scan ticks live (`0x10023A8F`); rows pending creatures on screen |
 | Extras (Graphics) | TBOTDLGF | `dlgProc_GraphicsTweaks 0x10007EC4` | [34](34-tabs-lists-extras-hud-spy-links.md) ✅ | toggle World View → `g_100ee8bb` set + `sub_10039c81`; toggle FPS tweak → GUI 10fps | ⏳ |
-| Icons | TBOTDLGW | `dlgProc_SkinEditor 0x1001B8BE` | [32](32-icons-tab.md) ✅ | define icon → `drawCustomHudElements` renders; click → `hitTestHudButtons` → command | ⏳ |
-| NavNet | TBOTDLGC | `dlgProc_NavNet 0x1001E7C3` | [18](18-navnet-codec.md) ✅ | connect navserv:7175 → position broadcast (`sendNavPositionUpdate 0x1003FFDF`) | ⏳ |
+| Icons | TBOTDLGW | `dlgProc_SkinEditor 0x1001B8BE` | [32](32-icons-tab.md) ✅ | define icon → `drawCustomHudElements` renders; click → `hitTestHudButtons` → command | ✅ defined a runtime icon; renderer drew it at the exact offsets set (docs/33) |
+| NavNet | TBOTDLGC | `dlgProc_NavNet 0x1001E7C3` | [18](18-navnet-codec.md) ✅ | connect navserv:7175 → position broadcast (`sendNavPositionUpdate 0x1003FFDF`) | 🟡 client + encoder RE'd, harness set up; send gated on connect handshake (docs/33) |
 | Links | TBOTDLGB | `dlgProc_LinksNavNet 0x1001EB33` | [34](34-tabs-lists-extras-hud-spy-links.md) ✅ | Run Links → listen socket up; Set-for-client (logged off) → client patches at `0x4F36xx` | ⏳ |
 | Proxy | TBOTDLGQ | `dlgProc_LinksProxy 0x1001EF0C` | [09](09-packet-proxy.md) ✅ | run proxy → watcher/controller listen socket (`byte_102898CD`) | ⏳ |
 | Skin | TBOTDLGV | `dlgProc_Skin 0x100086B3` | [05](05-ui-init-framework.md) 🟡 | pick skin → USkin applies `.msstyles`; `elfbot.ini LastSkin` written | ⏳ |
