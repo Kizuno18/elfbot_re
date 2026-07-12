@@ -62,6 +62,7 @@ scripts), `elfsettings/`, `lootitems.txt`, `outfits.txt`, `hotkeys.ini`,
 | [`docs/30-runtime-session-log.md`](docs/30-runtime-session-log.md) | Live driving of the OTServ-patched client: login path proven to server auth, crash-fix, pending items |
 | [`docs/31-gap-resolutions.md`](docs/31-gap-resolutions.md) | 4 behavior-parity GAPs resolved offline: `g_100f0e20` is a creature ptr, `auto N`, `dontlist`, deposit states `{0,2,3,5,7}` |
 | [`docs/32-icons-tab.md`](docs/32-icons-tab.md) | **Command Icons tab (TBOTDLGW)**: record layout, render/click path, seticonactive/seticontext |
+| [`docs/33-runtime-ingame-validation.md`](docs/33-runtime-ingame-validation.md) | **In-game injection on local TFS 0.4** — bot injected into a live in-world client, hooks confirmed |
 | [`docs/functions/index.md`](docs/functions/index.md) | Master index — every function (7125) decompiled + purpose |
 
 ## Method
