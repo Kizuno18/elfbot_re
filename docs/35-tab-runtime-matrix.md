@@ -32,8 +32,25 @@ live / 🟡 partially observed / ⏳ pending a stable in-game session.
 ## Documentation: complete
 
 Every tab now has a doc home (dedicated ✅ or within a broader engine doc 🟡). The
-wizard/editor popups (K/L/M/N/O/T/U) are indexed in docs/10 and their exact geometry
-is the pending live-capture noted in [docs/29](29-ui-layout-geometry.md).
+wizard/editor popups (K/L/M/N/O/T/U) are indexed in docs/10.
+
+### Wizard-popup geometry (B) — why it is runtime-gated
+
+Their exact control geometry cannot be lifted statically: `elfbot.dll` is Armadillo
+and its resource directory (`IMAGE_DIRECTORY_ENTRY_RESOURCE`) is a **16-byte stub** —
+the real `RT_DIALOG` templates live inside the encrypted `.aqfu` section
+(`0x3CB000`, 0xB0000) and are only rebuilt in memory after the packer runs. So the
+authoritative geometry source is one of, both needing the bot mapped + unpacked in a
+live process:
+
+- read the **in-memory `RT_DIALOG` templates** (the `DLGTEMPLATE`/`DLGITEMTEMPLATE`
+  x/y/cx/cy in dialog units) once Armadillo has decrypted resources, or
+- open each wizard and `GetWindowRect` its child controls (the docs/29 live-capture
+  method, which only covered the always-visible panels, not these on-demand popups).
+
+The general (docs/29) panels were captured this way; the seven popups are the
+remaining live capture, gated on the runtime stack (which was wiped from the lab VM
+on re-image — the docs/33 stack is not currently resident).
 
 ## Runtime tests: harness + method
 

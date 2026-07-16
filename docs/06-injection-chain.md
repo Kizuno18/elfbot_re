@@ -130,3 +130,41 @@ Net: loader.exe uses madCodeHook to inject `elfload.dll` into `Tibia.exe` by
 `OpenProcess` + shared-memory-coordinated `CreateRemoteThread`, with a relocated
 trampoline so the DLL maps cleanly. Delphi decompiles less cleanly than the MSVC
 binaries, so names come from the WinAPI/string anchors.
+
+## Why `loader.exe` fails `err=126` on the modern lab (root cause)
+
+The runtime harness ([docs/33](33-runtime-ingame-validation.md)) found `loader.exe`
+logs `FAIL err=126` (`ERROR_MOD_NOT_FOUND`) and never boots the engine, so injection
+there is done by a direct `LoadLibrary` + `CreateThread(botMainTickLoop)` instead.
+Statically the 126 is pinned to the load chain, not to the pieces people usually
+suspect:
+
+- **Target detection is fine.** loader finds the client by
+  `FindWindowA("TibiaClient", …)` (`0x405482`) → `GetWindowThreadProcessId`
+  (`0x40549A`); a genuine 8.60 client — even the RSA-patched `Tibia_ot.exe` — keeps
+  the `TibiaClient` window class, so this resolves (a mismatch would raise the
+  `"Please run Tibia first!"` MessageBox, not `126`).
+- **elfbot's dependencies are present.** Its imports are all stock system DLLs
+  (`WSOCK32`, `ws2_32`, `DSOUND`, `winmm`, `SHELL32`, `comdlg32`, `GDI32`,
+  `COMCTL32`, `user32`, `kernel32`) — all on the Win10 lab. `elfload.dll` itself only
+  needs `user32`/`kernel32`/`comctl32`. So the `126` is not a missing static import.
+
+That leaves two candidates, both consistent with the observed failure:
+
+1. **elfload's directory-relative resolution.** Once mapped, `elfload!sub_10001198`
+   builds `<its own module dir>\USkin.dll` and `<…>\elfbot.dll` from
+   `GetModuleFileNameA` + append and `LoadLibraryA`s them. If madCodeHook maps
+   `elfload.dll` from a path where `elfbot.dll`/`USkin.dll` are not co-located, that
+   directory-relative load returns `126`. All three DLLs must sit in one folder.
+2. **madCodeHook on Win10.** The injector is circa-2010 Madshi code; its
+   remote-thread + `findHelperProcess` (`0x40E7A8`) cross-session/cross-bitness model
+   predates Win10 session isolation. A missing/creatable madCodeHook helper module in
+   that path also surfaces as `126` from the remote `LoadLibrary`.
+
+The [docs/33](33-runtime-ingame-validation.md) direct-`LoadLibrary(elfbot.dll)` +
+manual hook install + `CreateThread(0x100227BD)` reproduces the loader's end state
+while bypassing both the madCodeHook path and the directory-relative resolution —
+which is exactly why it succeeds where `loader.exe` `126`-fails. A live confirmation
+of the fix (co-locate the three DLLs, run `loader.exe` against the client window) is
+gated on the runtime stack being present; the RE-level root cause is the load chain
+above.

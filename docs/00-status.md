@@ -20,10 +20,20 @@ The static side is complete, including the previously-deferred third-party surfa
 `.jiru`/`.cdtemn` support-section provenance, are documented in
 [37](37-uskin-and-support-section.md); the last byte-exact micro-gaps (`auto`/`wait`
 scheduler arrays, the `settargeting`/`setcavebot`/target-ptr flag literals) are
-pinned in [36](36-scheduling-and-flags.md). What remains is purely live-target work:
-per-tab **behavioural** runtime scenarios (a creature to attack/loot, a route to
-walk) and the exact pixel geometry of the seven wizard/editor popups — tracked in the
-runtime matrix ([35](35-tab-runtime-matrix.md)), gated on a stable in-game session.
+pinned in [36](36-scheduling-and-flags.md). The `loader.exe` `err=126` injection
+failure is root-caused at the RE level (the elfload directory-relative
+`elfbot`/`USkin` load + madCodeHook-on-Win10, [06](06-injection-chain.md)); the
+docs/33 direct-`LoadLibrary` path is the proven substitute.
+
+What remains is purely **live-target** work, and it is gated on the runtime stack —
+which was wiped when the lab VM was re-imaged (the docs/33 TFS 0.4 8.60 server +
+RSA-patched 8.60 client are no longer resident, and the Tibia client is not
+reproducible from this repo): per-tab **behavioural** scenarios (a creature to
+attack/loot, a route to walk), the seven wizard/editor popups' exact geometry (their
+`RT_DIALOG` templates are Armadillo-encrypted — capturable only from the bot mapped +
+unpacked in a live client, [35](35-tab-runtime-matrix.md)), and the live `loader.exe`
+re-run. The engine itself was already proven live in-game in a prior session
+([33](33-runtime-ingame-validation.md)).
 
 ## Done (detail)
 
