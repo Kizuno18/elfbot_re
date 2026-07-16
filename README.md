@@ -65,6 +65,8 @@ scripts), `elfsettings/`, `lootitems.txt`, `outfits.txt`, `hotkeys.ini`,
 | [`docs/33-runtime-ingame-validation.md`](docs/33-runtime-ingame-validation.md) | **In-game injection on local TFS 0.4** — bot injected into a live in-world client, hooks confirmed |
 | [`docs/34-tabs-lists-extras-hud-spy-links.md`](docs/34-tabs-lists-extras-hud-spy-links.md) | Dedicated RE of Lists, Extras, HUD On-Screen, Creature Spy, Links tabs |
 | [`docs/35-tab-runtime-matrix.md`](docs/35-tab-runtime-matrix.md) | **Every tab → doc → runtime-test matrix** (coverage tracker) |
+| [`docs/36-scheduling-and-flags.md`](docs/36-scheduling-and-flags.md) | Byte-exact `auto`/`wait` per-entry scheduler arrays + the three subsystem-state flag literals (`settargeting`/`setcavebot`/target ptr) |
+| [`docs/37-uskin-and-support-section.md`](docs/37-uskin-and-support-section.md) | `USkin.dll` 41 exports + the elfload load/`Init`/neutered-`Exit` contract; `.jiru`/`.cdtemn` 5935-func support section provenance |
 | [`docs/functions/index.md`](docs/functions/index.md) | Master index — every function (7125) decompiled + purpose |
 
 ## Method

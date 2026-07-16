@@ -49,15 +49,15 @@ On match:
   **the remainder of the line** (the command after `N`) via `sub_10030442` (the
   CiroScript statement executor).
 
-The per-entry countdown `g_10087A0B[i]` is only **decremented** here
-(`-= g_10084BFF`, the tick's ms-delta) and re-armed via the generation id; counters
-wrap at `2000`. `N` is the **repeat interval in milliseconds** (documented ElfBot
-behaviour), realised as the reload value of that countdown — but the exact
-`N → g_10087A0B` reload store is **not isolated in this function's decompile** (`N`
-is consumed as a token here; the numeric wiring runs through `sub_10030442` / the
-delay path). Confirm the reload store against raw disassembly if byte-exact timing
-matters. This is a single global schedule (the driver sweeps entry index `i`), not
-a per-module registry.
+The per-entry countdown here is only **decremented** (`-= g_10084BFF`, the tick's
+ms-delta) and re-armed via the generation id. `N` is the **repeat interval in
+milliseconds**. The reload store — left "not isolated" in this note originally — is
+now pinned byte-exact in [docs/36](36-scheduling-and-flags.md): the `auto` handler
+(`0x10032433`) stores the interval into **`g_10084C0B[i]`** (`0x10032470`) and its
+accumulator `g_10086E8B[i]`, while **`g_10087A0B[i]` is the separate `wait`/hold
+cooldown** (`wait` `0x10030878` @ `0x100308b4`), not the auto interval. This is a
+single global schedule (the driver sweeps entry index `i`), not a per-module
+registry.
 
 ## GAP-7 — `dontlist`
 

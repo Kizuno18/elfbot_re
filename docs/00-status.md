@@ -13,11 +13,17 @@ statically-linked library code** (zlib 1.2.3 + archive lib; no path to bot logic
 even via pointer dispatch — [12](12-script-crypto-compression.md)); the real
 network cipher is the Tibia client's XTEA at `0x549F60` and `.elfc`/`.elft` are
 plaintext opcode streams ([22](22-elfc-file-format.md)). IDA `.i64` fully named
-and saved. 28 docs (00–27).
+and saved. 38 docs (00–37).
 
-Open only if a live target appears: dynamic confirmation of runtime behaviour
-(re-x64dbg/re-frida on a running Tibia 8.60), and per-function RE of the
-third-party `USkin.dll` (out of scope — not ElfBot code).
+The static side is complete, including the previously-deferred third-party surface:
+`USkin.dll`'s 41 exports + the elfload load/`Init`/neutered-`Exit` contract, and the
+`.jiru`/`.cdtemn` support-section provenance, are documented in
+[37](37-uskin-and-support-section.md); the last byte-exact micro-gaps (`auto`/`wait`
+scheduler arrays, the `settargeting`/`setcavebot`/target-ptr flag literals) are
+pinned in [36](36-scheduling-and-flags.md). What remains is purely live-target work:
+per-tab **behavioural** runtime scenarios (a creature to attack/loot, a route to
+walk) and the exact pixel geometry of the seven wizard/editor popups — tracked in the
+runtime matrix ([35](35-tab-runtime-matrix.md)), gated on a stable in-game session.
 
 ## Done (detail)
 
@@ -98,8 +104,11 @@ Every function in every binary is decompiled to pseudo-C **and** has a purpose:
 - HUD renderer deep pass (the on-screen draw callbacks; partially covered in
   [20](20-client-hooks-deep.md) / [21](21-player-state.md)).
 - Reconcile the `SetFunctionAddresses` offset table with the hardcoded hooks.
-- The `.jiru`/`.cdtemn` support section stays catalogued (5935 funcs) but is not
-  individually deep-documented — MSVC STL/Boost/CRT glue, outside bot-logic scope.
+- The `.jiru`/`.cdtemn` support section stays catalogued (5935 funcs) with its
+  provenance now written up ([37](37-uskin-and-support-section.md)); the stock MSVC
+  STL/Boost/CRT glue is identified, not individually deep-documented (outside
+  bot-logic scope — the only bot-relevant part, the crypto/compression subsystem, is
+  in [12](12-script-crypto-compression.md)).
 
 ## Conventions
 
