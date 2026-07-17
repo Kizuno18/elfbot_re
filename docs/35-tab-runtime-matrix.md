@@ -34,23 +34,35 @@ live / 🟡 partially observed / ⏳ pending a stable in-game session.
 Every tab now has a doc home (dedicated ✅ or within a broader engine doc 🟡). The
 wizard/editor popups (K/L/M/N/O/T/U) are indexed in docs/10.
 
-### Wizard-popup geometry (B) — why it is runtime-gated
+### Wizard-popup geometry (B) — investigated live; capture path narrowed
 
-Their exact control geometry cannot be lifted statically: `elfbot.dll` is Armadillo
-and its resource directory (`IMAGE_DIRECTORY_ENTRY_RESOURCE`) is a **16-byte stub** —
-the real `RT_DIALOG` templates live inside the encrypted `.aqfu` section
-(`0x3CB000`, 0xB0000) and are only rebuilt in memory after the packer runs. So the
-authoritative geometry source is one of, both needing the bot mapped + unpacked in a
-live process:
+Their control geometry cannot be lifted statically: `elfbot.dll` is Armadillo and its
+resource directory (`IMAGE_DIRECTORY_ENTRY_RESOURCE`) is a **16-byte stub** — the real
+`RT_DIALOG` templates sit in the encrypted `.aqfu` section (`0x3CB000`, 0xB0000).
+A live injection pass this session (Frida, `elfbot.dll` mapped into a 32-bit WOW64
+host — note it is an **x86** DLL, so a 32-bit host is required; it loads at its
+preferred base `0x10000000`) pinned down what does *not* work and what remains:
 
-- read the **in-memory `RT_DIALOG` templates** (the `DLGTEMPLATE`/`DLGITEMTEMPLATE`
-  x/y/cx/cy in dialog units) once Armadillo has decrypted resources, or
-- open each wizard and `GetWindowRect` its child controls (the docs/29 live-capture
-  method, which only covered the always-visible panels, not these on-demand popups).
+- **`FindResourceW`/resource walk after load — fails.** With the module mapped, a
+  scan of ids 1–4000 for `RT_DIALOG` returned **zero**, and a memory scan of the whole
+  module for the wide class strings `TBOTDLG*` returned **zero** (only the 23 ASCII
+  `TBOTDLG?` class names from the `RegisterClassEx` table at `0x100428de…0x1004485c`
+  are present). So Armadillo does **not** restore the PE resource directory in the
+  mapped image — the templates are decrypted only **transiently, at dialog-creation
+  time**, through the bot's own (IAT-hooked) resource path.
+- **Booting `EcInit` in a throwaway host — crashes it.** `EcInit(0)` on a non-Tibia
+  host tears the process down: `EcInit` is Tibia-coupled (it installs the client
+  inline hooks at the `0x400000`-based Tibia addresses, which are not that host).
 
-The general (docs/29) panels were captured this way; the seven popups are the
-remaining live capture, gated on the runtime stack (which was wiped from the lab VM
-on re-image — the docs/33 stack is not currently resident).
+So the viable capture is one of: **(a)** inject into a real in-game Tibia client and,
+per wizard, either `GetWindowRect` the child controls (the docs/29 live method — it
+only covered the always-visible panels, not these on-demand popups) or hook
+`CreateWindowExW/A` (controls arrive as pixel client-rects) while the popup opens; or
+**(b)** a targeted harness that calls `CreateDialogParam` for each wizard id directly
+(so Armadillo decrypts that one template) with `CreateWindowExW` hooked, *without*
+running `EcInit`'s client-hook path. Both need a live client; the docs/33 stack was
+wiped on the lab-VM re-image and the Tibia client is not reproducible from the repo,
+so B stays gated on that. `elfbot.dll` is staged on the VM for the next attempt.
 
 ## Runtime tests: harness + method
 
