@@ -42,9 +42,21 @@ Cavebot-walk, Aimbot-engage and Targeting-attack-engage all failed while the fla
 paths (which the *other* installed hooks + `botMainTickLoop` drive) succeeded. **The fix
 is to install the arbiter hook**: patch `0x459F30` to `E9 <rel32 → E(0x1003D99F)>` (the
 arbiter replicates the prologue + `JUMPOUT`s to `0x459F35`), which the stock loader's full
-init does. Route load ✅, walker + arbiter + hook-site fully decoded; the live capture is
-one hook-install away, but the debug client's USkin dialog + fragility ended the window
-before the patch landed ([17](17-cavebot-walker.md), [19](19-cavebot-waypoints.md), [25](25-cavebot-targeting-sync.md)) | 33, 39 |
+init does. **✅ Cavebot walk — behavioural PASS (captured live).** On a fresh boot (elfbot
+@ `0x83D0000`) the full chain was assembled: (1) route loaded via `loadScriptFile`
+(`dword_10202F06=4`, north nodes from `148,573,2`); (2) **arbiter hook installed** by
+patching `0x459F30` with `E9 <rel32→arbiter>` — immediately `dword_1005DB9C` (arbiter
+SEH-phase) went non-zero and the current-waypoint index `dword_100F0E00` began **cycling
+`0→1→2→3→0`**, proving the walker runs; (3) the walker's pos `dword_1005F854/858/85C`
+synced to the live client pos each tick. Result: **the character walked** —
+`[148,573] → [148,572]` (`moved:true`, `walkerPos_after=[148,572,2]`), a bot-driven step
+north toward waypoint 0. Route → arbiter tick → pathfinder → step delivery, end to end.
+Continuous multi-tile walking is throttled by the walker's per-waypoint state machine +
+the manual pos-sync race, but the module is proven — **the bot drives character
+movement**. The **same arbiter hook** is the unifying enabler for **Aimbot** and
+**Targeting-attack engagement** (both dispatched from `sub_1003D99F`) — which is why they
+didn't engage on the minimal boot, not the dialog-config wall first assumed
+([17](17-cavebot-walker.md), [19](19-cavebot-waypoints.md), [25](25-cavebot-targeting-sync.md)) | 33, 39 |
 | **Creature Spy / battle-list** | `0x10023A8F` | ✅ **behavioural PASS** — `scanBattleListStatusTick` walks the live client battle-list (`0x63FEF8`, stride 168) each tick; with Dragon Lords on screen every occupied record was read + classified (the name-matcher recolours below prove the full-list scan reads names/outfits live) ([34](34-tabs-lists-extras-hud-spy-links.md)) | 39 |
 | **HUD on-screen** | `0x10023E42` | 🟡 exp-window tick runs live; on-screen draw needs the client render path ([34](34-tabs-lists-extras-hud-spy-links.md)) | 33 |
 | **Icons / HUD render** | `0x1003E7AA` | ✅ **behavioural PASS** — a runtime-defined icon rendered at the exact offsets set, active/inactive block selection working ([32](32-icons-tab.md)) | 33 |
