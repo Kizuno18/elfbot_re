@@ -83,6 +83,35 @@ So the ElfBot engine is **live inside the genuine client on the local Fir3elemen
 server, injected by the stock `loader.exe`, hooking byte-for-byte and mirroring the
 real in-world player** — the complete injected-runtime E2E.
 
+## Reproduced — independent second live run
+
+The whole chain was reproduced on a fresh VM boot to confirm it is deterministic, not
+a one-off. `Account Manager` was deleted from the `players` table so **`Godbot` (God,
+group 6) is the only character** — the login is then unambiguous. `Godbot` was
+relocated to a **Dragon Lord spawn at `149,574,2`** (its position stored `z,y,x` in
+the client: `[0x64F600]=2 [0x64F604]=574 [0x64F608]=149`). Results, all consistent
+with the first run:
+
+- `loader.exe` mapped **`elfload.dll @ 0x10000000`, `USkin.dll @ 0x07D70000`,
+  `elfbot.dll @ 0x082B0000`** — a *different* relocation base than the first run,
+  which is exactly why every elfbot address must be rebased by the live module base
+  (`E(off) = base + (off − 0x10000000)`).
+- After the docs/33 boot kick, **`0x45ACD6` = `ce 6f e5 07`** — the packet-parser
+  hook's rel32 into the relocated elfbot module (`0x45ACDB + 0x07E56FCE = 0x082B2CA8`),
+  byte-for-byte as expected at this base.
+- **Tick loop confirmed live**: the tick ms-delta `g_10084BFF` advanced between two
+  samples (`15 → 16`) — `botMainTickLoop` is running and updating each pass.
+- **Shadow == live player**: `Godbot` HP/mana `2000/2000` read equal in the client
+  (`[0x63FE94]`/`[0x63FE78]`) and the rebased elfbot shadow (`E(0x1005F7D1)` /
+  `E(0x1005F7D5)`), with `[0x64A9C0] == 31` (in-world).
+- **Creatures present**: the on-screen Dragon Lord spawn shows in the client's
+  creature list as `Dragon Lord` records at **stride 168** (`0x63FEFC`, `0x63FFA4`,
+  `0x64004C`, `0x6400F4` …) — the scenario source the Targeting / Creature-Spy
+  behavioural captures read from.
+- **elfbot UI live in-client**: the `USkin` "Choose a skin file to load" dialog
+  (`TBOTDLGV`) rendered inside the client, confirming `EcInit`'s dialog framework +
+  USkin init are running.
+
 ## Lab method note (winctl unavailable)
 
 The desktop-control MCP was down for this run and frida's 32-bit attach was unusable,
