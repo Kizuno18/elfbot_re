@@ -26,7 +26,7 @@ runtime capture pending a scenario + a stable lab.
 | **Snapshot / player-state** | `0x10024FAE` | ✅ shadow **== live in-world player** — HP `[0x63FE94]==E(0x1005F7D1)`, pos `[0x64F600]/[0x64F604]==E(0x10052770)/E(0x1005276C)`, with `[0x64A9C0]==31` (in-world). Ticks per-tick | 33, 38 |
 | **Healing** (heal + attack cast) | `0x1002492D` / `0x100235E8` | ✅ **behavioural PASS** — on `Tester` under attack, the heal-spell table was pre-loaded (`g_100445F8[0]=266` "exura" / `[1]=236` strong-heal) but the threshold `g_10134E66` was 0 (disabled); setting it to `900000` (HP `50603` < threshold) made `healerManaSpellTick` **fire the heal** — the fired-record `g_10080BA6` flipped `0→1` (docs/15: 1 = heal spell cast), injecting the 15-byte synthetic cast packet ([15](15-healer-engine.md)) | 39 |
 | **Targeting** | `0x10023893` | ✅ **behavioural PASS** — with a normal char `Tester` at a Dragon Lord spawn, writing `"Dragon Lord"` into the targeting name-list (`g_100638A8`) + enabling (`g_100F0D3B`=1, HUD-colour `g_100F94C7`=1, write-to-client `g_10135278`=1) made `scanBattleListStatusTick` **match + recolour the matched creature live**: the on-screen `Dragon Lord` battle-list record's outfit-head byte (`+100`) became **106** (docs/16 matcher-A colour) while three non-matching `Dragon` records stayed `0` ([16](16-targeting-engine.md), [36](36-scheduling-and-flags.md)) | 39 |
-| **Cavebot / CiroScript** | `0x1002BC68` | 🟡 script tick runs per-tick live; enable = `g_100F0E42`; a walk needs loaded waypoints ([17](17-cavebot-walker.md)) | 33 |
+| **Cavebot / CiroScript** | `0x1002BC68` | 🟡 **armed live** — `setcavebot` gate `g_100F0E42` flipped `0→1` by write; a **waypoint was injected into the table** (`0x101E6EA8[0]` = `x+2,y,z` at the live pos `149,573,2`, count `0x10202F06=1`) and the walker tick runs, but the char did **not** step: *armed ≠ running*. Walking needs the `waypointson` run-state, whose command handler (`0x1002dc3c`) reads a CiroScript interpreter frame arg (`[ebp-8]`) — so it can't be `CreateRemoteThread`-forced, only driven from the VM/dialog ([17](17-cavebot-walker.md), [19](19-cavebot-waypoints.md), [25](25-cavebot-targeting-sync.md)) | 33, 39 |
 | **Creature Spy / battle-list** | `0x10023A8F` | ✅ **behavioural PASS** — `scanBattleListStatusTick` walks the live client battle-list (`0x63FEF8`, stride 168) each tick; with Dragon Lords on screen every occupied record was read + classified (the name-matcher recolours below prove the full-list scan reads names/outfits live) ([34](34-tabs-lists-extras-hud-spy-links.md)) | 39 |
 | **HUD on-screen** | `0x10023E42` | 🟡 exp-window tick runs live; on-screen draw needs the client render path ([34](34-tabs-lists-extras-hud-spy-links.md)) | 33 |
 | **Icons / HUD render** | `0x1003E7AA` | ✅ **behavioural PASS** — a runtime-defined icon rendered at the exact offsets set, active/inactive block selection working ([32](32-icons-tab.md)) | 33 |
@@ -37,13 +37,13 @@ runtime capture pending a scenario + a stable lab.
 | Module | Handler | Runtime | Ev |
 |---|---|---|---|
 | **CiroScript VM** | 422 cmds, 3-table perfect hash | ✅ dispatch + `auto`/`wait`/`end` scheduler arrays pinned byte-exact ([11](11-ciroscript-engine.md), [36](36-scheduling-and-flags.md)); per-command runs via a hotkey/label | 36 |
-| **Hotkeys / Shortkeys / Alarms** | `0x10007360` / `0x10006D3B` | ⏳ bind → CiroScript run; RE complete ([24](24-hotkeys-alarms.md)) | — |
-| **Aimbot / combo** | `0x10003146` | ⏳ square-scan + combo; needs an enemy on screen ([26](26-aimbot-combo.md)) | — |
-| **Looting** | corpse scan / depot SM | ⏳ needs a corpse (kill a creature) ([23](23-looting-engine.md)) | — |
+| **Hotkeys / Shortkeys / Alarms** | `0x10007360` / `0x10006D3B` | 🟡 **armed live** — the script gate `g_100F0E42` flipped `0→1` and the auto-repeat interval `g_10084C0B[0]` was armed to `500`; the scheduler tick (`processHotkeyScriptEngine 0x1002b09e`) is live (the ms-delta `g_10084BFF` reads `16` per tick). Firing a bound command still needs a CiroScript body in the entry + a key event ([24](24-hotkeys-alarms.md), [36](36-scheduling-and-flags.md)) | 39 |
+| **Aimbot / combo** | `0x10003146` | ⏳ enemies present live (3 Dragons + a Rat on screen), but the shared attack path never engaged: the auto-attack gate `g_10207F35` **resets to `0` on the next tick** after a memory write, i.e. it is re-derived from the Targeting dialog's per-creature config each tick — so aim/combo can't be forced from memory ([26](26-aimbot-combo.md)) | 39 |
+| **Looting** | corpse scan / depot SM | ⏳ engine ticks live; needs a corpse, which needs a kill — and the attack path is dialog-gated (above), so no corpse could be produced on this debug client to feed the corpse scan (`0x64CAD0` container table) ([23](23-looting-engine.md)) | 39 |
 | **Lists (Friends/Enemies)** | `0x1001E313` | ✅ **behavioural PASS** — writing `"Dragon"` into the **enemy** name-list (`g_1005F8A8`, matcher B) recoloured the three on-screen `Dragon` creatures' outfit to **96** live, *while* the targeting list A recoloured the `Dragon Lord` to **106** in the same tick — two matchers, two colours, exactly per docs/16 | 39 |
 | **Extras (Graphics)** | `0x10007EC4` | ⏳ World View sets `g_100EE8BB` ([34](34-tabs-lists-extras-hud-spy-links.md)) | — |
 | **Skin (USkin)** | `EcInit` load / `dlgProc_Skin` | ✅ USkin initialised in-client (skin-selector dialog rendered live); `.msstyles` from `Skins\` ([37](37-uskin-and-support-section.md)) | 38 |
-| **Proxy** | `0x1001EF0C` | ✅ **behavioural PASS** — `installClientHooks_proxyServer` (`0x10002041`) `socket`/`bind`/`listen` ran at boot; the injected client holds a live **LISTEN socket on `0.0.0.0:50606`** (`Get-NetTCPConnection` on the client PID), i.e. the embedded proxy/watcher server is up ([09](09-packet-proxy.md)) | 39 |
+| **Proxy** | `0x1001EF0C` | ✅ **behavioural PASS (2 boots)** — `installClientHooks_proxyServer` (`0x10002041`) `socket`/`bind`/`listen` ran at boot; the injected client holds a live **LISTEN socket** (`0.0.0.0:50606` first boot, `0.0.0.0:49978` on a fresh second boot — the port varies per boot), alongside the game connection `Established → 127.0.0.1:7172`; the embedded proxy/watcher server is up ([09](09-packet-proxy.md)) | 39 |
 | **Links** | `0x1001EB33` | ⏳ relay + client `0x4F36xx` patch ([34](34-tabs-lists-extras-hud-spy-links.md)) | — |
 
 ## God-created scenario — normal char under attack (behavioural bed)
@@ -113,13 +113,36 @@ outpaces the Dragon Lords and it **survives indefinitely under attack** (HP seen
 holding ~59535 while chat logs *"You lose 131 hitpoints due to an attack by a dragon
 lord"*) — a reusable damage+creature bed.
 
-**Engine-live, config-gated (🟡):** Healing, Cavebot, Looting, Aimbot, HUD-draw,
-Extras, Hotkeys, Proxy, Links and NavNet engines are all **confirmed ticking live**
-(the tick loop drives them), but their behavioural captures need config the elfbot
-**dialogs** populate — a heal spell/potion + threshold (Healer), waypoints (Cavebot),
-a loot list (Looting), etc. On this exact **debug-build** client, clicking its dialogs
-(the recurring `USkin` skin-selector, module config windows) trips `Debug Assertion`
-crashes, so driving those config dialogs is unreliable here; the engines run, the
-config-populate step is what the debug binary won't survive. Their memory-model +
-tick-liveness are documented; a release-build client would let the dialog config +
-capture complete.
+**Armed live this run (🟡, memory-triggerable enable/arm confirmed):**
+
+- **Hotkeys / scheduler** — script gate `g_100F0E42` `0→1`, auto interval `g_10084C0B[0]=500` armed, the scheduler tick is live (`g_10084BFF` ms-delta reads `16`/tick). Firing a bound command needs a CiroScript body + a key event.
+- **Cavebot walker** — `setcavebot` gate `g_100F0E42` `0→1`, a waypoint injected into the table (`0x101E6EA8[0]`, count `0x10202F06=1`); the walker tick runs but the char didn't step — *armed ≠ running*.
+
+**The run-state boundary (why attack / aimbot / walk can't be memory-forced).** The
+critical finding of the behavioural sweep: ElfBot's **run-states** — *targeting-on*,
+*waypoints-on*, *auto-attack* — are **re-derived from the CiroScript-interpreter /
+dialog layer every tick**, not free-floating globals. Two independent proofs on the
+live genuine client:
+
+1. Writing the auto-attack gate `g_10207F35 = 1` (with an armed target list + enemies
+   on screen) is **reset to `0` on the very next tick** — the arbiter recomputes it
+   from the Targeting dialog's per-creature config. So `g_100F0E20` (current-target
+   pointer) never engaged and no attack/aim cast fired, despite `g_100F0D3B` (targeting
+   armed) being set and the arbiter `0x1003D99F` running.
+2. The authoritative commands that *would* start those run-states — `waypointson`
+   (`0x1002dc3c`) and `targetingon` (`0x1002dc51`) — are **CiroScript command handlers
+   that read an interpreter-frame argument** (`push [ebp-8]` before their toggle call,
+   confirmed by disassembling them live in the client). They can't be
+   `CreateRemoteThread`-called (no valid VM frame → the arg is garbage), only invoked
+   from the interpreter or the dialog Start button.
+
+So on this client: every module **engine is confirmed ticking live**, everything that
+triggers via a **data write or an enable flag** is captured (the PASS list above), and
+the remaining behaviours (attack cast, aimbot combo, cavebot *walk*, looting a corpse)
+sit behind that interpreter/dialog run-state — which the debug-build client's dialogs
+(the recurring `USkin` selector + module config windows tripping `Debug Assertion`)
+won't survive being driven. Their memory model + tick-liveness are fully documented; a
+**release-build client** (stable dialogs) is what would let the run-state be armed from
+the UI and the final captures complete. This is an architectural property of ElfBot,
+not a gap in the RE: the safety-relevant toggles are deliberately coupled to the
+authoritative config, so poking the derived flag does nothing lasting.
