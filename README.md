@@ -67,6 +67,7 @@ scripts), `elfsettings/`, `lootitems.txt`, `outfits.txt`, `hotkeys.ini`,
 | [`docs/35-tab-runtime-matrix.md`](docs/35-tab-runtime-matrix.md) | **Every tab → doc → runtime-test matrix** (coverage tracker) |
 | [`docs/36-scheduling-and-flags.md`](docs/36-scheduling-and-flags.md) | Byte-exact `auto`/`wait` per-entry scheduler arrays + the three subsystem-state flag literals (`settargeting`/`setcavebot`/target ptr) |
 | [`docs/37-uskin-and-support-section.md`](docs/37-uskin-and-support-section.md) | `USkin.dll` 41 exports + the elfload load/`Init`/neutered-`Exit` contract; `.jiru`/`.cdtemn` 5935-func support section provenance |
+| [`docs/38-runtime-e2e-genuine-client.md`](docs/38-runtime-e2e-genuine-client.md) | **Full E2E runtime** — `loader.exe` injects the chain into a genuine 8.60 client on a local Fir3element TFS; hooks byte-exact + shadow == live player; `err=126` resolved |
 | [`docs/functions/index.md`](docs/functions/index.md) | Master index — every function (7125) decompiled + purpose |
 
 ## Method

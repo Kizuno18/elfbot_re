@@ -164,7 +164,12 @@ That leaves two candidates, both consistent with the observed failure:
 The [docs/33](33-runtime-ingame-validation.md) direct-`LoadLibrary(elfbot.dll)` +
 manual hook install + `CreateThread(0x100227BD)` reproduces the loader's end state
 while bypassing both the madCodeHook path and the directory-relative resolution —
-which is exactly why it succeeds where `loader.exe` `126`-fails. A live confirmation
-of the fix (co-locate the three DLLs, run `loader.exe` against the client window) is
-gated on the runtime stack being present; the RE-level root cause is the load chain
-above.
+which is exactly why it succeeds where `loader.exe` `126`-fails.
+
+**Live-confirmed (candidate 1):** [docs/38](38-runtime-e2e-genuine-client.md) ran
+`loader.exe` against a genuine in-world 8.60 client with all four files
+(`loader.exe`/`elfload.dll`/`elfbot.dll`/`USkin.dll`) **co-located in one directory**,
+and it **injected cleanly with no `err=126`** — mapping `elfload`/`USkin`/`elfbot` and
+running `EcInit`. So the historical `126` was the **directory-relative
+`elfbot`/`USkin` load**, not madCodeHook-on-Win10; madCodeHook injects fine on Win10
+once the payload DLLs sit next to `elfload.dll`.

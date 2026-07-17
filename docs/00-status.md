@@ -21,9 +21,15 @@ The static side is complete, including the previously-deferred third-party surfa
 [37](37-uskin-and-support-section.md); the last byte-exact micro-gaps (`auto`/`wait`
 scheduler arrays, the `settargeting`/`setcavebot`/target-ptr flag literals) are
 pinned in [36](36-scheduling-and-flags.md). The `loader.exe` `err=126` injection
-failure is root-caused at the RE level (the elfload directory-relative
-`elfbot`/`USkin` load + madCodeHook-on-Win10, [06](06-injection-chain.md)); the
-docs/33 direct-`LoadLibrary` path is the proven substitute.
+failure is **resolved** — [38](38-runtime-e2e-genuine-client.md) ran `loader.exe`
+with the four files co-located and it injected cleanly (no `126`), confirming the
+cause was the elfload directory-relative `elfbot`/`USkin` load, not madCodeHook-on-Win10
+([06](06-injection-chain.md)).
+
+Full **E2E runtime is proven** ([38](38-runtime-e2e-genuine-client.md)): a genuine
+RSA-patched 8.60 client logged into a local Fir3element TFS 0.4, `loader.exe` injecting
+the whole chain, client hooks byte-for-byte, and the engine's shadow == the live
+in-world player (`[0x64A9C0]==31`, HP/pos mirrored).
 
 What remains is purely **live-target** work, and it is gated on the runtime stack —
 which was wiped when the lab VM was re-imaged (the docs/33 TFS 0.4 8.60 server +
