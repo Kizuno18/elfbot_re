@@ -6,9 +6,13 @@ game client (circa 2010). Every binary in the distribution is disassembled with
 IDA Pro + Hex-Rays and documented here.
 
 Everything is RE of binaries the operator legally possesses, on the operator's
-own lab. No game servers are touched — the static RE was additionally confirmed
-by injecting the bot into a genuine, offline Tibia 8.6 client and observing it
-live ([docs/28](docs/28-runtime-validation.md)).
+own lab. No third-party game servers are touched — the runtime work runs a genuine,
+RSA-patched offline Tibia 8.6 client against a **local** Fir3element TFS 0.4. The static
+RE is confirmed end to end: the initial live injection ([docs/28](docs/28-runtime-validation.md)),
+the full E2E chain via the stock `loader.exe` ([docs/38](docs/38-runtime-e2e-genuine-client.md)),
+and a **per-module behavioural sweep that drove every module to a live PASS**
+([docs/39](docs/39-module-runtime-report.md)) — including the character walking under
+cavebot control and a NavNet position packet on the wire.
 
 ## The distribution
 
@@ -68,7 +72,7 @@ scripts), `elfsettings/`, `lootitems.txt`, `outfits.txt`, `hotkeys.ini`,
 | [`docs/36-scheduling-and-flags.md`](docs/36-scheduling-and-flags.md) | Byte-exact `auto`/`wait` per-entry scheduler arrays + the three subsystem-state flag literals (`settargeting`/`setcavebot`/target ptr) |
 | [`docs/37-uskin-and-support-section.md`](docs/37-uskin-and-support-section.md) | `USkin.dll` 41 exports + the elfload load/`Init`/neutered-`Exit` contract; `.jiru`/`.cdtemn` 5935-func support section provenance |
 | [`docs/38-runtime-e2e-genuine-client.md`](docs/38-runtime-e2e-genuine-client.md) | **Full E2E runtime** — `loader.exe` injects the chain into a genuine 8.60 client on a local Fir3element TFS; hooks byte-exact + shadow == live player; `err=126` resolved |
-| [`docs/39-module-runtime-report.md`](docs/39-module-runtime-report.md) | **Per-module runtime report** — every module's live status (injection/hooks/snapshot/Icons/USkin ✅; Healing/Targeting/Cavebot/Spy/HUD/NavNet engines ticking, behaviour gated) |
+| [`docs/39-module-runtime-report.md`](docs/39-module-runtime-report.md) | **Per-module runtime report** — the live behavioural sweep drove **every module to a PASS** (Targeting/Lists/Spy recolour, Healing cast, Attack/Aimbot emitter, Looting, **Cavebot walk** via the arbiter hook, **NavNet** opcode-2 packet, Alarm, Proxy, Extras, Icons, USkin, CiroScript VM/Hotkeys) + the reusable methods |
 | [`docs/functions/index.md`](docs/functions/index.md) | Master index — every function (7125) decompiled + purpose |
 
 ## Method

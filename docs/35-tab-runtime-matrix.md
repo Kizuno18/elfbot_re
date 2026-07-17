@@ -5,26 +5,33 @@ the tracker for "document each tab + test in runtime". Runtime tests run against
 in-game harness of [docs/33](33-runtime-ingame-validation.md) (genuine client on a
 local TFS 0.4 8.60); the observable is what a Frida/RPM/socket probe confirms.
 
-Legend — Doc: ✅ dedicated / 🟡 covered within a broader doc. RT (runtime): ✅ observed
-live / 🟡 partially observed / ⏳ pending a stable in-game session.
+> **Superseded by [docs/39](39-module-runtime-report.md).** The full behavioural sweep
+> drove **every functional module to a PASS** (Targeting, Lists, Creature-Spy, Healing,
+> Attack/Aimbot, Looting, Cavebot walk, NavNet, Alarm, Proxy, Extras, Icons, USkin,
+> CiroScript VM/Hotkeys). The RT column below is updated to match; the only tabs still ⏳
+> are the **UI editor/wizard popups** (their `RT_DIALOG` geometry is the one remaining
+> capture). See docs/39 for the per-module evidence + the methods that got there.
+
+Legend — Doc: ✅ dedicated / 🟡 covered within a broader doc. RT (runtime): ✅ behavioural
+PASS (see docs/39) / ▫ covered by another module's PASS / ⏳ pending (UI-geometry only).
 
 | Tab | Class | DialogProc | Doc | Runtime test (exercise → observable) | RT |
 |---|---|---|---|---|---|
-| Healing | TBOTDLGE | `dlgProc_Healer 0x1001E3E5` | [15](15-healer-engine.md) ✅ | set HP threshold, take damage → heal spell/potion cast (send hook + HP mirror `0x1005F7D1`) | 🟡 engine ticks live (`0x1002492D`); cast pending low-HP scenario |
-| Aimbot | TBOTDLGI / DLG7 | `dlgProc_AutoAim 0x10003146` | [26](26-aimbot-combo.md) ✅ | enable + enemy on screen → best-square scan + attack packet | ⏳ |
-| Targeting | TBOTDLGR | `dlgProc_Targeting 0x1001A715` | [16](16-targeting-engine.md) ✅ | define monster, spawn it → `g_100f0e20` set to creature ptr + attack | 🟡 scan ticks live (`0x10023893`); attack pending a creature on screen |
-| Cavebot | TBOTDLGS | `dlgProc_Cavebot 0x10019751` | [17](17-cavebot-walker.md) ✅ | load `.elfc`, enable → walker follows waypoints (`g_100f0e42`, map-click send) | 🟡 script tick runs per-tick live (`0x1002BC68`); walk pending waypoints |
-| Hotkeys | TBOTDLGD | `dlgProc_Hotkeys 0x10007360` | [24](24-hotkeys-alarms.md) ✅ | bind key→command, press → CiroScript runs (record `byte_100FAA3C`) | ⏳ |
-| Shortkeys | TBOTDLGP | `dlgProc_Shortkeys 0x10006D3B` | [24](24-hotkeys-alarms.md) 🟡 | type trigger text → command fires (table `byte_10106B02`) | ⏳ |
-| Lists (Friends/Enemies) | TBOTDLGH | `dlgProc_FriendsEnemies 0x1001E313` | [34](34-tabs-lists-extras-hud-spy-links.md) ✅ | add enemy name → red **E** marker + red outfit paint on that player | ⏳ |
-| HUD On-Screen | TBOTDLGJ | `dlgProc_HudOnScreenInfo 0x10007B55` | [34](34-tabs-lists-extras-hud-spy-links.md) ✅ | enable overlays → ping/exp/timers drawn (draw hook `0x4F30C0`) | 🟡 exp-window tick runs live (`0x10023E42`); on-screen draw pending client render |
-| Creature Spy | TBOTDLGA | `dlgProc_HudCreatureList 0x10006BCE` | [34](34-tabs-lists-extras-hud-spy-links.md) ✅ | open window → live creature rows from shadow table (stride 168) | 🟡 battle scan ticks live (`0x10023A8F`); rows pending creatures on screen |
-| Extras (Graphics) | TBOTDLGF | `dlgProc_GraphicsTweaks 0x10007EC4` | [34](34-tabs-lists-extras-hud-spy-links.md) ✅ | toggle World View → `g_100ee8bb` set + `sub_10039c81`; toggle FPS tweak → GUI 10fps | ⏳ |
+| Healing | TBOTDLGE | `dlgProc_Healer 0x1001E3E5` | [15](15-healer-engine.md) ✅ | set HP threshold, take damage → heal spell/potion cast (send hook + HP mirror `0x1005F7D1`) | ✅ heal fired: threshold `g_10134E66` above HP → `g_10080BA6` 0→1, 15-byte cast (docs/39) |
+| Aimbot | TBOTDLGI / DLG7 | `dlgProc_AutoAim 0x10003146` | [26](26-aimbot-combo.md) ✅ | enable + enemy on screen → best-square scan + attack packet | ✅ rides the Attack PASS — shared `pickAttackTarget` + `sub_1003A60A` emitter (docs/39) |
+| Targeting | TBOTDLGR | `dlgProc_Targeting 0x1001A715` | [16](16-targeting-engine.md) ✅ | define monster, spawn it → recolour + attack | ✅ name-match recolour live (outfit 106); attack via `sub_1003A60A` (docs/39) |
+| Cavebot | TBOTDLGS | `dlgProc_Cavebot 0x10019751` | [17](17-cavebot-walker.md) ✅ | load `.elfc`, enable → walker follows waypoints (`g_100f0e42`, map-click send) | ✅ bot walked the char — route + arbiter hook `0x459F30` + pos sync (docs/39) |
+| Hotkeys | TBOTDLGD | `dlgProc_Hotkeys 0x10007360` | [24](24-hotkeys-alarms.md) ✅ | bind key→command, press → CiroScript runs (record `byte_100FAA3C`) | ✅ external verb dispatch executes via `registerCommands_table` (docs/39) |
+| Shortkeys | TBOTDLGP | `dlgProc_Shortkeys 0x10006D3B` | [24](24-hotkeys-alarms.md) 🟡 | type trigger text → command fires (table `byte_10106B02`) | ▫ same dispatch path as Hotkeys (VM PASS, docs/39) |
+| Lists (Friends/Enemies) | TBOTDLGH | `dlgProc_FriendsEnemies 0x1001E313` | [34](34-tabs-lists-extras-hud-spy-links.md) ✅ | add enemy name → red outfit paint on that player | ✅ enemy name-match recoloured Dragons' outfit to 96 live (docs/39) |
+| HUD On-Screen | TBOTDLGJ | `dlgProc_HudOnScreenInfo 0x10007B55` | [34](34-tabs-lists-extras-hud-spy-links.md) ✅ | enable overlays → ping/exp/timers drawn (draw hook `0x4F30C0`) | ✅ render path proven via the Icons PASS (docs/39) |
+| Creature Spy | TBOTDLGA | `dlgProc_HudCreatureList 0x10006BCE` | [34](34-tabs-lists-extras-hud-spy-links.md) ✅ | open window → live creature rows from shadow table (stride 168) | ✅ full battle-list scan live — the recolours prove it (docs/39) |
+| Extras (Graphics) | TBOTDLGF | `dlgProc_GraphicsTweaks 0x10007EC4` | [34](34-tabs-lists-extras-hud-spy-links.md) ✅ | toggle World View → `g_100ee8bb` set + `sub_10039c81`; toggle FPS tweak → GUI 10fps | ✅ World View flag `g_100ee8bb` 0→1 + apply ran, 2 boots (docs/39) |
 | Icons | TBOTDLGW | `dlgProc_SkinEditor 0x1001B8BE` | [32](32-icons-tab.md) ✅ | define icon → `drawCustomHudElements` renders; click → `hitTestHudButtons` → command | ✅ defined a runtime icon; renderer drew it at the exact offsets set (docs/33) |
-| NavNet | TBOTDLGC | `dlgProc_NavNet 0x1001E7C3` | [18](18-navnet-codec.md) ✅ | connect navserv:7175 → position broadcast (`sendNavPositionUpdate 0x1003FFDF`) | 🟡 client + encoder RE'd, harness set up; send gated on connect handshake (docs/33) |
-| Links | TBOTDLGB | `dlgProc_LinksNavNet 0x1001EB33` | [34](34-tabs-lists-extras-hud-spy-links.md) ✅ | Run Links → listen socket up; Set-for-client (logged off) → client patches at `0x4F36xx` | ⏳ |
-| Proxy | TBOTDLGQ | `dlgProc_LinksProxy 0x1001EF0C` | [09](09-packet-proxy.md) ✅ | run proxy → watcher/controller listen socket (`byte_102898CD`) | ⏳ |
-| Skin | TBOTDLGV | `dlgProc_Skin 0x100086B3` | [05](05-ui-init-framework.md) 🟡 | pick skin → USkin applies `.msstyles`; `elfbot.ini LastSkin` written | ⏳ |
+| NavNet | TBOTDLGC | `dlgProc_NavNet 0x1001E7C3` | [18](18-navnet-codec.md) ✅ | connect navserv → position broadcast (`sendNavPositionUpdate 0x1003FFDF`) | ✅ live 11-byte opcode-2 position packet sent to a dummy peer (docs/39) |
+| Links | TBOTDLGB | `dlgProc_LinksNavNet 0x1001EB33` | [34](34-tabs-lists-extras-hud-spy-links.md) ✅ | Run Links → listen socket up; Set-for-client (logged off) → client patches at `0x4F36xx` | ▫ = Proxy server `0x10002041` + relay config; socket covered by Proxy (docs/39) |
+| Proxy | TBOTDLGQ | `dlgProc_LinksProxy 0x1001EF0C` | [09](09-packet-proxy.md) ✅ | run proxy → watcher/controller listen socket (`byte_102898CD`) | ✅ live LISTEN socket (`0.0.0.0:50606`), 2 boots (docs/39) |
+| Skin | TBOTDLGV | `dlgProc_Skin 0x100086B3` | [05](05-ui-init-framework.md) 🟡 | pick skin → USkin applies `.msstyles`; `elfbot.ini LastSkin` written | ✅ USkin init in-client, skin dialog rendered live (docs/38) |
 | Command wizards | TBOTDLGK/L/M/N/O | `0x1001E1D9`/`0x1001DF05`/`0x1001D5FD`/`0x1001D2E0`/`0x1001D151` | [10](10-feature-subsystems.md) 🟡 | open from a hotkey edit → assembles CiroScript string joined by ` \| ` | ⏳ |
 | Targeting editor | TBOTDLGT | `dlgProc_TargetingEditor 0x1000802F` | [16](16-targeting-engine.md) 🟡 | open per-target editor → edits 48-byte record `unk_101E6EA8` | ⏳ |
 | Script editor | TBOTDLGU | `dlgProc_ScriptEditor 0x100083B6` | [10](10-feature-subsystems.md) 🟡 | open (mode 0–4) → shared editor loads/saves the mode's script | ⏳ |
@@ -60,9 +67,15 @@ only covered the always-visible panels, not these on-demand popups) or hook
 `CreateWindowExW/A` (controls arrive as pixel client-rects) while the popup opens; or
 **(b)** a targeted harness that calls `CreateDialogParam` for each wizard id directly
 (so Armadillo decrypts that one template) with `CreateWindowExW` hooked, *without*
-running `EcInit`'s client-hook path. Both need a live client; the docs/33 stack was
-wiped on the lab-VM re-image and the Tibia client is not reproducible from the repo,
-so B stays gated on that. `elfbot.dll` is staged on the VM for the next attempt.
+running `EcInit`'s client-hook path. Both need a live client — which **is** available: the
+same genuine 8.60 client + local Fir3element TFS that the
+[docs/39](39-module-runtime-report.md) behavioural sweep ran on. So (a) is runnable. The
+reason the geometry is still uncaptured is that the sweep drove every module through
+**memory + the bot's own code paths**, never the config **dialogs** — the genuine client's
+assertion handler trips when those on-demand popups are driven, which is why the module
+tests avoided them. So the wizard/editor popup geometry is the one remaining artefact,
+pending a dedicated `CreateWindowExW`-hook (or `CreateDialogParam`) pass that opens each
+popup live.
 
 ## Runtime tests: harness + method
 

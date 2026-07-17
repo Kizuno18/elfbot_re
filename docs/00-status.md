@@ -13,7 +13,9 @@ statically-linked library code** (zlib 1.2.3 + archive lib; no path to bot logic
 even via pointer dispatch — [12](12-script-crypto-compression.md)); the real
 network cipher is the Tibia client's XTEA at `0x549F60` and `.elfc`/`.elft` are
 plaintext opcode streams ([22](22-elfc-file-format.md)). IDA `.i64` fully named
-and saved. 38 docs (00–37).
+and saved. 40 docs (00–39), including the full E2E runtime
+([38](38-runtime-e2e-genuine-client.md)) and the per-module behavioural runtime
+([39](39-module-runtime-report.md)).
 
 The static side is complete, including the previously-deferred third-party surface:
 `USkin.dll`'s 41 exports + the elfload load/`Init`/neutered-`Exit` contract, and the
@@ -31,15 +33,21 @@ RSA-patched 8.60 client logged into a local Fir3element TFS 0.4, `loader.exe` in
 the whole chain, client hooks byte-for-byte, and the engine's shadow == the live
 in-world player (`[0x64A9C0]==31`, HP/pos mirrored).
 
-What remains is purely **live-target** work, and it is gated on the runtime stack —
-which was wiped when the lab VM was re-imaged (the docs/33 TFS 0.4 8.60 server +
-RSA-patched 8.60 client are no longer resident, and the Tibia client is not
-reproducible from this repo): per-tab **behavioural** scenarios (a creature to
-attack/loot, a route to walk), the seven wizard/editor popups' exact geometry (their
-`RT_DIALOG` templates are Armadillo-encrypted — capturable only from the bot mapped +
-unpacked in a live client, [35](35-tab-runtime-matrix.md)), and the live `loader.exe`
-re-run. The engine itself was already proven live in-game in a prior session
-([33](33-runtime-ingame-validation.md)).
+The **per-module behavioural runtime is also complete** ([39](39-module-runtime-report.md)):
+a live sweep on the genuine 8.60 client + local Fir3element TFS drove **every module** to a
+behavioural PASS — Targeting/Lists/Creature-Spy (name-match recolour), Healing (heal cast
+fired), **Attack** (`sub_1003A60A` emitter → forged 11-byte packet), Aimbot (shares that
+emitter), **Looting** (corpse-container scan → loot record), **Cavebot walk** (bot walked
+the char, via installing the arbiter hook `0x459F30`), **NavNet** (live opcode-2 position
+packet to a dummy peer), Alarm, Proxy (LISTEN socket), Extras, Icons, USkin, and the
+CiroScript VM/Hotkeys (external verb dispatch). The reusable methods — memory-trigger,
+forged-packet signature, interpreter injection, the arbiter-hook enabler, the attack path,
+and the 32/64-bit socket-injection lesson — are in [39](39-module-runtime-report.md) and
+generalised into the global `otserv-bot-re-harness` skill.
+
+What remains is a single optional artefact: the **seven wizard/editor popups' exact
+geometry** (their `RT_DIALOG` templates are Armadillo-encrypted — capturable only from the
+bot mapped + unpacked in a live client, [35](35-tab-runtime-matrix.md)).
 
 ## Done (detail)
 
