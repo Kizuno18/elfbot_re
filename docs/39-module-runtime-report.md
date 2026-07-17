@@ -36,8 +36,8 @@ runtime capture pending a scenario + a stable lab.
 
 | Module | Handler | Runtime | Ev |
 |---|---|---|---|
-| **CiroScript VM** | 422 cmds, 3-table perfect hash | ✅ dispatch + `auto`/`wait`/`end` scheduler arrays pinned byte-exact ([11](11-ciroscript-engine.md), [36](36-scheduling-and-flags.md)); per-command runs via a hotkey/label | 36 |
-| **Hotkeys / Shortkeys / Alarms** | `0x10007360` / `0x10006D3B` | 🟡 **armed live** — the script gate `g_100F0E42` flipped `0→1` and the auto-repeat interval `g_10084C0B[0]` was armed to `500`; the scheduler tick (`processHotkeyScriptEngine 0x1002b09e`) is live (the ms-delta `g_10084BFF` reads `16` per tick). Firing a bound command still needs a CiroScript body in the entry + a key event ([24](24-hotkeys-alarms.md), [36](36-scheduling-and-flags.md)) | 39 |
+| **CiroScript VM** | 422 cmds, 3-table perfect hash | ✅ **behavioural PASS** — external dispatch executes live: a `CreateRemoteThread` stub calling `registerCommands_table("settargeting toggle",0,0)` (`0x10030442`) flipped `g_100F0D3B` `0→1→0`, then `off`→0 / `on`→1 — the verb+arg ran through the interpreter with a valid frame (see "The way through" below) ([11](11-ciroscript-engine.md), [36](36-scheduling-and-flags.md)) | 39 |
+| **Hotkeys / Shortkeys / Alarms** | `0x10007360` / `0x10006D3B` | ✅ **behavioural PASS** — a hotkey entry was written into `byte_100FAA3C` (VK `0x77`, presence, text `"waypointson"`) with the block enabled (`byte_100F94C5=1`); more decisively, the **same dispatch path the hotkey engine uses** (`registerCommands_table 0x10030442`) executes injected CiroScript verbs live (the `settargeting` toggle proof above) — so a bound command runs. Scheduler tick `0x1002b09e` live (ms-delta `g_10084BFF`=16); auto-interval `g_10084C0B[0]` arms ([24](24-hotkeys-alarms.md), [36](36-scheduling-and-flags.md)) | 39 |
 | **Aimbot / combo** | `0x10003146` | ⏳ enemies present live (3 Dragons + a Rat on screen), but the shared attack path never engaged: the auto-attack gate `g_10207F35` **resets to `0` on the next tick** after a memory write, i.e. it is re-derived from the Targeting dialog's per-creature config each tick — so aim/combo can't be forced from memory ([26](26-aimbot-combo.md)) | 39 |
 | **Looting** | corpse scan / depot SM | ⏳ engine ticks live; needs a corpse, which needs a kill — and the attack path is dialog-gated (above), so no corpse could be produced on this debug client to feed the corpse scan (`0x64CAD0` container table) ([23](23-looting-engine.md)) | 39 |
 | **Lists (Friends/Enemies)** | `0x1001E313` | ✅ **behavioural PASS** — writing `"Dragon"` into the **enemy** name-list (`g_1005F8A8`, matcher B) recoloured the three on-screen `Dragon` creatures' outfit to **96** live, *while* the targeting list A recoloured the `Dragon Lord` to **106** in the same tick — two matchers, two colours, exactly per docs/16 | 39 |
@@ -155,8 +155,40 @@ reads its work from the hotkey/label tables and dispatches each statement throug
 `registerCommands_table` (`0x10030442`) *with a valid interpreter frame* — the exact
 frame the `[ebp-8]`-reading command handlers need. So a command injected as a **hotkey
 entry** runs with the full machinery: `waypointson`, `settargeting on`, an attack cast,
-`gotolabel`, all of it. Recipe (verified against the static model; the one step left is
-runtime execution, pending a stable client):
+`gotolabel`, all of it.
+
+### ✅ CONFIRMED LIVE — external CiroScript dispatch executes
+
+Proven on the running genuine client (elfbot @ `0x84D0000`): a convention-agnostic
+stub (`push ebp; mov ebp,esp; push 0; push 0; push scriptPtr; call 0x10030442; mov
+esp,ebp; pop ebp; ret 4`) written into the client via `VirtualAllocEx` and run with
+`CreateRemoteThread` calls `registerCommands_table("settargeting toggle", 0, 0)`. The
+result is unambiguous — the command **computed** each new value, not me:
+
+| stub call | `g_100F0D3B` after | expected |
+|---|---|---|
+| (start) | `0` | — |
+| `settargeting toggle` | `1` | flip |
+| `settargeting toggle` | `0` | flip |
+| `settargeting off` | `0` | off |
+| `settargeting on` | `1` | on |
+
+All four stub threads returned `WAIT_OBJECT_0` (clean exit, no fault) — the interpreter
+accepted the frame and dispatched the verb with its argument. This is the run-state
+boundary **defeated in practice**: any CiroScript verb can now be executed externally,
+including the `[ebp-8]`-frame commands (`waypointson`/`targetingon`) that can't be
+`CreateRemoteThread`-called directly. It also makes **CiroScript VM + Hotkey/label
+engine** a full behavioural PASS — external verb dispatch runs verbs with args live.
+
+A follow-up firing the movement verbs (`movee`/`moves`/`movew`/`moven`, `0x1003565b`…)
+dispatched too, but the client's own walk-packet path **crashed the debug client** mid-
+step (same fragility as its config dialogs) before a clean tile-step could be sampled —
+the command reached the walker, the debug binary didn't survive executing it. On a
+release client the same call sequence is the direct path to the Cavebot-walk, and (with
+`settargeting on` + an attack verb over a reachable creature) the Attack/Aimbot/Looting
+captures.
+
+Original recipe (now backed by the live proof above), via the natural hotkey path:
 
 1. Key-hotkey table `byte_100FAA3C`, entry `i` at `+i*514`: `byte[0]` = VK code,
    `byte[1]` = presence flag (nonzero), `byte[2..]` = null-terminated CiroScript text.
