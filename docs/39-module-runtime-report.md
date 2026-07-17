@@ -243,12 +243,32 @@ creature's HP — not the cavebot-side globals.
 
 So the attack is **decoded and half-proven live**: the bot resolves the target
 (`dword_100F9355 → dword_1005E19C`) and the client target field (`0x63FE5C`) is
-identified; the remaining piece is the outgoing-attack emission, which needs the fuller
-hook initialisation rather than the minimal boot. **Aimbot** shares this resolution
-(`pickAttackTarget` via `sub_1003CA03`); **Looting** follows a real kill. Everything up
-to the outgoing-emit — inject, hooks, engine, snapshot, targeting recolor, lists,
-creature-spy, healing, proxy, extras, external interpreter control, and now **bot-side
-attack target resolution** — is confirmed live.
+identified. And the **emission itself is now fully decoded** — it is *not* the `0x63FE5C`
+write (that's the UI red-square echo); the actual attack/cast is emitted by
+**`castRuneOrSpellOnTarget sub_1003A60A(recPtr, mode)`**, where `recPtr` is the creature's
+battle-list record pointer (`0x63FEF8 + idx*168`) and `mode` selects:
+
+- **`mode & 0xC0 == 0x80` → attack (melee/follow):** sets `MEMORY[0x63FE60] = creatureId`,
+  bumps the client sequence `MEMORY[0x63DA40]`, and injects an **11-byte** packet via
+  `injectIncomingPacket (sub_1002ADE7)`. This is the real attack command.
+- **`mode & 0xC0 == 0x40` → spell cast:** `idx = mode & 0x3F` indexes a spell/rune table
+  (spell ids `3155–3202` for `idx` 1–5,0xE–0x12,0x20,0x28–0x2A; rune item ids via
+  `sub_10039413(MEMORY[0x10059ED4…])` for `idx` 6–0x1F) and injects a **15-byte** targeted
+  packet carrying the creature's x/y/z (`*(recPtr+36/40/44)`), mana-gated at `≥1200`.
+
+`runAttackHealerLogic (sub_100235E8)` calls `sub_1003A60A(dword_100F9336, 42)` for its
+priority-tier targets when invoked with `a1=1` (the resolver passes `a1=0`, so it doesn't
+fire from there — the caller with `a1=1` does). The direct, boot-independent way to fire
+the attack is therefore a stub calling `sub_1003A60A(<Rat record ptr>, 0x80)`; the
+behavioural evidence is `MEMORY[0x63FE60] == <Rat id>` + the attack record
+`dword_100432BA == <Rat id>` (the built/injected 11-byte packet) — the same
+"forged-packet-fired" signature the Healing PASS used. **Aimbot** shares the resolution
+(`pickAttackTarget` via `sub_1003CA03`) and this same emitter; **Looting** follows a real
+kill. Everything up to this single live fire — inject, hooks, engine, snapshot, targeting
+recolor, lists, creature-spy, healing, proxy, extras, external interpreter control, and
+**bot-side attack target resolution** — is confirmed live; the attack/cast emitter is
+decoded end-to-end and the one-call live capture (`sub_1003A60A(recPtr,0x80)`) is pending
+only a stable client session.
 
 Original recipe (now backed by the live proof above), via the natural hotkey path:
 
