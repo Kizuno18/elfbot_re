@@ -195,6 +195,31 @@ fragile binary. On a release client the tick-thread hotkey path (or the client's
 Start button) drives `movee`/`waypointson` cleanly, and (`settargeting on` + an attack
 verb over a reachable creature) the Attack/Aimbot/Looting captures.
 
+One more probe pins the attack story exactly. `settargeting on` (verb `0x10035786`) and
+`attack` (`0x10031025`) both **run clean via the stub** (`WAIT_OBJECT_0`, client
+healthy) with the Rat adjacent and `"Rat"` written to the matcher-A name list — but the
+targeting arbiter never engaged (`g_100F0E20` held `0`, so `attack` had no target). The
+reason is precise: the recolor name-list (`g_100638A8`) is *not* the attack-target list.
+Target **selection** reads the per-creature attack config (attack yes/no, priority,
+range) that only the Targeting dialog populates; arming the engine and issuing `attack`
+from the interpreter can't conjure that config.
+
+This was pushed as far as memory allows. Even setting **every** known lever at once —
+name list A `= "Rat"`, all three scan sub-flags (`g_100F0D3B`/`g_100F94C7`/`g_10135278`,
+the exact set that drives the live recolor), the **forced/locked sticky-target override**
+`g_100F9355 = <Rat id>`, `attack`/`settargeting on` via the interpreter, and the
+auto-attack byte `g_10207F35` held at `1` by re-writing it every tick — the arbiter still
+did **not** engage: the matched-creature counter `g_100F49C9` stayed `0`, the
+current-target pointer `g_100F0E20` stayed `0`, and the attack-throttle byte
+`g_100F45BC` never armed. So the final boundary is not the command layer (proven live)
+nor the run-state (defeated live) — it is the **per-creature attack configuration**, a
+dialog-owned structure the priority scan (`pickAttackTarget 0x1002355e`) reads and that
+is not reconstructable from any single global reachable here. Populating that structure
+directly (deeper RE) or driving the dialog on a release client is the one remaining step
+for the Attack / Aimbot / Looting captures. Everything up to it — inject, hooks, engine,
+snapshot, targeting recolor, lists, creature-spy, healing, proxy, extras, and now
+**external interpreter control** — is confirmed live.
+
 Original recipe (now backed by the live proof above), via the natural hotkey path:
 
 1. Key-hotkey table `byte_100FAA3C`, entry `i` at `+i*514`: `byte[0]` = VK code,
