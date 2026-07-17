@@ -99,10 +99,14 @@ in-client** (the control panel above), Icons render, and USkin init — on the g
 - **Creature Spy / battle-list** — `scanBattleListStatusTick` reads + classifies the
   whole live battle-list each tick (the recolours prove the full-list name/outfit
   scan).
+- **Healing** — the heal-spell table was pre-loaded (`exura`/strong-heal); enabling
+  the HP threshold (`g_10134E66`) above current HP made `healerManaSpellTick` fire the
+  heal (`g_10080BA6` `0→1`, the 15-byte cast inject).
 
-These three ride the shared `scanBattleListStatusTick` name-matcher, driven purely by
-memory writes to the elfbot config globals + enable flags — no dialog needed, so they
-are reliable on the fragile client.
+These ride purely on **memory writes to the elfbot config globals + enable flags** —
+no dialog needed, so they are reliable on the fragile debug client. The key finding:
+the module config tables already hold sensible defaults, so a module is triggered by
+flipping its enable/threshold, not by populating it from scratch.
 
 **Durable behavioural bed.** `Tester`'s `healthmax` was set to `999999`, so its regen
 outpaces the Dragon Lords and it **survives indefinitely under attack** (HP seen
