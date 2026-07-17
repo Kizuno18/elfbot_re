@@ -221,14 +221,34 @@ every frame → the client attacks it. (`pickAttackTarget 0x1002355E` → `selec
 attack name-list and picks the best by priority — the name list *is* the attack list, so
 that path is reachable too; the forced-target override is just the most direct.)
 
-The **evidence to read** is therefore `MEMORY[0x63FE5C]` in the client (== the forced id
-when engaged) and the target creature's HP dropping — not the cavebot-side globals. This
-makes **Attack / Aimbot** (aimbot shares `pickAttackTarget` via `sub_1003CA03`) reachable,
-and **Looting** follows once a forced attack produces a corpse. Everything up to it —
-inject, hooks, engine, snapshot, targeting recolor, lists, creature-spy, healing, proxy,
-extras, and **external interpreter control** — is confirmed live; the attack live-capture
-via `dword_100F9355` + `0x63FE5C` is the remaining step, gated only by a stable client
-session.
+The **evidence to read** is therefore `MEMORY[0x63FE5C]` in the client and the target
+creature's HP — not the cavebot-side globals.
+
+### Live result (elfbot @ `0x83A0000`, Rat id `0x40000400` on screen)
+
+- ✅ **Bot-side resolution confirmed live.** Writing the forced target
+  `dword_100F9355 = 0x40000400` made the resolver (`sub_10023A45`, per-tick from
+  `botMainTickLoop`) publish **`dword_1005E19C = 0x40000400`** every sample — the bot
+  resolves the forced creature as its attack target exactly as decompiled.
+- ✅ **`0x63FE5C` is the client attacked-creature field** — a direct write of the Rat id
+  holds (the client does not clear it), confirming its identity.
+- ⏳ **But a raw memory write does not deal damage.** With `0x63FE5C` = Rat id held for
+  ~7 s the Rat's HP didn't move and it didn't die. That's expected: attacking is an
+  **outgoing** action — the client sends an "attack creature X" packet when its own attack
+  routine runs; setting the local field post-hoc doesn't emit that packet. The bot's full
+  attack therefore needs the send path — the render hook `sub_1003E34D` (which writes
+  `0x63FE5C`) plus the routine that emits the attack — active, which the **minimal
+  two-thread boot** (`installClientHooks` + `botMainTickLoop`) doesn't fully wire up; the
+  stock loader's complete init (or the client's own attack routine) does.
+
+So the attack is **decoded and half-proven live**: the bot resolves the target
+(`dword_100F9355 → dword_1005E19C`) and the client target field (`0x63FE5C`) is
+identified; the remaining piece is the outgoing-attack emission, which needs the fuller
+hook initialisation rather than the minimal boot. **Aimbot** shares this resolution
+(`pickAttackTarget` via `sub_1003CA03`); **Looting** follows a real kill. Everything up
+to the outgoing-emit — inject, hooks, engine, snapshot, targeting recolor, lists,
+creature-spy, healing, proxy, extras, external interpreter control, and now **bot-side
+attack target resolution** — is confirmed live.
 
 Original recipe (now backed by the live proof above), via the natural hotkey path:
 
