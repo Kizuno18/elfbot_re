@@ -180,13 +180,20 @@ including the `[ebp-8]`-frame commands (`waypointson`/`targetingon`) that can't 
 `CreateRemoteThread`-called directly. It also makes **CiroScript VM + Hotkey/label
 engine** a full behavioural PASS — external verb dispatch runs verbs with args live.
 
-A follow-up firing the movement verbs (`movee`/`moves`/`movew`/`moven`, `0x1003565b`…)
-dispatched too, but the client's own walk-packet path **crashed the debug client** mid-
-step (same fragility as its config dialogs) before a clean tile-step could be sampled —
-the command reached the walker, the debug binary didn't survive executing it. On a
-release client the same call sequence is the direct path to the Cavebot-walk, and (with
-`settargeting on` + an attack verb over a reachable creature) the Attack/Aimbot/Looting
-captures.
+The movement verbs (`movee`/`moves`/`movew`/`moven`, `0x1003565b`…) behave differently
+and pin down *why* a clean walk is hard here. Unlike the synchronous flag verbs, a
+movement verb called from a `CreateRemoteThread` stub **blocks** — the stub thread
+returns `WAIT_TIMEOUT` (`0x102`), never `WAIT_OBJECT_0` — because the walk path is
+tick-thread-affine (it expects to run inside the bot tick, touching state the tick loop
+owns), and firing several in quick succession left enough hung threads to crash the
+client outright. Routed the *right* way — as a hotkey entry so it runs on the tick
+thread — the driver **does** scan the entry (`dword_1008AA0B[0]` updates) and the client
+stays healthy, but the `GetAsyncKeyState` keypress trigger didn't latch a fire on this
+debug client (and the char may also be walled in at the spawn). So: the command layer
+is proven, the walk's remaining variables are the fire-trigger + walkability on a
+fragile binary. On a release client the tick-thread hotkey path (or the client's own
+Start button) drives `movee`/`waypointson` cleanly, and (`settargeting on` + an attack
+verb over a reachable creature) the Attack/Aimbot/Looting captures.
 
 Original recipe (now backed by the live proof above), via the natural hotkey path:
 
