@@ -43,7 +43,7 @@ runtime capture pending a scenario + a stable lab.
 | **Lists (Friends/Enemies)** | `0x1001E313` | ✅ **behavioural PASS** — writing `"Dragon"` into the **enemy** name-list (`g_1005F8A8`, matcher B) recoloured the three on-screen `Dragon` creatures' outfit to **96** live, *while* the targeting list A recoloured the `Dragon Lord` to **106** in the same tick — two matchers, two colours, exactly per docs/16 | 39 |
 | **Extras (Graphics)** | `0x10007EC4` | ⏳ World View sets `g_100EE8BB` ([34](34-tabs-lists-extras-hud-spy-links.md)) | — |
 | **Skin (USkin)** | `EcInit` load / `dlgProc_Skin` | ✅ USkin initialised in-client (skin-selector dialog rendered live); `.msstyles` from `Skins\` ([37](37-uskin-and-support-section.md)) | 38 |
-| **Proxy** | `0x1001EF0C` | ⏳ watcher/controller listen socket ([09](09-packet-proxy.md)) | — |
+| **Proxy** | `0x1001EF0C` | ✅ **behavioural PASS** — `installClientHooks_proxyServer` (`0x10002041`) `socket`/`bind`/`listen` ran at boot; the injected client holds a live **LISTEN socket on `0.0.0.0:50606`** (`Get-NetTCPConnection` on the client PID), i.e. the embedded proxy/watcher server is up ([09](09-packet-proxy.md)) | 39 |
 | **Links** | `0x1001EB33` | ⏳ relay + client `0x4F36xx` patch ([34](34-tabs-lists-extras-hud-spy-links.md)) | — |
 
 ## God-created scenario — normal char under attack (behavioural bed)
