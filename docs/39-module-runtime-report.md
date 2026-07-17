@@ -46,6 +46,19 @@ runtime capture pending a scenario + a stable lab.
 | **Proxy** | `0x1001EF0C` | ⏳ watcher/controller listen socket ([09](09-packet-proxy.md)) | — |
 | **Links** | `0x1001EB33` | ⏳ relay + client `0x4F36xx` patch ([34](34-tabs-lists-extras-hud-spy-links.md)) | — |
 
+## God-created scenario — normal char under attack (behavioural bed)
+
+Because a God char takes no monster damage, a **normal char `Tester`** (group 1,
+level 120, 15000 HP, backpack + 200 health potions + a weapon) was created via SQL by
+copying the Godbot row and overriding stats (Godbot moved to account 2 so account 1
+logs `Tester` deterministically), spawned at the Dragon Lord spawn. In-world it is
+**genuinely under attack** — client chat *"You lose 76 hitpoints due to an attack by a
+dragon lord"*, HP falling `15000 → 14257 → 11663 → 6465`, and the rebased elfbot
+**shadow HP tracks it exactly each tick**. This is the damage/creature bed the
+behavioural module tests run against. The **Targeting** recolor (below) was captured
+in this scenario — the matched `Dragon Lord`'s name/outfit is recoloured on-screen
+live.
+
 ## Full control panel rendered live (every module UI present)
 
 A second live run (fresh boot, elfbot relocated to `0x082B0000`) captured the whole
