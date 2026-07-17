@@ -27,7 +27,7 @@ runtime capture pending a scenario + a stable lab.
 | **Healing** (heal + attack cast) | `0x1002492D` / `0x100235E8` | 🟡 both tick ~10/s live; a cast needs a low-HP scenario ([15](15-healer-engine.md)) | 33 |
 | **Targeting** | `0x10023893` | ✅ **behavioural PASS** — with a normal char `Tester` at a Dragon Lord spawn, writing `"Dragon Lord"` into the targeting name-list (`g_100638A8`) + enabling (`g_100F0D3B`=1, HUD-colour `g_100F94C7`=1, write-to-client `g_10135278`=1) made `scanBattleListStatusTick` **match + recolour the matched creature live**: the on-screen `Dragon Lord` battle-list record's outfit-head byte (`+100`) became **106** (docs/16 matcher-A colour) while three non-matching `Dragon` records stayed `0` ([16](16-targeting-engine.md), [36](36-scheduling-and-flags.md)) | 39 |
 | **Cavebot / CiroScript** | `0x1002BC68` | 🟡 script tick runs per-tick live; enable = `g_100F0E42`; a walk needs loaded waypoints ([17](17-cavebot-walker.md)) | 33 |
-| **Creature Spy / battle-list** | `0x10023A8F` | 🟡 battle-scan ticks ~10/s live; the shadow creature table (`E(0x10077175)`, stride 168) populates only with creatures on screen ([34](34-tabs-lists-extras-hud-spy-links.md)) | 33 |
+| **Creature Spy / battle-list** | `0x10023A8F` | ✅ **behavioural PASS** — `scanBattleListStatusTick` walks the live client battle-list (`0x63FEF8`, stride 168) each tick; with Dragon Lords on screen every occupied record was read + classified (the name-matcher recolours below prove the full-list scan reads names/outfits live) ([34](34-tabs-lists-extras-hud-spy-links.md)) | 39 |
 | **HUD on-screen** | `0x10023E42` | 🟡 exp-window tick runs live; on-screen draw needs the client render path ([34](34-tabs-lists-extras-hud-spy-links.md)) | 33 |
 | **Icons / HUD render** | `0x1003E7AA` | ✅ **behavioural PASS** — a runtime-defined icon rendered at the exact offsets set, active/inactive block selection working ([32](32-icons-tab.md)) | 33 |
 | **NavNet** | `0x1003FFDF` | 🟡 client + 11-byte encoder RE'd, harness up; `send` gated on the full connect/handshake ([18](18-navnet-codec.md), [04](04-navnet-server.md)) | 33 |
@@ -40,7 +40,7 @@ runtime capture pending a scenario + a stable lab.
 | **Hotkeys / Shortkeys / Alarms** | `0x10007360` / `0x10006D3B` | ⏳ bind → CiroScript run; RE complete ([24](24-hotkeys-alarms.md)) | — |
 | **Aimbot / combo** | `0x10003146` | ⏳ square-scan + combo; needs an enemy on screen ([26](26-aimbot-combo.md)) | — |
 | **Looting** | corpse scan / depot SM | ⏳ needs a corpse (kill a creature) ([23](23-looting-engine.md)) | — |
-| **Lists (Friends/Enemies)** | `0x1001E313` | ⏳ colouring/markers on named players ([34](34-tabs-lists-extras-hud-spy-links.md)) | — |
+| **Lists (Friends/Enemies)** | `0x1001E313` | ✅ **behavioural PASS** — writing `"Dragon"` into the **enemy** name-list (`g_1005F8A8`, matcher B) recoloured the three on-screen `Dragon` creatures' outfit to **96** live, *while* the targeting list A recoloured the `Dragon Lord` to **106** in the same tick — two matchers, two colours, exactly per docs/16 | 39 |
 | **Extras (Graphics)** | `0x10007EC4` | ⏳ World View sets `g_100EE8BB` ([34](34-tabs-lists-extras-hud-spy-links.md)) | — |
 | **Skin (USkin)** | `EcInit` load / `dlgProc_Skin` | ✅ USkin initialised in-client (skin-selector dialog rendered live); `.msstyles` from `Skins\` ([37](37-uskin-and-support-section.md)) | 38 |
 | **Proxy** | `0x1001EF0C` | ⏳ watcher/controller listen socket ([09](09-packet-proxy.md)) | — |
