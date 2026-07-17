@@ -146,3 +146,39 @@ won't survive being driven. Their memory model + tick-liveness are fully documen
 the UI and the final captures complete. This is an architectural property of ElfBot,
 not a gap in the RE: the safety-relevant toggles are deliberately coupled to the
 authoritative config, so poking the derived flag does nothing lasting.
+
+## The way through — driving the CiroScript interpreter externally
+
+The run-state gate is not a dead end: the trigger just has to go **through the
+interpreter**, not around it. The per-tick driver `callSub1002b3d7` (`0x1002b09e`)
+reads its work from the hotkey/label tables and dispatches each statement through
+`registerCommands_table` (`0x10030442`) *with a valid interpreter frame* — the exact
+frame the `[ebp-8]`-reading command handlers need. So a command injected as a **hotkey
+entry** runs with the full machinery: `waypointson`, `settargeting on`, an attack cast,
+`gotolabel`, all of it. Recipe (verified against the static model; the one step left is
+runtime execution, pending a stable client):
+
+1. Key-hotkey table `byte_100FAA3C`, entry `i` at `+i*514`: `byte[0]` = VK code,
+   `byte[1]` = presence flag (nonzero), `byte[2..]` = null-terminated CiroScript text.
+2. Write entry 0 = VK `0x77` (F8), presence `1`, text `"waypointson"` (or
+   `"auto 300 waypointson"` to also arm auto-repeat `dword_1008910B[0]`).
+3. Enable the key-hotkey block: `byte_100F94C5 = 1`.
+4. Pre-load a waypoint (Cavebot: `0x101E6EA8[0]` = `x+2,y,z`, count `0x10202F06 = 1`,
+   gate `g_100F0E42 = 1`).
+5. `SetForegroundWindow` the client + `keybd_event(0x77)` — the driver polls
+   `GetAsyncKeyState(F8)`, fires entry 0, dispatches `waypointson` through
+   `registerCommands_table`.
+6. Walker now has an armed run-state **and** a waypoint → the char steps toward it:
+   the client position (`0x64F608` x / `0x64F604` y) changing = a genuine **Cavebot
+   walk** behavioural PASS *and* the first live proof of external CiroScript execution.
+   The same entry re-pointed at `settargeting on` + an attack script over a reachable
+   creature is the path to the **Attack / Aimbot / Looting** captures (a kill produces
+   the corpse the loot scan needs).
+
+Direct backup: a `push flag; push idx; push scriptPtr; call 0x10030442` stub run via
+`CreateRemoteThread` dispatches one statement without the hotkey table (confirm
+`0x10030442`'s convention from its epilogue — `ret` cdecl vs `ret 0xC` stdcall — first).
+The remaining **Alarm** subsystem is independent + data-driven: `handleAlarmTriggers`
+(`0x10009489`) walks 3-byte rows at `g_10207F12`; arming a row's `byte[0]` (sound +
+on-screen flag `g_100580F8`) with a creature on screen — never `byte[2]`, the
+proxy-socket disconnect — should raise `g_100580F8` with no interpreter involvement.
