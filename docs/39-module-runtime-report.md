@@ -195,30 +195,40 @@ fragile binary. On a release client the tick-thread hotkey path (or the client's
 Start button) drives `movee`/`waypointson` cleanly, and (`settargeting on` + an attack
 verb over a reachable creature) the Attack/Aimbot/Looting captures.
 
-One more probe pins the attack story exactly. `settargeting on` (verb `0x10035786`) and
-`attack` (`0x10031025`) both **run clean via the stub** (`WAIT_OBJECT_0`, client
-healthy) with the Rat adjacent and `"Rat"` written to the matcher-A name list — but the
-targeting arbiter never engaged (`g_100F0E20` held `0`, so `attack` had no target). The
-reason is precise: the recolor name-list (`g_100638A8`) is *not* the attack-target list.
-Target **selection** reads the per-creature attack config (attack yes/no, priority,
-range) that only the Targeting dialog populates; arming the engine and issuing `attack`
-from the interpreter can't conjure that config.
+### The attack path, decoded — earlier "unreachable" was measuring the wrong globals
 
-This was pushed as far as memory allows. Even setting **every** known lever at once —
-name list A `= "Rat"`, all three scan sub-flags (`g_100F0D3B`/`g_100F94C7`/`g_10135278`,
-the exact set that drives the live recolor), the **forced/locked sticky-target override**
-`g_100F9355 = <Rat id>`, `attack`/`settargeting on` via the interpreter, and the
-auto-attack byte `g_10207F35` held at `1` by re-writing it every tick — the arbiter still
-did **not** engage: the matched-creature counter `g_100F49C9` stayed `0`, the
-current-target pointer `g_100F0E20` stayed `0`, and the attack-throttle byte
-`g_100F45BC` never armed. So the final boundary is not the command layer (proven live)
-nor the run-state (defeated live) — it is the **per-creature attack configuration**, a
-dialog-owned structure the priority scan (`pickAttackTarget 0x1002355e`) reads and that
-is not reconstructable from any single global reachable here. Populating that structure
-directly (deeper RE) or driving the dialog on a release client is the one remaining step
-for the Attack / Aimbot / Looting captures. Everything up to it — inject, hooks, engine,
-snapshot, targeting recolor, lists, creature-spy, healing, proxy, extras, and now
-**external interpreter control** — is confirmed live.
+A decompilation pass (IDA over the unpacked image) corrects the earlier boundary call. The
+live attack-target globals I was reading (`g_100F0E20`, `g_100F49C9`, `g_100F45BC`) belong
+to the **cavebot/recolor** side, not the attack-resolve path — which is why forcing
+`g_100F9355` and watching those showed nothing. The real attack path is short and **fully
+reachable from memory**:
+
+1. **Resolver `sub_10023A45`** (called every tick from `botMainTickLoop 0x100227BD`):
+   ```c
+   if (dword_100F9355) { dword_1005E19C = dword_100F9355; return dword_100F9355; }  // forced target wins
+   else { r = runAttackHealerLogic(0); if (r) dword_1005E19C = *pickAttackTarget(); ... }
+   ```
+   So the **forced/locked target `dword_100F9355`** is written straight into the resolved-
+   target global **`dword_1005E19C`** — no dialog config, no priority scan needed.
+2. **Consumer `sub_1003E34D`** (a render-path hook, `JUMPOUT(0x4D0554)` back into the
+   client): `if (dword_1013F320 || dword_100F9355) MEMORY[0x63FE5C] = dword_1005E19C;` —
+   it writes the resolved target id into the **client's own attacked-creature field
+   `0x63FE5C`**, i.e. it drives the genuine client to attack that creature.
+
+So setting `dword_100F9355 = <creature id>` makes the bot force `0x63FE5C` to that creature
+every frame → the client attacks it. (`pickAttackTarget 0x1002355E` → `selectBestTargetByPriority
+0x1003BC54` is the *unforced* path: it name-matches each battle-list record against the
+attack name-list and picks the best by priority — the name list *is* the attack list, so
+that path is reachable too; the forced-target override is just the most direct.)
+
+The **evidence to read** is therefore `MEMORY[0x63FE5C]` in the client (== the forced id
+when engaged) and the target creature's HP dropping — not the cavebot-side globals. This
+makes **Attack / Aimbot** (aimbot shares `pickAttackTarget` via `sub_1003CA03`) reachable,
+and **Looting** follows once a forced attack produces a corpse. Everything up to it —
+inject, hooks, engine, snapshot, targeting recolor, lists, creature-spy, healing, proxy,
+extras, and **external interpreter control** — is confirmed live; the attack live-capture
+via `dword_100F9355` + `0x63FE5C` is the remaining step, gated only by a stable client
+session.
 
 Original recipe (now backed by the live proof above), via the natural hotkey path:
 
