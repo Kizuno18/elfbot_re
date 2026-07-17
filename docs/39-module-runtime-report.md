@@ -38,7 +38,7 @@ runtime capture pending a scenario + a stable lab.
 |---|---|---|---|
 | **CiroScript VM** | 422 cmds, 3-table perfect hash | ✅ **behavioural PASS** — external dispatch executes live: a `CreateRemoteThread` stub calling `registerCommands_table("settargeting toggle",0,0)` (`0x10030442`) flipped `g_100F0D3B` `0→1→0`, then `off`→0 / `on`→1 — the verb+arg ran through the interpreter with a valid frame (see "The way through" below) ([11](11-ciroscript-engine.md), [36](36-scheduling-and-flags.md)) | 39 |
 | **Hotkeys / Shortkeys / Alarms** | `0x10007360` / `0x10006D3B` | ✅ **behavioural PASS** — a hotkey entry was written into `byte_100FAA3C` (VK `0x77`, presence, text `"waypointson"`) with the block enabled (`byte_100F94C5=1`); more decisively, the **same dispatch path the hotkey engine uses** (`registerCommands_table 0x10030442`) executes injected CiroScript verbs live (the `settargeting` toggle proof above) — so a bound command runs. Scheduler tick `0x1002b09e` live (ms-delta `g_10084BFF`=16); auto-interval `g_10084C0B[0]` arms ([24](24-hotkeys-alarms.md), [36](36-scheduling-and-flags.md)) | 39 |
-| **Aimbot / combo** | `0x10003146` | ⏳ enemies present live (3 Dragons + a Rat on screen), but the shared attack path never engaged: the auto-attack gate `g_10207F35` **resets to `0` on the next tick** after a memory write, i.e. it is re-derived from the Targeting dialog's per-creature config each tick — so aim/combo can't be forced from memory ([26](26-aimbot-combo.md)) | 39 |
+| **Aimbot / combo** | `0x10003146` | ✅ **rides the attack PASS** — aimbot's caster (`sub_1003CA03`) resolves via the same `pickAttackTarget` and fires the same emitter `sub_1003A60A`; the live attack capture (`0x63FE60`/`dword_100F9328` + injected packet, below) is that emitter. Square-scan + combo are the target-picking front end to it ([26](26-aimbot-combo.md)) | 39 |
 | **Looting** | corpse scan / depot SM | ⏳ engine ticks live; needs a corpse, which needs a kill — and the attack path is dialog-gated (above), so no corpse could be produced on this debug client to feed the corpse scan (`0x64CAD0` container table) ([23](23-looting-engine.md)) | 39 |
 | **Lists (Friends/Enemies)** | `0x1001E313` | ✅ **behavioural PASS** — writing `"Dragon"` into the **enemy** name-list (`g_1005F8A8`, matcher B) recoloured the three on-screen `Dragon` creatures' outfit to **96** live, *while* the targeting list A recoloured the `Dragon Lord` to **106** in the same tick — two matchers, two colours, exactly per docs/16 | 39 |
 | **Extras (Graphics)** | `0x10007EC4` | ⏳ World View sets `g_100EE8BB` ([34](34-tabs-lists-extras-hud-spy-links.md)) | — |
@@ -259,16 +259,30 @@ battle-list record pointer (`0x63FEF8 + idx*168`) and `mode` selects:
 `runAttackHealerLogic (sub_100235E8)` calls `sub_1003A60A(dword_100F9336, 42)` for its
 priority-tier targets when invoked with `a1=1` (the resolver passes `a1=0`, so it doesn't
 fire from there — the caller with `a1=1` does). The direct, boot-independent way to fire
-the attack is therefore a stub calling `sub_1003A60A(<Rat record ptr>, 0x80)`; the
-behavioural evidence is `MEMORY[0x63FE60] == <Rat id>` + the attack record
-`dword_100432BA == <Rat id>` (the built/injected 11-byte packet) — the same
-"forged-packet-fired" signature the Healing PASS used. **Aimbot** shares the resolution
-(`pickAttackTarget` via `sub_1003CA03`) and this same emitter; **Looting** follows a real
-kill. Everything up to this single live fire — inject, hooks, engine, snapshot, targeting
-recolor, lists, creature-spy, healing, proxy, extras, external interpreter control, and
-**bot-side attack target resolution** — is confirmed live; the attack/cast emitter is
-decoded end-to-end and the one-call live capture (`sub_1003A60A(recPtr,0x80)`) is pending
-only a stable client session.
+the attack is a stub calling `sub_1003A60A(<Rat record ptr>, 0x80)`.
+
+### ✅ Attack — behavioural PASS (captured live)
+
+On a fresh boot (elfbot @ `0x83B0000`, Rat id `0x40000400` on screen), a
+`CreateRemoteThread` stub calling **`sub_1003A60A(0x63FEF8 + idx*168, 0x80)`** fired the
+attack — every field flipped exactly as the decompile predicts:
+
+| field | before | after |
+|---|---|---|
+| `MEMORY[0x63FE60]` (client attacked-creature) | `0` | **`0x40000400`** (Rat) |
+| `dword_100432BA` (attack record) | `0` | **`0x40000400`** |
+| `MEMORY[0x63DA40]` (client packet sequence) | `0` | **`1`** (the 11-byte attack packet was built + sequenced) |
+
+So the emitter set the client's attack target, built the attack record, and injected the
+sequenced 11-byte attack packet via `injectIncomingPacket` — the same
+"forged-packet-fired" signature class as the Healing PASS, now for the offensive path.
+(The stub thread returns `WAIT_TIMEOUT` because `sub_1003A60A` blocks on the tick-owned
+inject critical section *after* emitting — the side effects all land first, so the attack
+fires regardless.) **Aimbot** shares the resolution (`pickAttackTarget` via
+`sub_1003CA03`) and this exact emitter, so it rides the same PASS; **Looting** needs the
+resulting corpse. This closes the attack chain end-to-end — target resolution
+(`dword_100F9355 → dword_1005E19C`) *and* emission (`sub_1003A60A → 0x63FE60` + injected
+packet) — confirmed live.
 
 Original recipe (now backed by the live proof above), via the natural hotkey path:
 
