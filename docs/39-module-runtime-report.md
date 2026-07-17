@@ -46,12 +46,35 @@ runtime capture pending a scenario + a stable lab.
 | **Proxy** | `0x1001EF0C` | ⏳ watcher/controller listen socket ([09](09-packet-proxy.md)) | — |
 | **Links** | `0x1001EB33` | ⏳ relay + client `0x4F36xx` patch ([34](34-tabs-lists-extras-hud-spy-links.md)) | — |
 
+## Full control panel rendered live (every module UI present)
+
+A second live run (fresh boot, elfbot relocated to `0x082B0000`) captured the whole
+**elfbot control panel rendered inside the injected client** — the `CiroScript.com –
+Startup – 00 exp/hour` window with a button for **every module**:
+
+```
+Healing   Aimbot     Lists       HUD          1 2 3 4 5
+Extras    Hotkeys    Shortkeys   Reconnect    Save  Custom
+Cavebot   Navigation Links       Creature Spy Load  Help
+Targeting Proxy      Icons                    OK
+```
+
+So `EcInit`'s dialog framework and **every module's UI are live in-client** — each
+button opens that module's config dialog ([05](05-ui-init-framework.md),
+[10](10-feature-subsystems.md)). Note the retrieved `Tibia.exe` is a **debug build**
+(it carries `assert` strings like `Password!=NULL`): a malformed `/`-command typed
+into chat tripped a `Debug Assertion` and closed the client — normal gameplay input
+(clicking, walking) does not, but it makes extended behavioural runs on this exact
+binary fragile.
+
 ## What is fully confirmed vs. gated
 
 **Live-confirmed (✅):** injection via the real loader, all three client hooks
-byte-for-byte, the engine tick loop, the player-state snapshot mirroring the **live
-in-world player**, Icons render, and USkin init — on the genuine 8.60 client + local
-Fir3element server.
+byte-for-byte, the engine tick loop (its `g_10084BFF` ms-delta advances live), the
+player-state snapshot mirroring the **live in-world player** (HP/mana `2000/2000` on
+the God char `Godbot` at the Dragon Lord spawn), **every module's UI rendered live
+in-client** (the control panel above), Icons render, and USkin init — on the genuine
+8.60 client + local Fir3element server.
 
 **Engine-live, behaviour-gated (🟡):** Healing, Targeting, Cavebot, Creature Spy, HUD
 and NavNet engines are all **confirmed ticking live** on their documented schedules;
