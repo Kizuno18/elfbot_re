@@ -89,13 +89,33 @@ the God char `Godbot` at the Dragon Lord spawn), **every module's UI rendered li
 in-client** (the control panel above), Icons render, and USkin init — on the genuine
 8.60 client + local Fir3element server.
 
-**Engine-live, behaviour-gated (🟡):** Healing, Targeting, Cavebot, Creature Spy, HUD
-and NavNet engines are all **confirmed ticking live** on their documented schedules;
-their remaining behavioural captures each need a specific scenario — a creature on
-screen (Targeting attack / Creature-Spy rows / the `0x45ACD6` parser feeding the
-shadow creature table), a low-HP moment (Healing cast), loaded waypoints (Cavebot
-walk), a corpse (Looting), or a live `navserv` (NavNet send). The intended setup is a
-God char at a monster spawn (Godbot was relocated to a Dragon Lord spawn at
-`149,574,2`) plus `/c`-summoned creatures; those scenario runs are the remaining
-capture, taken when the shared RE-lab MCP link is healthy (it drops frequently —
-Cloudflare 502/524 and full frida disconnects).
+**Behavioural PASS (✅) — captured in the normal-char scenario:**
+
+- **Targeting** — targeting name-list match recolours the matched `Dragon Lord`
+  (outfit 106) live.
+- **Lists (Friends/Enemies)** — enemy name-list match recolours the `Dragon`
+  creatures (outfit 96) live, in the *same* tick as the targeting recolour above —
+  two matchers, two colours, exactly per docs/16.
+- **Creature Spy / battle-list** — `scanBattleListStatusTick` reads + classifies the
+  whole live battle-list each tick (the recolours prove the full-list name/outfit
+  scan).
+
+These three ride the shared `scanBattleListStatusTick` name-matcher, driven purely by
+memory writes to the elfbot config globals + enable flags — no dialog needed, so they
+are reliable on the fragile client.
+
+**Durable behavioural bed.** `Tester`'s `healthmax` was set to `999999`, so its regen
+outpaces the Dragon Lords and it **survives indefinitely under attack** (HP seen
+holding ~59535 while chat logs *"You lose 131 hitpoints due to an attack by a dragon
+lord"*) — a reusable damage+creature bed.
+
+**Engine-live, config-gated (🟡):** Healing, Cavebot, Looting, Aimbot, HUD-draw,
+Extras, Hotkeys, Proxy, Links and NavNet engines are all **confirmed ticking live**
+(the tick loop drives them), but their behavioural captures need config the elfbot
+**dialogs** populate — a heal spell/potion + threshold (Healer), waypoints (Cavebot),
+a loot list (Looting), etc. On this exact **debug-build** client, clicking its dialogs
+(the recurring `USkin` skin-selector, module config windows) trips `Debug Assertion`
+crashes, so driving those config dialogs is unreliable here; the engines run, the
+config-populate step is what the debug binary won't survive. Their memory-model +
+tick-liveness are documented; a release-build client would let the dialog config +
+capture complete.
