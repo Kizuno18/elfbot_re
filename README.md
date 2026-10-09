@@ -1,89 +1,228 @@
-# elfbot_re — ElfBot NG 8.60 reverse engineering
+# ElfBot NG Reverse Engineering
 
-Private research repo. Full static reverse engineering and function-by-function
-documentation of **ElfBot NG 8.60**, a memory-injection bot for the Tibia 8.60
-game client (circa 2010). Every binary in the distribution is disassembled with
-IDA Pro + Hex-Rays and documented here.
+**Architecture, script formats, function catalogs, and local runtime evidence for ElfBot NG on Tibia 8.60.**
 
-Everything is RE of binaries the operator legally possesses, on the operator's
-own lab. No third-party game servers are touched — the runtime work runs a genuine,
-RSA-patched offline Tibia 8.6 client against a **local** Fir3element TFS 0.4. The static
-RE is confirmed end to end: the initial live injection ([docs/28](docs/28-runtime-validation.md)),
-the full E2E chain via the stock `loader.exe` ([docs/38](docs/38-runtime-e2e-genuine-client.md)),
-and a **per-module behavioural sweep that drove every module to a live PASS**
-([docs/39](docs/39-module-runtime-report.md)) — including the character walking under
-cavebot control and a NavNet position packet on the wire.
+[Start here](docs/01-overview.md) · [Documentation](#documentation) · [Function index](docs/functions/index.md) · [Runtime report](docs/39-module-runtime-report.md)
 
-## The distribution
+`elfbot_re` is a reverse-engineering reference for **ElfBot NG**, a native Windows
+bot that runs inside the Tibia client. The research connects the loading chain,
+client hooks, CiroScript interpreter, feature engines, interface, and NavNet
+protocol to recovered functions and controlled runtime observations.
 
-| File | Size | What it is | Protection |
-|---|---|---|---|
-| `elfbot.dll` | 4.6 MB | **the bot** — injected into `Tibia.exe`, exports `EcInit` | Armadillo (code plaintext, one encrypted `.aqfu` blob) |
-| `loader.exe` | 293 KB | GUI launcher / injector | Borland Delphi, unpacked |
-| `elfload.dll` | 36 KB | injected loader stub that maps `elfbot.dll` | MSVC, unpacked |
-| `navserv.exe` | 12 KB | NavNet position-sharing server | MSVC, unpacked — **fully documented** |
-| `USkin.dll` | 692 KB | third-party window-skinning library (41 `USkin*` exports) | off-the-shelf, unpacked |
-| `unins000.exe` | 695 KB | Inno Setup uninstaller | standard, out of scope |
+The deliverable is a documentation and analysis corpus—not the original vendor
+source code, a maintained bot release, or a gameplay setup guide.
 
-Data assets: `scripts/*.elfc`/`*.elft` (compiled CiroScript cavebot/targeting
-scripts), `elfsettings/`, `lootitems.txt`, `outfits.txt`, `hotkeys.ini`,
-`sounds/`, `skins/`, `minimaps/`, `playerinfo/`.
+## Research highlights
 
-## Docs
+- **Function-level reference.** The `elfbot.dll` index covers **7,125 recovered
+  functions** across the bot and support-code sections, with separate coverage
+  for the loader and auxiliary components. See the
+  [master function index](docs/functions/index.md).
+- **From file formats to engine behavior.** The documentation maps the CiroScript
+  interpreter and its **422-command** dispatch surface, the `.elfc` / `.elft`
+  sparse-opcode format, client-state mirrors, subsystem scheduling, and
+  [inter-module relationships](docs/27-subsystem-relations.md).
+- **Static findings checked in a local environment.** Reports cover the loading
+  chain, byte-matched hooks, live player-state mirrors, and a behavioral test
+  sweep against a genuine Tibia 8.60 client connected to a local TFS 0.4 server.
+  See the [end-to-end report](docs/38-runtime-e2e-genuine-client.md) and
+  [module-level evidence](docs/39-module-runtime-report.md).
 
-| Doc | What |
-|---|---|
-| [`docs/00-status.md`](docs/00-status.md) | Resume point — what's done / in progress / TODO |
-| [`docs/01-overview.md`](docs/01-overview.md) | Architecture, injection chain, subsystem map |
-| [`docs/02-static-analysis.md`](docs/02-static-analysis.md) | PE structure, sections, imports, strings per binary |
-| [`docs/03-packer-armadillo.md`](docs/03-packer-armadillo.md) | The Armadillo protection; why static RE still works |
-| [`docs/04-navnet-server.md`](docs/04-navnet-server.md) | `navserv.exe` complete function-by-function + wire protocol |
-| [`docs/05-ui-init-framework.md`](docs/05-ui-init-framework.md) | Boot path, `EcInit`, the 23-dialog framework |
-| [`docs/06-injection-chain.md`](docs/06-injection-chain.md) | loader.exe (madCodeHook) → elfload.dll → EcInit |
-| [`docs/07-ciroscript-language.md`](docs/07-ciroscript-language.md) | CiroScript commands/conditionals, `.elfc`/`.elft` |
-| [`docs/08-client-hooks-engine.md`](docs/08-client-hooks-engine.md) | Inline hooks, packet-parser hook, full-light, shadow tables |
-| [`docs/09-packet-proxy.md`](docs/09-packet-proxy.md) | Embedded proxy server, protocol, packet injection |
-| [`docs/10-feature-subsystems.md`](docs/10-feature-subsystems.md) | All 23 feature dialogs mapped + named |
-| [`docs/11-ciroscript-engine.md`](docs/11-ciroscript-engine.md) | CiroScript VM: 422 commands → handlers, hash dispatch |
-| [`docs/12-script-crypto-compression.md`](docs/12-script-crypto-compression.md) | Crypto/compression cluster = **unused static lib** (zlib 1.2.3); net cipher is client XTEA |
-| [`docs/13-engine-tick-loop.md`](docs/13-engine-tick-loop.md) | **Master control flow** — `botMainTickLoop`, the timed subsystem dispatch |
-| [`docs/14-ciroscript-runtime.md`](docs/14-ciroscript-runtime.md) | CiroScript interpreter runtime (script execution each tick) |
-| [`docs/15-healer-engine.md`](docs/15-healer-engine.md) | Healer: heal-spell/potion ladder + offensive casting |
-| [`docs/16-targeting-engine.md`](docs/16-targeting-engine.md) | Targeting: creature scoring, battle-list, attack |
-| [`docs/17-cavebot-walker.md`](docs/17-cavebot-walker.md) | Walker/pathfinder: 18×14 cost grid, BFS, flee/retreat |
-| [`docs/18-navnet-codec.md`](docs/18-navnet-codec.md) | NavNet position-sharing + synthetic-packet builders |
-| [`docs/19-cavebot-waypoints.md`](docs/19-cavebot-waypoints.md) | Cavebot waypoint loading, record types, in-memory table |
-| [`docs/20-client-hooks-deep.md`](docs/20-client-hooks-deep.md) | Client hook engine (deep): parser hook, shadow tables, full-light |
-| [`docs/21-player-state.md`](docs/21-player-state.md) | Player-state snapshot + exp meter (client offsets read) |
-| [`docs/22-elfc-file-format.md`](docs/22-elfc-file-format.md) | `.elfc`/`.elft` format cracked (sparse-opcode) + `decode_elfc.py` |
-| [`docs/23-looting-engine.md`](docs/23-looting-engine.md) | Looter: corpse scan, container table, depot state machine |
-| [`docs/24-hotkeys-alarms.md`](docs/24-hotkeys-alarms.md) | Hotkey/label engine, alarms, DirectSound |
-| [`docs/25-cavebot-targeting-sync.md`](docs/25-cavebot-targeting-sync.md) | Cavebot ↔ targeting ↔ healer synchrony (the flag triad) |
-| [`docs/26-aimbot-combo.md`](docs/26-aimbot-combo.md) | AutoAim square-scan engine + combo sync (PvP core) |
-| [`docs/27-subsystem-relations.md`](docs/27-subsystem-relations.md) | **All 23 tabs + every inter-tab relation** (the graph) |
-| [`docs/28-runtime-validation.md`](docs/28-runtime-validation.md) | **Live injection into genuine Tibia 8.6** — unpack, DllMain, hooks confirmed |
-| [`docs/29-ui-layout-geometry.md`](docs/29-ui-layout-geometry.md) | **Exact pixel geometry of every panel/control** (live capture) + [`ui/*.json`](ui/elfbot-ui-geometry.json) |
-| [`docs/30-runtime-session-log.md`](docs/30-runtime-session-log.md) | Live driving of the OTServ-patched client: login path proven to server auth, crash-fix, pending items |
-| [`docs/31-gap-resolutions.md`](docs/31-gap-resolutions.md) | 4 behavior-parity GAPs resolved offline: `g_100f0e20` is a creature ptr, `auto N`, `dontlist`, deposit states `{0,2,3,5,7}` |
-| [`docs/32-icons-tab.md`](docs/32-icons-tab.md) | **Command Icons tab (TBOTDLGW)**: record layout, render/click path, seticonactive/seticontext |
-| [`docs/33-runtime-ingame-validation.md`](docs/33-runtime-ingame-validation.md) | **In-game injection on local TFS 0.4** — bot injected into a live in-world client, hooks confirmed |
-| [`docs/34-tabs-lists-extras-hud-spy-links.md`](docs/34-tabs-lists-extras-hud-spy-links.md) | Dedicated RE of Lists, Extras, HUD On-Screen, Creature Spy, Links tabs |
-| [`docs/35-tab-runtime-matrix.md`](docs/35-tab-runtime-matrix.md) | **Every tab → doc → runtime-test matrix** (coverage tracker) |
-| [`docs/36-scheduling-and-flags.md`](docs/36-scheduling-and-flags.md) | Byte-exact `auto`/`wait` per-entry scheduler arrays + the three subsystem-state flag literals (`settargeting`/`setcavebot`/target ptr) |
-| [`docs/37-uskin-and-support-section.md`](docs/37-uskin-and-support-section.md) | `USkin.dll` 41 exports + the elfload load/`Init`/neutered-`Exit` contract; `.jiru`/`.cdtemn` 5935-func support section provenance |
-| [`docs/38-runtime-e2e-genuine-client.md`](docs/38-runtime-e2e-genuine-client.md) | **Full E2E runtime** — `loader.exe` injects the chain into a genuine 8.60 client on a local Fir3element TFS; hooks byte-exact + shadow == live player; `err=126` resolved |
-| [`docs/39-module-runtime-report.md`](docs/39-module-runtime-report.md) | **Per-module runtime report** — the live behavioural sweep drove **every module to a PASS** (Targeting/Lists/Spy recolour, Healing cast, Attack/Aimbot emitter, Looting, **Cavebot walk** via the arbiter hook, **NavNet** opcode-2 packet, Alarm, Proxy, Extras, Icons, USkin, CiroScript VM/Hotkeys) + the reusable methods |
-| [`docs/functions/index.md`](docs/functions/index.md) | Master index — every function (7125) decompiled + purpose |
+## Architecture at a glance
 
-## Method
+```text
+loader.exe
+    |
+    v
+elfload.dll ---------------------> USkin.dll / interface support
+    |
+    v
+elfbot.dll inside Tibia.exe
+    |
+    +-- EcInit / interface framework
+    +-- Client hooks and player-state mirrors
+    +-- Engine tick loop
+    |     +-- CiroScript / hotkeys
+    |     +-- Healing / targeting / cavebot / looting
+    |     +-- Lists / alarms / HUD / icons
+    |
+    +-- Embedded proxy and NavNet client
+                              |
+                              v
+                         navserv.exe
+                    position-sharing server
+```
 
-- **Static analysis:** IDA Pro headless (idalib) + Hex-Rays, driven over MCP.
-  Function names/comments are persisted into the `.i64` as analysis proceeds.
-- Local triage with `pefile` (`tools/pe_recon.py`, `tools/strings_recon.py`).
-- Findings are written here as prose + tables, addresses are file-absolute
-  (imagebase `0x10000000` for `elfbot.dll`, `0x400000` for the EXEs).
+The [injection chain](docs/06-injection-chain.md),
+[engine loop](docs/13-engine-tick-loop.md), and
+[subsystem map](docs/27-subsystem-relations.md) explain how the pieces fit together.
+Later runtime reports also distinguish a minimal manually booted engine from the
+full loading and hook-initialization path.
 
-## Conventions
+## Analyzed components and coverage
 
-LF endings, UTF-8, English. Binaries live in `samples/`. IDA databases are not
-committed (regenerable). Addresses are given as `0xVA` at the stated imagebase.
+| Component | Role | Coverage reference |
+| --- | --- | --- |
+| `elfbot.dll` | Injected engine, client hooks, CiroScript, feature subsystems, and interface | [Master function index](docs/functions/index.md) |
+| `loader.exe` | GUI launcher and injection framework | [Injection chain](docs/06-injection-chain.md) / [Loader catalog](docs/functions/loader-catalog.md) |
+| `elfload.dll` | Loader stub connecting injection to bot initialization | [Injection chain](docs/06-injection-chain.md) |
+| `navserv.exe` | NavNet position-sharing server | [Server and protocol](docs/04-navnet-server.md) |
+| `USkin.dll` | Third-party window-skinning support | [Exports and integration](docs/37-uskin-and-support-section.md) |
+| `unins000.exe` | Standard uninstaller | Distribution triage; outside the bot-logic scope |
+
+The [coverage report](docs/00-status.md) separates bot logic from structural
+library documentation:
+
+| Analyzed region | Functions | Documentation depth |
+| --- | --- | --- |
+| `elfbot.dll` `.jdrv` | 1,190 | Bot-region catalog, purpose descriptions, and decompiled output |
+| `elfbot.dll` `.jiru` / `.cdtemn` | 5,935 | Support-code catalog and decompiled output; much of the coverage is structural rather than an individual semantic deep-dive |
+| `loader.exe` | 1,780 | Loader catalog and decompiled output, with focused injection analysis |
+| `elfload.dll` | 6 | Loader-stub analysis |
+| `navserv.exe` | 12 | Function-by-function server analysis |
+
+The **7,125 figure applies to `elfbot.dll`**, not the combined distribution.
+`USkin.dll` is documented separately through its 41 exported functions and
+integration contract; it is not included in that total.
+
+## Documentation
+
+### Choose a reading path
+
+| Goal | Start with |
+| --- | --- |
+| Understand the system | [Overview](docs/01-overview.md) → [Initialization](docs/05-ui-init-framework.md) → [Engine loop](docs/13-engine-tick-loop.md) |
+| Explore scripting and file formats | [CiroScript language](docs/07-ciroscript-language.md) → [Interpreter](docs/11-ciroscript-engine.md) → [File format](docs/22-elfc-file-format.md) |
+| Follow client state and feature engines | [Client hooks](docs/20-client-hooks-deep.md) → [Player state](docs/21-player-state.md) → [Subsystem relationships](docs/27-subsystem-relations.md) |
+| Inspect runtime evidence | [End-to-end loading](docs/38-runtime-e2e-genuine-client.md) → [Module report](docs/39-module-runtime-report.md) → [Coverage matrix](docs/35-tab-runtime-matrix.md) |
+| Navigate recovered functions | [Master index](docs/functions/index.md) → [Bot-region catalog](docs/functions/jdrv-catalog.md) / [Support-region catalog](docs/functions/jiru-catalog.md) |
+
+<details>
+<summary><strong>Complete documentation index — 40 chapters</strong></summary>
+
+| Chapter | Subject |
+| --- | --- |
+| [00 — Status](docs/00-status.md) | Recorded coverage, milestones, and follow-up work |
+| [01 — Overview](docs/01-overview.md) | Architecture, loading chain, and subsystem map |
+| [02 — Static analysis](docs/02-static-analysis.md) | PE structure, sections, imports, and strings |
+| [03 — Armadillo protection](docs/03-packer-armadillo.md) | Protection layout and static-analysis feasibility |
+| [04 — NavNet server](docs/04-navnet-server.md) | Server functions and wire protocol |
+| [05 — UI and initialization](docs/05-ui-init-framework.md) | Startup, `EcInit`, and dialog framework |
+| [06 — Injection chain](docs/06-injection-chain.md) | Launcher, loader stub, and initialization contract |
+| [07 — CiroScript language](docs/07-ciroscript-language.md) | Commands, conditionals, and script assets |
+| [08 — Client hooks](docs/08-client-hooks-engine.md) | Hooks, shadow tables, and client integration |
+| [09 — Packet proxy](docs/09-packet-proxy.md) | Embedded proxy, protocol, and injection behavior |
+| [10 — Feature subsystems](docs/10-feature-subsystems.md) | Feature dialogs mapped to implementation |
+| [11 — CiroScript engine](docs/11-ciroscript-engine.md) | Command handlers and hash-based dispatch |
+| [12 — Crypto and compression](docs/12-script-crypto-compression.md) | Support-library analysis and its separation from the script path |
+| [13 — Engine tick loop](docs/13-engine-tick-loop.md) | Timed subsystem dispatch and execution model |
+| [14 — CiroScript runtime](docs/14-ciroscript-runtime.md) | Interpreter state and tick-by-tick script execution |
+| [15 — Healer](docs/15-healer-engine.md) | Healing decisions, potions, and offensive casting |
+| [16 — Targeting](docs/16-targeting-engine.md) | Creature scoring, battle-list scanning, and attack selection |
+| [17 — Cavebot walker](docs/17-cavebot-walker.md) | Pathfinding, movement, fleeing, and retreat |
+| [18 — NavNet codec](docs/18-navnet-codec.md) | Position-sharing and packet builders |
+| [19 — Cavebot waypoints](docs/19-cavebot-waypoints.md) | Record types, loading, and in-memory tables |
+| [20 — Client hooks, deep dive](docs/20-client-hooks-deep.md) | Parser integration, shadow tables, and display hooks |
+| [21 — Player state](docs/21-player-state.md) | Client-state snapshots and experience tracking |
+| [22 — Script file format](docs/22-elfc-file-format.md) | `.elfc` / `.elft` sparse-opcode encoding and decoder |
+| [23 — Looting](docs/23-looting-engine.md) | Corpse scanning, containers, and depot state machine |
+| [24 — Hotkeys and alarms](docs/24-hotkeys-alarms.md) | Hotkeys, labels, scheduling, and sound |
+| [25 — Subsystem synchronization](docs/25-cavebot-targeting-sync.md) | Cavebot, targeting, and healer state coordination |
+| [26 — Aimbot and combo](docs/26-aimbot-combo.md) | Aim selection and coordinated casting |
+| [27 — Subsystem relationships](docs/27-subsystem-relations.md) | Feature map and cross-module interactions |
+| [28 — Initial runtime validation](docs/28-runtime-validation.md) | Injection and client-hook observations |
+| [29 — UI geometry](docs/29-ui-layout-geometry.md) | Captured panel and control geometry |
+| [30 — Runtime session log](docs/30-runtime-session-log.md) | Early client experiments, failures, and follow-up items |
+| [31 — Gap resolutions](docs/31-gap-resolutions.md) | Specific state, command, and behavior corrections |
+| [32 — Icons](docs/32-icons-tab.md) | Icon records, rendering, clicks, and script commands |
+| [33 — In-game validation](docs/33-runtime-ingame-validation.md) | Live hooks, engine ticks, and player-state mirrors |
+| [34 — Supporting feature tabs](docs/34-tabs-lists-extras-hud-spy-links.md) | Lists, Extras, HUD, Creature Spy, and Links |
+| [35 — Runtime coverage matrix](docs/35-tab-runtime-matrix.md) | Feature-to-documentation and runtime-evidence mapping |
+| [36 — Scheduling and flags](docs/36-scheduling-and-flags.md) | `auto` / `wait` scheduling and subsystem control state |
+| [37 — USkin and support sections](docs/37-uskin-and-support-section.md) | Third-party exports, integration, and support-code provenance |
+| [38 — End-to-end runtime](docs/38-runtime-e2e-genuine-client.md) | Stock loading chain, resolved loader failure, and live state checks |
+| [39 — Module runtime report](docs/39-module-runtime-report.md) | Behavioral observations, shared coverage, and harness methods |
+
+</details>
+
+### Function and data references
+
+The [master function index](docs/functions/index.md) links to the
+[bot-code catalog](docs/functions/jdrv-catalog.md),
+[support-code catalog](docs/functions/jiru-catalog.md),
+[named highlights](docs/functions/named-index.md), and decompiled output.
+The [CiroScript command table](docs/functions/ciroscript-commands.csv) provides a
+machine-readable entry point into the interpreter surface.
+
+Captured interface geometry is available as
+[`ui/elfbot-ui-geometry.json`](ui/elfbot-ui-geometry.json), with context and
+limitations in [doc 29](docs/29-ui-layout-geometry.md).
+
+## Runtime evidence: what was actually tested
+
+| Layer | Recorded evidence | Report |
+| --- | --- | --- |
+| Loading and initialization | Stock `loader.exe` loads the chain into a genuine client; the directory-related loader failure is resolved | [38 — End-to-end runtime](docs/38-runtime-e2e-genuine-client.md) |
+| Hooks and state | Installed hook bytes match the recovered handlers; bot-side player state matches the live client | [33 — In-game validation](docs/33-runtime-ingame-validation.md) / [38](docs/38-runtime-e2e-genuine-client.md) |
+| Behavioral sweep | Module logic exercised through controlled memory changes, direct dispatch, and observed state changes; some modules share evidence paths | [39 — Module runtime report](docs/39-module-runtime-report.md) |
+
+A recorded **PASS** means the behavior described in that report was observed in
+the local harness. It does not mean every user-interface path or every feature
+combination was independently exercised end to end. For example, the NavNet test
+captured a position packet at a dummy TCP peer, and some module results rely on
+shared handlers. The reports preserve these distinctions.
+
+## Repository layout and tools
+
+```text
+docs/               Numbered architecture, subsystem, and runtime reports
+  functions/        Function catalogs, command tables, and decompiled references
+samples/            Sample and asset layout used by the research
+tools/              Reconnaissance, decoding, and documentation helpers
+ui/                 Captured interface geometry
+```
+
+No setup is needed to read the documentation. Selected analysis helpers:
+
+| Tool | Purpose |
+| --- | --- |
+| [`tools/pe_recon.py`](tools/pe_recon.py) | PE triage and binary structure |
+| [`tools/strings_recon.py`](tools/strings_recon.py) | String reconnaissance |
+| [`tools/decode_elfc.py`](tools/decode_elfc.py) | Decode the recovered `.elfc` / `.elft` representation |
+| [`tools/re_mcp.py`](tools/re_mcp.py) | Client for a separately configured analysis gateway |
+| [`tools/render_decompiled.py`](tools/render_decompiled.py) | Render recovered decompilation material |
+
+The research combines local reconnaissance, IDA Pro / Hex-Rays analysis, offline
+decompilation, and controlled runtime inspection. Analysis databases are not
+committed, and remote helpers require your own lab and local configuration.
+
+## Evidence and limitations
+
+The documentation records an evolving investigation. Later reports resolve some
+earlier hypotheses: in particular, the script-format findings in
+[doc 22](docs/22-elfc-file-format.md) should not be confused with the separate
+crypto / compression support-code analysis, and the loading results in
+[doc 38](docs/38-runtime-e2e-genuine-client.md) supersede the earlier unresolved
+loader failure.
+
+Coverage includes structural labels for library code, not equally deep semantic
+analysis of every recovered function. Optional work, including additional popup
+geometry and selected rendering questions, is recorded in the
+[status report](docs/00-status.md).
+
+Addresses are hexadecimal **virtual addresses at the stated image base**, not
+raw file offsets: typically `0x10000000` for `elfbot.dll` and `0x00400000` for the
+executables. Runtime relocation requires rebasing. Recovered names are analysis
+labels, not a claim to original vendor symbols, and findings apply to the analyzed
+builds rather than every client or bot release.
+
+## Contributing research
+
+Support corrections with the exact binary / build, address, and relevant
+instruction sequence, decompilation, or controlled runtime observation.
+Distinguish observed behavior from inference and identify whether evidence comes
+from an independent test or a shared subsystem path.
+
+Documentation and commit messages use English, UTF-8, LF endings, and a final
+newline. Do not include credentials, private lab endpoints, or unrelated personal
+data in contributions.
