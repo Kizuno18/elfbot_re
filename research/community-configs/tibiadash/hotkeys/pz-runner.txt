@@ -1,0 +1,3 @@
+auto 1000..2000 dontlist | ifplayerattacking {loadcavebot 'PZ RUNNER' | settargeting off}
+auto 1000..2000 dontlist | if [$hppc < 20] {ghealth self | loadcavebot 'PZ RUNNER' | settargeting off}
+

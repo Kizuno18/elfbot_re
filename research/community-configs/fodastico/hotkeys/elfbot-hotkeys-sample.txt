@@ -1,0 +1,13 @@
+auto 200 fastequipammy 3081
+if [$targetingon || $caveboton] {statusmessage 'ElfBot NG - CaveBot Paused' | stopattack | settargeting off | setcavebot off | wait 400 | end} | if [$targetingon == 0 || $caveboton == 0] {statusmessage 'ElfBot NG - CaveBot Resumed' | settargeting on | setcavebot on | wait 400}
+auto 200 if [$mppc > 90] say 'utana vid'
+auto 200 uhpc 50 friend
+auto 200 sio 60 friend
+auto 200 attack target | sd target
+auto 200 manashield
+auto 200 ifnoplayeronscreen explo target | ifplayeronscreen exorihur 100
+auto 200 healparalysis exura
+auto 200 listas 'Hunt Gran Hur' | isnotattacking stronghaste
+auto 200 listas Utani hur | haste
+auto 200 listas Utani gran Hur | stronghaste
+

@@ -1,0 +1,11 @@
+loadcavebot {scriptname}
+loadtargeting {scriptname}
+loadsetting {settingname}
+loadscript {scriptname.elfs}
+setautocombo {on/off/toggle}
+setcavebot {on/off/toggle}
+settargeting {on/off/toggle}
+setoutfit {playername} {outfitid}
+setitemoutfit {playername} {itemid}
+setoutfitcolor {playername} {headcolor} {primary} {secondary} {detail} {addon}
+

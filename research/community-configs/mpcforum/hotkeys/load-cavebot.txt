@@ -1,0 +1,4 @@
+auto 100 if [$cap <= 100] { loadcavebot yyy | wait 1000 }
+auto 100 if [$itemcount.ID <= x] { loadcavebot nazwaskrypta | wait 1000 }
+auto 200 if [$mp >= x] say 'y'
+

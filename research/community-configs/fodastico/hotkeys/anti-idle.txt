@@ -1,0 +1,2 @@
+auto 100 listas 'Anti-Idle Mundo Elfbot' | if [$self.dir == 0] {set $dir 0 | set $firdir 'turnn' | set $secdir 'turns'} | if [$self.dir == 1] {set $dir 1 | set $firdir 'turne' | set $secdir 'turnw'} | if [$self.dir == 2] {set $dir 2 | set $firdir 'turns' | set $secdir 'turnn'} | if [$self.dir == 3] {set $dir 3 | set $firdir 'turnw' | set $secdir 'turne'} | if [$time > $idletime] {exec $secdir | wait 1500 | exec $firdir | wait 1500 | if [$self.dir == $dir] $idletime [$time+60]}
+

@@ -1,0 +1,5 @@
+# Generated summaries are reproducible from the indexed decompiled documents.
+docs/functions/inventory.json
+docs/functions/*-catalog.md
+docs/functions/*-purposes.json
+docs/functions/named-index.md

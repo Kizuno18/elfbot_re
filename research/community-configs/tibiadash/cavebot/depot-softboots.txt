@@ -1,0 +1,17 @@
+reachgrounditem 'dp'
+opengrounditem 'dp'
+wait [$rand.500.1300]
+openitem 2866 1 'Locker'
+wait [$rand.500.1300]
+moveitemsonto (ITEM ID) 8860 0 'Yellow Backpack'
+countitems 6530
+if [ $count == 1] gotolabel Depositer
+wait 300
+say hi
+wait [$rand.500.1300]
+npcsay soft boots
+wait [$rand.500.1300]
+npcsay yes
+wait [$rand.1000.2000]
+islocation equipboots 6529
+

@@ -1,0 +1,3 @@
+if [$hotkeys == 0] {set $hotkeys 1 | statusmessage '$systime - Hotkeys Set #2 (PUSHMAX ON)' | wait 1000} | if [$hotkeys == 1] {clear $hotkeys | statusmessage '$systime - Hotkeys Set #1 (DASH ON)' | wait 1000}
+if [$hotkeys == 1] {loop 1 moveitemonground $target.posx $target.posy $target.posz [$target.posx-1] [$target.posy+1] $target.posz}
+

@@ -1,0 +1,2 @@
+auto 100 listas "Anti push Mundo Elfbot" | if [$itemcount.3031 >= 2] {dropitemsxyzamount $posx $posy $posz 3031 2 | wait 300} | if [$itemcount.3492 >= 2] {dropitemsxyzamount $posx $posy $posz 3492 2 | wait 300} | if [$itemcount.283 >= 1] {dropitems 283 | wait 300} | if [$itemcount.284 >= 1] {dropitems 284 | wait 300} | if [$itemcount.285 >= 1] {dropitems 285 | wait 300}
+

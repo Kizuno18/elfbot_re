@@ -1,0 +1,10 @@
+auto 200 attack target | sd target
+auto 200 attack target | aimgfb
+auto 200 ifgm {say 'hello' | wait 2000 | say 'whats up' | turnoff} | ifplayeronscreen {say 'hello' | wait 2000 | say 'whats up' | turnoff}
+auto 200 haste
+auto 200 stronghaste
+auto 200 reconnect
+auto 200 xlog
+auto 200 keepmagwall
+auto 200 magwall target
+
